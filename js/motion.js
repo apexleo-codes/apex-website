@@ -34,7 +34,6 @@
       .from(".hero__title .line > span", { yPercent: 115, duration: 1.2, ease: "expo.out", stagger: 0.12 })
       .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8")
       .from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
-      .from(".orbit__item", { autoAlpha: 0, scale: 0.4, duration: 0.7, stagger: 0.07 }, "-=1.1")
       .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, "-=.7")
       .add(() => apexHero.start(), "-=.45")   // he waves as the first message lands
       .from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, "-=.9")

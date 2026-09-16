@@ -80,8 +80,6 @@
     </div>
 
     <div class="hero__visual">
-      <div class="orbit" aria-hidden="true"></div>
-
       <!-- the wrapper is parallaxed, the bubble inside is animated: one GSAP owner each -->
       <div class="bubble-wrap">
         <div class="bubble" aria-live="polite">
@@ -101,9 +99,12 @@
            seams). Frames lost the measurement badly — see README. hero.js resets
            it to 0 as each message lands, so the wave greets the message. -->
       <div class="lion-stage">
-        <video class="lion" src="media/apex-wave.mp4" poster="media/apex-wave-poster.webp"
+        <video class="lion" poster="media/apex-wave-poster.webp"
                muted loop playsinline autoplay preload="auto"
-               aria-label="APEX, the lion, waving hello"></video>
+               aria-label="APEX, the lion, waving hello">
+          <source src="media/apex-wave.webm" type="video/webm">
+          <source src="media/apex-wave.mp4" type="video/mp4">
+        </video>
       </div>
     </div>
     <a class="hero__scroll" href="#idea" data-goto="#idea"><span>Scroll</span><i></i></a>

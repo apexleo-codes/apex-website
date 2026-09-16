@@ -18,8 +18,11 @@
   const names = D.team.map((t) => `<span>${t.name}</span>${icon("star")}`).join("");
   $(".marquee__track").innerHTML = `<div>${names}</div><div>${names}</div>`;
 
-  // hero orbit: the eight agents around the lion
-  $(".orbit").innerHTML = D.team.slice(1).map((t, i) => `<span class="orbit__item" style="--i:${i};--n:8">${av(t.key)}</span>`).join("");
+  // No agents in the hero. They were tried twice: a flat ring (they read as
+  // smudges on the lion) and electron orbits round him as a nucleus (the rings
+  // vanished and the agents shrank to illegible specks). The stats already say
+  // "8 AI agents" a few lines away, and the team gets proper room further down
+  // the page - the hero is stronger with just APEX and his message.
 
   // 01 · the idea: hover-reveal list
   $(".jobs").innerHTML = D.jobs.map((j, i) => `

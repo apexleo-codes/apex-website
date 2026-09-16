@@ -2,40 +2,20 @@
    Layout and type for the hero live in base.css; this file is only the cast. */
 
 /* ---- the lion ---- */
-/* A 205 KB muted h264 loop, not a sprite sheet: h264 stores only what changes
-   between frames, so it beat every WebP variant on bytes at twice the
-   resolution — and a sprite sheet would decode to a 40 MB bitmap. */
-/* Two masks, nested rather than composited. The clip is a solid #0d1614
-   rectangle against the page's #0b1312, so every edge shows as a grey panel if
-   left bare — and it is cut flat across the mane crown, which needs a
-   *directional* fade a symmetrical vignette can't give (keeping his body opaque
-   forces the fade to start ~55%, leaving the top edge ~90% opaque). Stacking
-   both on one element would need mask-composite, which falls back to a union —
-   the opposite of what we want. Masks multiply down the tree, so: vignette on
-   the wrapper, top fade on the video. */
-/* The vignette must reach fully transparent *inside* the element box, or the
-   clip's rectangle still shows: radii wider than 100% push the transparent stop
-   past the edge, so the bottom and corners stay near-opaque and the panel reads
-   as a grey box on the page ink. Hence radii under 100% and an early fade. */
-/* Balance point between two failures: radii over 100% push the transparent stop
-   outside the box and the clip's rectangle shows as a grey panel; fading as early
-   as 38%/82% kills the panel but eats his legs and arm. Opaque to ~50%, gone by
-   ~90% — inside the box, but past his body. */
-.lion-stage {
-  position: absolute; left: 4%; bottom: 0; width: 96%;
-  -webkit-mask-image: radial-gradient(92% 80% at 50% 50%, #000 50%, transparent 90%);
-  mask-image: radial-gradient(92% 80% at 50% 50%, #000 50%, transparent 90%);
-}
-.lion {
-  display: block; width: 100%; height: auto;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 91%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 91%, transparent 100%);
-}
+/* A VP9 WebM with a real alpha channel, with an h264 mp4 fallback whose
+   background is keyed to the page ink. Alpha is what fixed the green shade:
+   the browser decodes YUV with a levels shift, so the clip painted #0e1717
+   against a #0b1312 page whatever hex was stored - masking it never worked
+   because the mismatch was in the decode, not the file. With no background at
+   all there is nothing left to mismatch, and the two mask-image fades that
+   used to hide that rectangle are gone with it. */
+.lion-stage { position: absolute; left: 2%; bottom: 0; width: 96%; }
+.lion { display: block; width: 100%; height: auto; }
 
 /* ---- the bubble ---- */
-/* The wrapper owns the pointer parallax (GSAP x/y), the bubble owns the intro
-   tween and the fade between messages. Two GSAP owners on one element let
-   overwrite kill the intro tween and strand it at visibility:hidden. */
+/* The wrapper and the bubble stay separate elements so GSAP's intro tween and
+   the CSS fade never own the same property. (The pointer parallax that
+   originally forced this split is gone - APEX already waves.) */
 /* Up and to the left of him: sitting square on top of the stage put the bubble
    over his head. There is empty gutter between the copy and the stage, so it can
    hang outside the stage box without crowding the text. */
@@ -55,9 +35,10 @@
 }
 .bubble.is-live { opacity: 1; }
 .bubble.is-live.is-out { opacity: 0; }
-/* Aimed at the gap between his mane and the orbit ring, not at his head centre:
-   at 83% the tail landed square on an orbiting agent's disc, so the bubble read
-   as talking to the wrong one. Mobile re-aims it below. */
+/* Sits just left of his head rather than dead centre on it. The value was
+   originally chosen to dodge an orbiting agent that no longer exists; it still
+   reads well, so it stayed. ~83% would point straight at him if ever wanted.
+   Mobile re-aims it below. */
 .bubble__tail {
   position: absolute; left: 64%; bottom: -8px; width: 18px; height: 18px;
   background: #0f1917; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2);
