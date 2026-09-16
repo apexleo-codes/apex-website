@@ -48,6 +48,8 @@
 .bubble__from { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
 .bubble__from img { width: 19px; height: 19px; border-radius: 50%; }
 .bubble__from b { font-size: .8rem; font-weight: 600; color: var(--mint); }
+/* the message is unmistakably a Telegram message, not a generic speech bubble */
+.bubble__from .tg { width: 14px; height: 14px; flex: none; margin-left: -1px; }
 .bubble__from span {
   font-family: var(--mono); font-size: .52rem; letter-spacing: .14em; text-transform: uppercase;
   color: var(--dim); border: 1px solid var(--line-2); border-radius: 4px; padding: 1px 5px;
