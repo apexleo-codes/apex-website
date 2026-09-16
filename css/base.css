@@ -116,9 +116,12 @@ body.menu-open .menu { clip-path: inset(0); visibility: visible; }
   position: relative; min-height: 100svh; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: clamp(30px, 5vw, 70px);
   padding: 130px var(--pad) 100px; overflow: hidden;
 }
+/* No gold pool behind the lion: it sat at 74% 54%, right under him, and read as
+   an odd elliptical light rather than atmosphere. His background is now the flat
+   page ink. Only the faint mint wash on the copy side is left. */
 .hero__glow {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(38% 48% at 74% 54%, rgba(233, 173, 79, .17), transparent 70%), radial-gradient(30% 36% at 12% 88%, rgba(114, 209, 174, .07), transparent 70%);
+  background: radial-gradient(30% 36% at 12% 88%, rgba(114, 209, 174, .07), transparent 70%);
 }
 .hero__copy { position: relative; }
 .hero__eyebrow { display: flex; align-items: center; }

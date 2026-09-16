@@ -124,15 +124,9 @@
   // ---------- decorative motion ----------
   mm.add("(prefers-reduced-motion: no-preference)", () => {
     // hero: mouse parallax + scroll-out
-    const hv = $(".hero__visual"), bub = $(".bubble-wrap");
-    const hx = gsap.quickTo(hv, "x", { duration: 1.2, ease: "power3" }), hy = gsap.quickTo(hv, "y", { duration: 1.2, ease: "power3" });
-    const bx = gsap.quickTo(bub, "x", { duration: 1.7, ease: "power3" }), by = gsap.quickTo(bub, "y", { duration: 1.7, ease: "power3" });
-    const onMove = (e) => {
-      const px = e.clientX / innerWidth - 0.5, py = e.clientY / innerHeight - 0.5;
-      hx(px * 40); hy(py * 40);
-      bx(px * 26); by(py * 20); // the bubble drifts further than the lion: depth
-    };
-    $(".hero").addEventListener("pointermove", onMove);
+    // No pointer parallax on the hero: APEX is already waving, and drifting the
+    // stage under the cursor moved him too. (It lived on .hero__visual, which
+    // holds the lion, so it could not be kept for the bubble alone.)
     gsap.to(".hero__copy", { yPercent: -14, autoAlpha: 0.2, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
     gsap.to(".lion", { scale: 1.1, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
 
@@ -173,7 +167,7 @@
     gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
     gsap.from(".thanks__lion", { rotate: -25, scale: 0.4, autoAlpha: 0, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".thanks", start: "top 70%" } });
 
-    return () => { $(".hero").removeEventListener("pointermove", onMove); ScrollTrigger.removeEventListener("scrollEnd", settle); };
+    return () => ScrollTrigger.removeEventListener("scrollEnd", settle);
   });
 
   // ---------- pinned scroll stories (desktop) ----------

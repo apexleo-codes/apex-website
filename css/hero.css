@@ -36,7 +36,13 @@
 /* The wrapper owns the pointer parallax (GSAP x/y), the bubble owns the intro
    tween and the fade between messages. Two GSAP owners on one element let
    overwrite kill the intro tween and strand it at visibility:hidden. */
-.bubble-wrap { position: absolute; left: 0; top: 0; width: min(100%, 332px); z-index: 2; }
+/* Up and to the left of him: sitting square on top of the stage put the bubble
+   over his head. There is empty gutter between the copy and the stage, so it can
+   hang outside the stage box without crowding the text. */
+/* The overhang has to shrink with the viewport: a flat -18% cleared the copy at
+   1440 but collided with it around 1100. -4.5vw keeps a real margin instead of
+   the 1px one -6vw happened to leave. */
+.bubble-wrap { position: absolute; left: max(-18%, -4.5vw); top: -9%; width: min(122%, 332px); z-index: 2; }
 .bubble {
   position: relative;
   padding: 13px 16px 10px;
@@ -49,10 +55,11 @@
 }
 .bubble.is-live { opacity: 1; }
 .bubble.is-live.is-out { opacity: 0; }
-/* 71% of the bubble lands on his head at every width: he stands at 59% of the
-   stage and the bubble is ~83% of it. Pinning the tail to a corner misses him. */
+/* Aimed at the gap between his mane and the orbit ring, not at his head centre:
+   at 83% the tail landed square on an orbiting agent's disc, so the bubble read
+   as talking to the wrong one. Mobile re-aims it below. */
 .bubble__tail {
-  position: absolute; left: 71%; bottom: -8px; width: 18px; height: 18px;
+  position: absolute; left: 64%; bottom: -8px; width: 18px; height: 18px;
   background: #0f1917; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2);
   border-bottom-right-radius: 3px; transform: rotate(45deg);
 }
@@ -84,9 +91,13 @@
 .bubble.is-read .tick__2 { opacity: 1; }
 
 @media (max-width: 900px) {
-  .bubble-wrap { width: min(100%, 300px); }
+  /* the desktop offsets would push the bubble off screen here: sit it square again */
+  .bubble-wrap { width: min(100%, 300px); left: 0; top: 0; }
   .bubble { padding: 12px 14px 9px; }
   .bubble__text { font-size: .82rem; min-height: 5em; }
+  /* a slightly smaller lion drops his head clear of the bubble above him */
+  .lion-stage { left: 8%; width: 84%; }
+  .bubble__tail { left: 57%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
