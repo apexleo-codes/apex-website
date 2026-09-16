@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections mirror deck v6 (the final deck), slide for slide** — the only extra is the build loop, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the idea · where everything lives · the journey flow · put it on autopilot · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the idea · where everything lives · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -24,7 +24,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `js/render.js` | Turns `content.js` into markup |
 | `js/motion.js` | Smooth scroll, loader, cursor, menu, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero, marquee |
-| `css/sections.css` | the idea · where everything lives · the journey flow · autopilot |
+| `css/sections.css` | the idea · where everything lives · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `vendor/`, `fonts/` | GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Bricolage Grotesque / Instrument Serif / JetBrains Mono |

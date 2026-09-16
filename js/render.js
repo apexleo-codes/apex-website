@@ -9,7 +9,7 @@
   const color = Object.fromEntries(D.team.map((t) => [t.key, t.color]));
 
   // menu: one entry per chapter
-  const chapterAgent = { "Intro": "apex", "The idea": "tusk", "Under the hood": "forge", "The magic": "nyx", "Autopilot": "miso",
+  const chapterAgent = { "Intro": "apex", "The idea": "tusk", "Under the hood": "forge", "The magic": "nyx",
     "Brains & tools": "bullseye", "How they work": "colony", "Recipe → cart": "miso", "Daily rhythm": "kitsune", "Build loop": "forge", "Thank you": "apex" };
   $(".menu__list").innerHTML = $$("[data-chapter]").map((sec, i) =>
     `<a href="#${sec.id}" data-goto="#${sec.id}" data-img="${chapterAgent[sec.dataset.chapter] || "apex"}"><span>${pad(i)}</span>${sec.dataset.chapter}</a>`).join("");
@@ -33,7 +33,6 @@
   // 02 · where everything lives
   $(".dash__parts").innerHTML = D.dashboard.map((p) => `
     <li><b>${p.name}</b><span>${p.tab}</span><em>${p.what}</em></li>`).join("");
-  $(".flowstrip__chain").innerHTML = D.flowstrip.map((s) => `<span>${s}</span>`).join(icon("arrow"));
 
   // 03 · the journey flow
   $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
@@ -42,11 +41,6 @@
       <span class="fnode__n">${pad(i + 1)}</span>
       <h3>${n.head}</h3><p>${n.body}</p>
     </div>`).join("");
-
-  // 04 · one scheduled job: numbered markers on the screenshot + the rows beside it
-  $(".auto__marks").innerHTML = D.autopilot.map((r, i) => `<b class="mk" data-i="${i}" style="top:${r.y}%">${i + 1}</b>`).join("");
-  $(".auto__rows").innerHTML = D.autopilot.map((r, i) => `
-    <li data-i="${i}"><b class="mk">${i + 1}</b><div><strong>${r.head}</strong><em>${r.body}</em></div></li>`).join("");
 
   // 05 · brains and tools
   $(".models").innerHTML = D.models.map((m) => `

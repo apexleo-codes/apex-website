@@ -32,7 +32,6 @@ window.APEX = {
     { name: "SETTINGS", tab: "Config tab", what: "House rules: a backup brain if one is busy, the voice for voice notes, what needs my OK" },
     { name: "LOGS", tab: "Logs tab", what: "Why something didn't work" }
   ],
-  flowstrip: ["Request", "Soul", "Skill", "Script", "Schedule / Send"],
 
   // slide 4 · the journey flow
   journey: [
@@ -40,15 +39,6 @@ window.APEX = {
     { head: "Soul", body: "Who APEX is and its ground rules. The parent brain reads it first, every time.", icon: "spark" },
     { head: "Skill", body: "Plain-English instructions that give the AI know-how for one task or tool.", icon: "book" },
     { head: "Script", body: "A small program for the exact action: search, fill the cart, send. Same result every time.", icon: "gear" }
-  ],
-
-  // slide 5 · one scheduled job, explained (markers sit on the cron screenshot, in % from its top)
-  autopilot: [
-    { head: "What to do", body: "“Create this Sunday's gut-health recipe”: the instruction for this run", y: 24.7 },
-    { head: "When", body: "Every Sunday at 9:30 AM", y: 42 },
-    { head: "Where the result goes", body: "Kept inside Hermes for now. At 9:45 a second job picks it up, fills the cart and sends it all to Telegram", y: 61 },
-    { head: "Which skill", body: "The gut-health-chef skill", y: 76 },
-    { head: "Which brain", body: "A nutrition-tuned model, just for this job", y: 95 }
   ],
 
   // slide 6 · brains and tools

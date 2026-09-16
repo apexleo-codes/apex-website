@@ -101,14 +101,7 @@
     const on = () => { $$(".skillnote").forEach((x) => x.classList.toggle("is-on", x === b)); shotBox.dataset.hl = b.dataset.hl; };
     ["pointerenter", "focus", "click"].forEach((ev) => b.addEventListener(ev, on));
   });
-  // autopilot: a row and its marker on the screenshot light up together
-  const autoRows = $$(".auto__rows li"), autoMarks = $$(".auto__marks .mk");
-  const setAuto = (i) => { autoRows.forEach((r, k) => r.classList.toggle("is-on", k === i)); autoMarks.forEach((m, k) => m.classList.toggle("is-on", k === i)); };
-  autoRows.forEach((r, i) => { ["pointerenter", "focus"].forEach((ev) => r.addEventListener(ev, () => setAuto(i))); });
-  autoMarks.forEach((m, i) => m.addEventListener("pointerenter", () => setAuto(i)));
-  setAuto(0);
-
-  // rhythm stop display (the dial on desktop, the list on small screens)
+  // rhythm stop display  // rhythm stop display (the dial on desktop, the list on small screens)
   const R = D.rhythm, rhythmSec = $(".rhythm"), timeEl = $(".dial__time"), agentEl = $(".dial__agent"), labelEl = $(".dial__label");
   const rItems = $$(".rhythm__list li"), dots = $$(".stopdot");
   let curStop = -1;
@@ -149,7 +142,7 @@
     gsap.fromTo(".words .w", { opacity: 0.12 }, { opacity: 1, stagger: 0.1, ease: "none", scrollTrigger: { trigger: words, start: "top 85%", end: "bottom 55%", scrub: true } });
 
     // headings and blocks rise in
-    const risers = $$(".section .big, .roles .role, .job, .dash__shot, .dash__parts li, .flowstrip, .skillx, .auto__shot, .auto__rows li, .auto__why, .model, .tool, .backups, .task__notes > *");
+    const risers = $$(".section .big, .roles .role, .job, .dash__shot, .dash__parts li, .skillx, .model, .tool, .backups, .task__notes > *");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
 
@@ -168,8 +161,6 @@
     gsap.fromTo(flowPath, { strokeDasharray: 960, strokeDashoffset: 960 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: ".flow", start: "top 80%", end: "bottom 50%", scrub: true } });
     gsap.from(".fnode", { y: 70, autoAlpha: 0, duration: 1.1, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".flow", start: "top 78%" } });
 
-    // autopilot: markers pop onto the screenshot one by one
-    gsap.from(".auto__marks .mk", { scale: 0, autoAlpha: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.12, scrollTrigger: { trigger: ".auto__shot", start: "top 70%" } });
 
     // thank you
     gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
@@ -226,7 +217,6 @@
     $$(".orch__captions li").forEach((c) => c.classList.add("is-on"));
     $(".stage").dataset.step = "all";
     rItems.forEach((li, i) => ScrollTrigger.create({ trigger: li, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setStop(i) }));
-    autoRows.forEach((r, i) => ScrollTrigger.create({ trigger: r, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setAuto(i) }));
   });
 
   refreshAll();
