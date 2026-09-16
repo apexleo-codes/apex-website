@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>APEX · A personal AI assistant, run by a team of agents</title>
+  <meta name="description" content="How Gaurav Yadav built APEX: a personal AI assistant on Telegram, run by a team of AI agents on Hermes Agent.">
+  <link rel="icon" href="img/agent-apex.webp">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="vendor/lenis.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/sections-2.css">
+</head>
+<body class="is-loading">
+
+<!-- icon sprite: one stroke style, 24px grid -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h9a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M5 16a4 4 0 0 1 4-4h9"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19h16M5 15l4-4 3 3 7-7"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h10.6L20.5 8H7"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8z"/></symbol>
+  </defs>
+</svg>
+
+<div class="loader" aria-hidden="true">
+  <div class="loader__word"><span>A</span><span>P</span><span>E</span><span>X</span></div>
+  <div class="loader__count"><span class="loader__num">0</span>%</div>
+</div>
+
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>
+
+<header class="nav">
+  <a class="nav__brand" href="#top" data-goto="#top"><img src="img/agent-apex.webp" alt=""><span>APEX</span></a>
+  <div class="nav__chapter" aria-live="polite"><span class="nav__num">00</span><span class="nav__name">Intro</span></div>
+  <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu"><span class="nav__menu-label">Menu</span><span class="nav__burger"><i></i><i></i></span></button>
+  <div class="progress"><span></span></div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu__list"></nav>
+  <div class="menu__side">
+    <img class="menu__preview" src="img/agent-apex.webp" alt="">
+    <p>by <strong>Gaurav Yadav</strong><br>Runs on Hermes Agent · September 2026</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- 00 · HERO (slide 1) -->
+  <section class="hero" id="top" data-chapter="Intro">
+    <div class="hero__glow"></div>
+    <div class="hero__copy">
+      <p class="eyebrow hero__eyebrow"><span class="dot"></span>How I built it</p>
+      <h1 class="hero__title">
+        <span class="line"><span>Switch off</span></span>
+        <span class="line"><span><em>alert mode.</em></span></span>
+      </h1>
+      <p class="hero__lede"><b>Building APEX</b>: a personal AI assistant on Telegram, run by a team of AI agents.</p>
+      <div class="hero__stats">
+        <div class="stat"><b data-count="8">0</b><span>AI agents</span></div>
+        <div class="stat"><b data-count="6">0</b><span>everyday jobs</span></div>
+        <div class="stat"><b data-count="7">0</b><span>AI models</span></div>
+      </div>
+      <p class="hero__credit">by <strong>Gaurav Yadav</strong> <span>·</span> Runs on Hermes Agent (Nous Research) · September 2026</p>
+    </div>
+    <div class="hero__visual" data-cursor="hello">
+      <div class="orbit"></div>
+      <img class="hero__lion" src="img/agent-apex.webp" alt="APEX, the lion avatar">
+      <p class="hero__handle">APEX · @Apexleo_bot</p>
+    </div>
+    <a class="hero__scroll" href="#idea" data-goto="#idea"><span>Scroll</span><i></i></a>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="marquee__track"></div></div>
+
+  <!-- 01 · THE IDEA (slide 2) -->
+  <section class="section idea" id="idea" data-chapter="The idea">
+    <header class="shead"><span class="shead__num">01</span><p class="eyebrow">The idea</p></header>
+    <h2 class="big">Switch off alert mode. <em>APEX is here!</em></h2>
+    <p class="words">A baby turning 2, markets to watch, ideas to grow. Each job gets its own specialist agent.</p>
+    <ul class="jobs"></ul>
+    <img class="jobs__float" src="img/agent-tusk.webp" alt="" aria-hidden="true">
+  </section>
+
+  <!-- 02 · WHERE EVERYTHING LIVES (slide 3) -->
+  <section class="section dash" id="dashboard" data-chapter="Under the hood">
+    <header class="shead"><span class="shead__num">02</span><p class="eyebrow">Under the hood · Hermes dashboard</p></header>
+    <h2 class="big">Where everything <em>lives</em></h2>
+    <div class="dash__grid">
+      <figure class="dash__shot">
+        <img src="img/dash-skills-personal.webp" alt="The Hermes dashboard, showing the personal skills">
+        <figcaption><b>Open it:</b> hermes dashboard, then 127.0.0.1:9119 in a browser</figcaption>
+      </figure>
+      <ul class="dash__parts"></ul>
+    </div>
+    <div class="flowstrip"><span class="flowstrip__label">The journey flow</span><div class="flowstrip__chain"></div></div>
+  </section>
+
+  <!-- 03 · THE JOURNEY FLOW (slide 4) -->
+  <section class="section journey" id="journey" data-chapter="The magic">
+    <header class="shead"><span class="shead__num">03</span><p class="eyebrow">How the magic happens</p></header>
+    <h2 class="big">The <em>Journey Flow</em></h2>
+    <div class="flow">
+      <svg class="flow__line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="M20 20 H980"/></svg>
+      <div class="flow__nodes"></div>
+    </div>
+    <div class="skillx">
+      <div class="skillx__shot">
+        <img src="img/dash-skill-edit.webp" alt="The MISO skill open in the Hermes skill editor">
+        <span class="hl hl--1" data-hl="1"><b>1</b></span>
+        <span class="hl hl--2" data-hl="2"><b>2</b></span>
+      </div>
+      <div class="skillx__notes">
+        <p class="eyebrow">Inside a real skill</p>
+        <button class="skillnote is-on" data-hl="1" type="button"><b>1</b><span><strong>The menu card</strong>A name and a one-line description. The AI scans only these, across all 64 skills, to pick the right one.</span></button>
+        <button class="skillnote" data-hl="2" type="button"><b>2</b><span><strong>The playbook</strong>Steps, rules and the exact output. Opened only once the skill is picked, so the AI stays fast and focused.</span></button>
+        <div class="selfimprove">
+          <svg class="ic"><use href="#i-spark"/></svg>
+          <p><strong>Self-improving.</strong> No skill for a task? Hermes finds another way, can write a new script, and turns what worked into a new or better skill. I review those changes before they stick.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · PUT IT ON AUTOPILOT (slide 5) -->
+  <section class="section auto" id="autopilot" data-chapter="Autopilot">
+    <header class="shead"><span class="shead__num">04</span><p class="eyebrow">Put it on autopilot</p></header>
+    <h2 class="big">One scheduled job, <em>explained</em></h2>
+    <div class="auto__grid">
+      <figure class="auto__shot">
+        <img src="img/dash-cron-edit-recipe.webp" alt="The Sunday gut-health recipe job in the Hermes cron editor">
+        <div class="auto__marks"></div>
+      </figure>
+      <ol class="auto__rows"></ol>
+    </div>
+    <p class="auto__why"><b>Why a brain per job?</b> A specialist model does better work in its field, and a backup takes over if one is busy.</p>
+  </section>
+
+  <!-- 05 · BRAINS AND TOOLS (slide 6) -->
+  <section class="section brains" id="brains" data-chapter="Brains & tools">
+    <header class="shead"><span class="shead__num">05</span><p class="eyebrow">Brains and tools</p></header>
+    <h2 class="big">The right model and tool <em>for each job</em></h2>
+    <div class="brains__grid">
+      <div>
+        <p class="eyebrow eyebrow--dim">Targeted models <span class="hint">agents that use them</span></p>
+        <ul class="models"></ul>
+        <div class="backups"><span class="backups__label">If one is busy</span><div class="backups__chain"></div></div>
+      </div>
+      <div>
+        <p class="eyebrow eyebrow--dim">Tools <span class="hint">hover a row to see the paid option</span></p>
+        <ul class="tools"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · HOW THEY WORK TOGETHER (slide 7) -->
+  <section class="orch" id="orchestra" data-chapter="How they work">
+    <div class="orch__pin">
+      <header class="shead shead--row">
+        <div><span class="shead__num">06</span><p class="eyebrow">How they work together</p></div>
+        <h2 class="big">An orchestrator, <em>musicians</em> and stagehands</h2>
+      </header>
+      <div class="orch__body">
+        <ol class="orch__captions">
+          <li class="is-on"><b>You send a message</b>on Telegram, like any chat.</li>
+          <li><b>APEX, the orchestrator,</b>reads it and hands it to the right specialist.</li>
+          <li><b>Or a schedule wakes a musician</b>on time, no message needed.</li>
+          <li><b>COLONY, the stagehands,</b>small Python programs, handle the messaging, carry data between the agents or perform repeatable tasks. No AI needed, so they're fast and exact.</li>
+        </ol>
+        <div class="stage">
+          <svg class="stage__svg" viewBox="0 0 1200 700" aria-hidden="true">
+            <path id="p-you" class="wire" d="M165 290 L385 290"/>
+            <path id="p-apex" class="wire" d="M475 290 C 660 200 860 230 1030 290"/>
+            <path id="p-clock" class="wire wire--gold" d="M640 575 C 800 570 930 470 1010 408"/>
+            <path id="p-colony" class="wire" d="M1080 340 C 1080 520 860 610 700 626"/>
+          </svg>
+          <div class="node node--you" style="--x:110;--y:290"><svg class="ic"><use href="#i-phone"/></svg><span>You</span></div>
+          <div class="node node--apex" style="--x:430;--y:290"><img src="img/agent-apex.webp" alt=""><span>APEX<small>orchestrator</small></span></div>
+          <div class="node node--clock" style="--x:600;--y:575"><svg class="ic"><use href="#i-clock"/></svg><span>Schedule</span></div>
+          <div class="stage__musicians"></div>
+          <div class="node node--colony" style="--x:600;--y:655"><img src="img/agent-colony.webp" alt=""><span>COLONY · the stagehands</span></div>
+          <i class="packet" data-path="p-you"></i>
+          <i class="packet" data-path="p-apex"></i>
+          <i class="packet packet--gold" data-path="p-clock"></i>
+          <i class="packet" data-path="p-colony"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · MISO RECIPE → CART (slide 8) -->
+  <section class="section task" id="task" data-chapter="Recipe → cart">
+    <header class="shead"><span class="shead__num">07</span><p class="eyebrow"><img class="eyebrow__av" src="img/agent-miso.webp" alt="">Feature · MISO · recipe + cart</p></header>
+    <h2 class="big">Sunday recipe → <em>grocery cart</em></h2>
+    <div class="task__grid">
+      <div class="task__sticky">
+        <div class="phone">
+          <div class="phone__notch"></div>
+          <div class="phone__screen"></div>
+        </div>
+      </div>
+      <div class="task__col">
+        <ol class="task__steps"></ol>
+        <div class="task__notes">
+          <div class="guardcard">
+            <svg class="ic"><use href="#i-shield"/></svg>
+            <p><strong>Guardrail.</strong> AI never checks out. I review the cart and pay myself.</p>
+          </div>
+          <p class="gotcha">Gotcha: “pear” once added Pears bathing soap. Now: whole-word matching and a non-food blocklist.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · A DAY WITH APEX (slide 9) -->
+  <section class="rhythm" id="rhythm" data-chapter="Daily rhythm">
+    <div class="rhythm__pin">
+      <header class="shead shead--row">
+        <div><span class="shead__num">08</span><p class="eyebrow">The daily rhythm</p></div>
+      </header>
+      <div class="rhythm__body">
+        <div class="dial">
+          <svg class="dial__svg" viewBox="0 0 600 600" aria-hidden="true"></svg>
+          <div class="dial__hand"><i></i></div>
+          <div class="dial__center">
+            <p class="dial__time">07:30</p>
+            <img class="dial__agent" src="img/agent-apex.webp" alt="">
+            <p class="dial__label">Morning brief</p>
+          </div>
+        </div>
+        <div class="rhythm__side">
+          <h2 class="big">A day with <em>APEX</em></h2>
+          <ul class="rhythm__list"></ul>
+          <p class="rhythm__note">Night work rolls into the 07:30 brief: one message, not five. Sundays at 09:30, MISO plans the recipe and fills the cart. BOLT is on call any time you say “emergency”.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · THE BUILD LOOP (extra) -->
+  <section class="section loop" id="loop" data-chapter="Build loop">
+    <header class="shead"><span class="shead__num">09</span><p class="eyebrow">The build loop</p></header>
+    <h2 class="big">I direct. <em>Claude Code builds.</em> Hermes runs.</h2>
+    <div class="roles">
+      <article class="role role--me">
+        <p class="role__tag">the director</p><h3>Me</h3>
+        <p>Choose the jobs, set the rules, test on my phone, flag what's off.</p>
+      </article>
+      <article class="role">
+        <p class="role__tag">the engineer</p><h3>Claude Code</h3>
+        <p>Writes the scripts and skills, deploys them, fixes what I flag.</p>
+      </article>
+      <article class="role">
+        <p class="role__tag">the runtime</p><h3>Hermes Agent</h3>
+        <p>Runs the agents on my Mac, day and night.</p>
+      </article>
+    </div>
+    <div class="cycle">
+      <div class="cycle__ring">
+        <svg viewBox="0 0 600 600" aria-hidden="true">
+          <circle class="cycle__track" cx="300" cy="300" r="240"/>
+          <circle class="cycle__fill" cx="300" cy="300" r="240"/>
+        </svg>
+        <div class="cycle__runner"></div>
+        <div class="cycle__nodes"></div>
+        <div class="cycle__center">
+          <p class="eyebrow">every round</p>
+          <p class="cycle__mantra">my feedback → a fix → a one-line rule → <em>repeat</em></p>
+        </div>
+      </div>
+      <p class="cycle__note">Shared notes (HANDOFF · RULES · PROGRESS · LOG) let every new session pick up where we left off.</p>
+    </div>
+  </section>
+
+  <!-- 10 · THANK YOU (slide 10) -->
+  <section class="section outro" id="outro" data-chapter="Thank you">
+    <div class="thanks">
+      <p class="thanks__word"><span>Thank</span> <em>you.</em></p>
+      <img class="thanks__lion" src="img/agent-apex.webp" alt="">
+      <p class="thanks__q">Questions?</p>
+      <p class="thanks__credit">by <strong>Gaurav Yadav</strong> · APEX · @Apexleo_bot · Runs on Hermes Agent (Nous Research) · September 2026</p>
+      <a class="totop" href="#top" data-goto="#top" data-cursor="top"><svg class="ic"><use href="#i-up"/></svg><span>Back to the top</span></a>
+    </div>
+  </section>
+
+</main>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="vendor/lenis.min.js"></script>
+<script src="js/content.js"></script>
+<script src="js/render.js"></script>
+<script src="js/motion.js"></script>
+</body>
+</html>
