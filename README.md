@@ -4,6 +4,8 @@ A scrolling story of the APEX build. **The sections mirror deck v6 (the final de
 
 Page order: hero · the idea · where everything lives · the journey flow · put it on autopilot · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
+Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
+
 ## Run it
 
 ```bash
