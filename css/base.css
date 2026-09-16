@@ -118,13 +118,15 @@ body.menu-open .menu { clip-path: inset(0); visibility: visible; }
 }
 .hero__glow {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(38% 48% at 74% 46%, rgba(233, 173, 79, .16), transparent 70%), radial-gradient(30% 36% at 12% 88%, rgba(114, 209, 174, .07), transparent 70%);
+  background: radial-gradient(38% 48% at 74% 54%, rgba(233, 173, 79, .17), transparent 70%), radial-gradient(30% 36% at 12% 88%, rgba(114, 209, 174, .07), transparent 70%);
 }
 .hero__copy { position: relative; }
 .hero__eyebrow { display: flex; align-items: center; }
 .hero__eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); margin-right: 12px; animation: pulse 2.2s infinite; }
 .hero__title { font-size: clamp(2.8rem, 8vw, 8.4rem); line-height: .92; letter-spacing: -.05em; font-weight: 800; margin: .32em 0 .4em; }
 .hero__title em { letter-spacing: -.03em; padding-right: .1em; }
+/* no glow here: .line clips overflow, so a text-shadow shows up as a hard-edged box */
+.hero__name { color: var(--gold); }
 .line { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
 .line > span { display: inline-block; }
 .hero__lede { max-width: 38ch; font-size: clamp(1rem, 1.2vw, 1.2rem); color: var(--cream-2); margin: 0; }
@@ -134,15 +136,24 @@ body.menu-open .menu { clip-path: inset(0); visibility: visible; }
 .stat span { font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
 .hero__credit { font-family: var(--mono); font-size: .72rem; color: var(--dim); margin: 0; }
 .hero__credit span { color: var(--gold); margin: 0 6px; }
-.hero__visual { position: relative; width: min(100%, 460px); aspect-ratio: 1; justify-self: center; }
-.orbit { position: absolute; inset: 0; border: 1px dashed var(--line-2); border-radius: 50%; animation: spin 70s linear infinite; }
-.orbit__item {
-  position: absolute; left: 50%; top: 50%; width: 15%; aspect-ratio: 1; margin: -7.5% 0 0 -7.5%;
-  transform: rotate(calc(var(--i) * 45deg)) translateY(-333%) rotate(calc(var(--i) * -45deg));
+.hero__credit .tag {
+  display: inline-block; margin-left: 9px; padding: 3px 10px; font-weight: 400; font-size: .67rem;
+  color: var(--gold); border: 1px solid rgba(233, 173, 79, .32); border-radius: 999px;
 }
-.orbit__item img { width: 100%; border-radius: 50%; animation: spin 70s linear infinite reverse; box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
-.hero__lion { position: absolute; left: 19%; top: 19%; width: 62%; border-radius: 50%; box-shadow: 0 40px 140px rgba(233, 173, 79, .28); }
-.hero__handle { position: absolute; left: 0; right: 0; bottom: -70px; text-align: center; font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; color: var(--dim); margin: 0; }
+/* the stage: the bubble sits top left, APEX stands below it, the team orbits behind his head */
+.hero__visual { position: relative; height: clamp(400px, 60vh, 600px); aspect-ratio: 44/58; width: auto; justify-self: center; }
+.orbit { position: absolute; left: 23%; top: 19.7%; width: 72%; aspect-ratio: 1; border: 1px dashed var(--line-2); border-radius: 50%; animation: spin 70s linear infinite; opacity: .5; }
+.orbit__item {
+  position: absolute; left: 50%; top: 50%; width: 14%; aspect-ratio: 1; margin: -7% 0 0 -7%;
+  transform: rotate(calc(var(--i) * 45deg)) translateY(-357%) rotate(calc(var(--i) * -45deg));
+}
+/* full strength, on a dark disc with a gold hairline: at half opacity the team
+   read as smudges on the lion rather than as his agents */
+.orbit__item img {
+  width: 100%; border-radius: 50%; animation: spin 70s linear infinite reverse;
+  background: var(--ink-2); border: 1.5px solid rgba(233, 173, 79, .45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .75);
+}
 .hero__scroll {
   position: absolute; left: var(--pad); bottom: 30px; display: flex; align-items: center; gap: 14px; text-decoration: none;
   font-family: var(--mono); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim);
@@ -168,9 +179,9 @@ body.menu-open .menu { clip-path: inset(0); visibility: visible; }
   .menu { grid-template-columns: 1fr; padding-top: 96px; }
   .menu__list { columns: 1; }
   .menu__side { display: none; }
-  .hero { grid-template-columns: 1fr; padding-top: 110px; gap: 66px; }
-  .hero__visual { width: min(76%, 380px); order: -1; margin-top: 12px; }
-  .hero__handle { bottom: -28px; font-size: .62rem; }
+  .hero { grid-template-columns: 1fr; padding-top: 104px; gap: 34px; }
+  .hero__visual { width: min(100%, 360px); height: auto; aspect-ratio: 44/58; order: -1; margin-top: 4px; }
+  .hero__credit .tag { margin: 8px 0 0; display: block; width: fit-content; }
   .hero__scroll { display: none; }
   .shead--row { grid-template-columns: 1fr; gap: 10px; }
   .shead--row > div { padding-top: 0; }

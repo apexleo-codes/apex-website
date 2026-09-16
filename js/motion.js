@@ -33,14 +33,16 @@
     gsap.timeline()
       .from(".hero__title .line > span", { yPercent: 115, duration: 1.2, ease: "expo.out", stagger: 0.12 })
       .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8")
-      .from(".hero__lion", { scale: 0.55, autoAlpha: 0, duration: 1.3, ease: "expo.out" }, "-=1.2")
-      .from(".orbit__item", { autoAlpha: 0, duration: 0.6, stagger: 0.07 }, "-=1")
-      .from(".nav, .hero__scroll, .hero__handle", { autoAlpha: 0, duration: 0.8 }, "-=.9")
+      .from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
+      .from(".orbit__item", { autoAlpha: 0, scale: 0.4, duration: 0.7, stagger: 0.07 }, "-=1.1")
+      .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, "-=.7")
+      .add(() => apexHero.start(), "-=.45")   // he waves as the first message lands
+      .from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, "-=.9")
       .add(countUp, "-=1");
   }
   const finishLoad = () => { document.body.classList.remove("is-loading"); lenis && lenis.start(); refreshAll(); };
   const loader = $(".loader");
-  if (reduce) { loader.remove(); finishLoad(); countUp(true); }
+  if (reduce) { loader.remove(); finishLoad(); countUp(true); apexHero.start(); }
   else {
     const num = $(".loader__num"), c = { v: 0 };
     document.fonts.ready.then(() => {
@@ -122,12 +124,17 @@
   // ---------- decorative motion ----------
   mm.add("(prefers-reduced-motion: no-preference)", () => {
     // hero: mouse parallax + scroll-out
-    const hv = $(".hero__visual");
+    const hv = $(".hero__visual"), bub = $(".bubble-wrap");
     const hx = gsap.quickTo(hv, "x", { duration: 1.2, ease: "power3" }), hy = gsap.quickTo(hv, "y", { duration: 1.2, ease: "power3" });
-    const onMove = (e) => { hx((e.clientX / innerWidth - 0.5) * 40); hy((e.clientY / innerHeight - 0.5) * 40); };
+    const bx = gsap.quickTo(bub, "x", { duration: 1.7, ease: "power3" }), by = gsap.quickTo(bub, "y", { duration: 1.7, ease: "power3" });
+    const onMove = (e) => {
+      const px = e.clientX / innerWidth - 0.5, py = e.clientY / innerHeight - 0.5;
+      hx(px * 40); hy(py * 40);
+      bx(px * 26); by(py * 20); // the bubble drifts further than the lion: depth
+    };
     $(".hero").addEventListener("pointermove", onMove);
     gsap.to(".hero__copy", { yPercent: -14, autoAlpha: 0.2, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
-    gsap.to(".hero__lion", { scale: 1.18, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+    gsap.to(".lion", { scale: 1.1, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
 
     // marquee speeds up and leans with scroll velocity
     const loopTween = gsap.to(".marquee__track", { xPercent: -50, duration: 30, ease: "none", repeat: -1 });

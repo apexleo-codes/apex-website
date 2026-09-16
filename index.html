@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="vendor/lenis.css">
   <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/sections-2.css">
 </head>
@@ -64,23 +65,46 @@
   <section class="hero" id="top" data-chapter="Intro">
     <div class="hero__glow"></div>
     <div class="hero__copy">
-      <p class="eyebrow hero__eyebrow"><span class="dot"></span>How I built it</p>
+      <p class="eyebrow hero__eyebrow"><span class="dot"></span>Live on Telegram · @Apexleo_bot</p>
       <h1 class="hero__title">
-        <span class="line"><span>Switch off</span></span>
-        <span class="line"><span><em>alert mode.</em></span></span>
+        <span class="line"><span>Meet</span></span>
+        <span class="line"><span class="hero__name">APEX.</span></span>
       </h1>
-      <p class="hero__lede"><b>Building APEX</b>: a personal AI assistant on Telegram, run by a team of AI agents.</p>
+      <p class="hero__lede">My personal AI assistant on Telegram, run by a <b>team of AI agents</b>.</p>
       <div class="hero__stats">
         <div class="stat"><b data-count="8">0</b><span>AI agents</span></div>
         <div class="stat"><b data-count="6">0</b><span>everyday jobs</span></div>
         <div class="stat"><b data-count="7">0</b><span>AI models</span></div>
       </div>
-      <p class="hero__credit">by <strong>Gaurav Yadav</strong> <span>·</span> Runs on Hermes Agent (Nous Research) · September 2026</p>
+      <p class="hero__credit">by <strong>Gaurav Yadav</strong> <span>·</span> Runs on Hermes Agent <b class="tag">better version of Openclaw</b></p>
     </div>
+
     <div class="hero__visual" data-cursor="hello">
-      <div class="orbit"></div>
-      <img class="hero__lion" src="img/agent-apex.webp" alt="APEX, the lion avatar">
-      <p class="hero__handle">APEX · @Apexleo_bot</p>
+      <div class="orbit" aria-hidden="true"></div>
+
+      <!-- the wrapper is parallaxed, the bubble inside is animated: one GSAP owner each -->
+      <div class="bubble-wrap">
+        <div class="bubble" aria-live="polite">
+          <div class="bubble__from"><img src="img/agent-apex.webp" alt=""><b>APEX</b><span>bot</span></div>
+          <p class="bubble__text"></p>
+          <span class="bubble__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="bubble__meta">
+            <span class="bubble__rail" aria-hidden="true"></span>
+            <span class="bubble__time"></span>
+            <svg class="tick" viewBox="0 0 22 12" aria-hidden="true"><path d="M2 6.6l3.4 3.4L11.6 3"/><path class="tick__2" d="M9.4 6.6l3.4 3.4L19 3"/></svg>
+          </div>
+          <span class="bubble__tail" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <!-- APEX: a 205 KB muted h264 loop (one wave, forward then reversed so it
+           seams). Frames lost the measurement badly — see README. hero.js resets
+           it to 0 as each message lands, so the wave greets the message. -->
+      <div class="lion-stage">
+        <video class="lion" src="media/apex-wave.mp4" poster="media/apex-wave-poster.webp"
+               muted loop playsinline autoplay preload="auto"
+               aria-label="APEX, the lion, waving hello"></video>
+      </div>
     </div>
     <a class="hero__scroll" href="#idea" data-goto="#idea"><span>Scroll</span><i></i></a>
   </section>
@@ -289,6 +313,7 @@
 <script src="vendor/lenis.min.js"></script>
 <script src="js/content.js"></script>
 <script src="js/render.js"></script>
+<script src="js/hero.js"></script>
 <script src="js/motion.js"></script>
 </body>
 </html>

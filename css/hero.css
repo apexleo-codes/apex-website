@@ -1,0 +1,94 @@
+/* APEX site · the hero character: the low-poly lion and the Telegram bubble he speaks in.
+   Layout and type for the hero live in base.css; this file is only the cast. */
+
+/* ---- the lion ---- */
+/* A 205 KB muted h264 loop, not a sprite sheet: h264 stores only what changes
+   between frames, so it beat every WebP variant on bytes at twice the
+   resolution — and a sprite sheet would decode to a 40 MB bitmap. */
+/* Two masks, nested rather than composited. The clip is a solid #0d1614
+   rectangle against the page's #0b1312, so every edge shows as a grey panel if
+   left bare — and it is cut flat across the mane crown, which needs a
+   *directional* fade a symmetrical vignette can't give (keeping his body opaque
+   forces the fade to start ~55%, leaving the top edge ~90% opaque). Stacking
+   both on one element would need mask-composite, which falls back to a union —
+   the opposite of what we want. Masks multiply down the tree, so: vignette on
+   the wrapper, top fade on the video. */
+/* The vignette must reach fully transparent *inside* the element box, or the
+   clip's rectangle still shows: radii wider than 100% push the transparent stop
+   past the edge, so the bottom and corners stay near-opaque and the panel reads
+   as a grey box on the page ink. Hence radii under 100% and an early fade. */
+/* Balance point between two failures: radii over 100% push the transparent stop
+   outside the box and the clip's rectangle shows as a grey panel; fading as early
+   as 38%/82% kills the panel but eats his legs and arm. Opaque to ~50%, gone by
+   ~90% — inside the box, but past his body. */
+.lion-stage {
+  position: absolute; left: 4%; bottom: 0; width: 96%;
+  -webkit-mask-image: radial-gradient(92% 80% at 50% 50%, #000 50%, transparent 90%);
+  mask-image: radial-gradient(92% 80% at 50% 50%, #000 50%, transparent 90%);
+}
+.lion {
+  display: block; width: 100%; height: auto;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 91%, transparent 100%);
+}
+
+/* ---- the bubble ---- */
+/* The wrapper owns the pointer parallax (GSAP x/y), the bubble owns the intro
+   tween and the fade between messages. Two GSAP owners on one element let
+   overwrite kill the intro tween and strand it at visibility:hidden. */
+.bubble-wrap { position: absolute; left: 0; top: 0; width: min(100%, 332px); z-index: 2; }
+.bubble {
+  position: relative;
+  padding: 13px 16px 10px;
+  background: linear-gradient(170deg, #1a2723, #0f1917);
+  border: 1px solid var(--line-2); border-radius: 18px;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(236, 229, 214, .06);
+  /* CSS owns the fade, GSAP owns the movement. A GSAP autoAlpha here strands the
+     bubble at opacity:0 / visibility:hidden and nothing ever throws. */
+  opacity: 0; transition: opacity .42s var(--ease);
+}
+.bubble.is-live { opacity: 1; }
+.bubble.is-live.is-out { opacity: 0; }
+/* 71% of the bubble lands on his head at every width: he stands at 59% of the
+   stage and the bubble is ~83% of it. Pinning the tail to a corner misses him. */
+.bubble__tail {
+  position: absolute; left: 71%; bottom: -8px; width: 18px; height: 18px;
+  background: #0f1917; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2);
+  border-bottom-right-radius: 3px; transform: rotate(45deg);
+}
+
+.bubble__from { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+.bubble__from img { width: 19px; height: 19px; border-radius: 50%; }
+.bubble__from b { font-size: .8rem; font-weight: 600; color: var(--mint); }
+.bubble__from span {
+  font-family: var(--mono); font-size: .52rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--dim); border: 1px solid var(--line-2); border-radius: 4px; padding: 1px 5px;
+}
+
+/* min-height holds the box still while the line types itself in */
+.bubble__text { margin: 0; font-size: .87rem; line-height: 1.5; color: var(--cream); min-height: 4.5em; }
+.bubble__dots { position: absolute; left: 17px; top: 47px; display: flex; gap: 5px; opacity: 0; transition: opacity .25s; }
+.bubble.is-typing .bubble__dots { opacity: 1; }
+.bubble__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); animation: bdot 1.1s infinite; }
+.bubble__dots i:nth-child(2) { animation-delay: .15s; }
+.bubble__dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes bdot { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+.bubble__meta { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-family: var(--mono); font-size: .58rem; color: var(--dim); }
+.bubble__rail { display: flex; gap: 5px; margin-right: auto; }
+.bubble__rail i { width: 5px; height: 5px; border-radius: 50%; background: var(--line-2); transition: background .35s, transform .35s; }
+.bubble__rail i.is-on { background: var(--mint); transform: scale(1.3); }
+.tick { width: 17px; height: 9px; fill: none; stroke: var(--dim); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; transition: stroke .35s; }
+.tick__2 { opacity: 0; transition: opacity .35s; }
+.bubble.is-read .tick { stroke: var(--gold); }
+.bubble.is-read .tick__2 { opacity: 1; }
+
+@media (max-width: 900px) {
+  .bubble-wrap { width: min(100%, 300px); }
+  .bubble { padding: 12px 14px 9px; }
+  .bubble__text { font-size: .82rem; min-height: 5em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble__dots { display: none; }
+}

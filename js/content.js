@@ -1,6 +1,15 @@
 /* All site copy that repeats in lists. Source: APEX deck v6 (the final deck) — same order, same words.
    The build loop is the one extra section, kept late in the page. */
 window.APEX = {
+  // hero · what APEX says on Telegram while you read the page. Light on the
+  // surface, but each line is one of the real jobs below (APEX · BULLSEYE · TUSK · NYX).
+  hero: [
+    { time: "08:12", text: "Hi Gaurav 👋 Since today you have an in office-meeting and I know you well, don't forget your wallet." },
+    { time: "08:15", text: "Markets open in 43 minutes. Your brief is ready, so you can sound like you read it overnight." },
+    { time: "09:00", text: "Baby's vaccine is Thursday, 11 AM. I've written the message for the clinic — you just press send." },
+    { time: "22:45", text: "Two questions before bed. Answer them half asleep; I'll have something sharper by 7:30." }
+  ],
+
   jobs: [
     { key: "tusk", name: "TUSK", title: "Never miss baby's vaccine", sub: "Reminder, clinic message, voice note" },
     { key: "bullseye", name: "BULLSEYE", title: "Markets before 9:15", sub: "What moved overnight, and the India angle" },
