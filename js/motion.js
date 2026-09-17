@@ -139,6 +139,14 @@
   addEventListener("load", remeasure);
   setCase(0, true);
 
+  // 05 · the tools layer can be switched off when the stage feels busy
+  const toolsBtn = $(".orch__toggle"), orchStage = $(".stage");
+  toolsBtn.addEventListener("click", () => {
+    const on = toolsBtn.getAttribute("aria-pressed") !== "true";
+    toolsBtn.setAttribute("aria-pressed", on);
+    orchStage.dataset.tools = on ? "on" : "off";
+  });
+
   const shotBox = $(".skillx__shot");
   shotBox.dataset.hl = "1";
   $$(".skillnote").forEach((b) => {
@@ -236,7 +244,8 @@
 
   // ---------- pinned scroll stories (desktop) ----------
   mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
-    // orchestra: messages travel along the wires
+    // how they work together: a request travels you → soul → skills → scripts,
+    // and the gold one comes back round to you (a reply, or the next schedule)
     const stage = $(".stage"), caps = $$(".orch__captions li");
     $$(".stage .wire").forEach((w) => { const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L; });
     const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0 } }));

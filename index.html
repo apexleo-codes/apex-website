@@ -201,7 +201,10 @@
     </div>
   </section>
 
-  <!-- 05 · HOW THEY WORK TOGETHER (slide 7) -->
+  <!-- 05 · HOW THEY WORK TOGETHER (slide 7) · four layers, one per caption:
+       you (or a schedule) → the soul → skills → scripts, with an optional tools
+       layer across the top. Skill nodes and tool chips come from js/render.js;
+       stage units are 1200 × 700. -->
   <section class="orch" id="orchestra" data-chapter="How they work">
     <div class="orch__pin">
       <header class="shead shead--row">
@@ -209,28 +212,41 @@
         <h2 class="big">An orchestrator, <em>musicians</em> and stagehands</h2>
       </header>
       <div class="orch__body">
-        <ol class="orch__captions">
-          <li class="is-on"><b>You send a message</b>on Telegram, like any chat.</li>
-          <li><b>APEX, the orchestrator,</b>reads it and hands it to the right specialist.</li>
-          <li><b>Or a schedule wakes a musician</b>on time, no message needed.</li>
-          <li><b>COLONY, the stagehands,</b>small Python programs, handle the messaging, carry data between the agents or perform repeatable tasks. No AI needed, so they're fast and exact.</li>
-        </ol>
-        <div class="stage">
+        <div class="orch__side">
+          <ol class="orch__captions">
+            <li class="is-on"><b>You</b> make a request, a goal in natural language.</li>
+            <li><b>Soul</b>, the core engine (LLM), interprets context and plans.</li>
+            <li><b>Skills</b> are special-purpose agent capabilities.</li>
+            <li><b>Scripts</b> handle non-AI automated tasks and schedules.</li>
+          </ol>
+          <button class="orch__toggle" type="button" aria-pressed="true"><i aria-hidden="true"></i>Tools layer</button>
+        </div>
+        <div class="stage" data-tools="on">
           <svg class="stage__svg" viewBox="0 0 1200 700" aria-hidden="true">
-            <path id="p-you" class="wire" d="M165 290 L385 290"/>
-            <path id="p-apex" class="wire" d="M475 290 C 660 200 860 230 1030 290"/>
-            <path id="p-clock" class="wire wire--gold" d="M640 575 C 800 570 930 470 1010 408"/>
-            <path id="p-colony" class="wire" d="M1080 340 C 1080 520 860 610 700 626"/>
+            <path class="tlink" d="M400 86 V266 M730 86 V114 M1060 86 V298"/>
+            <circle class="skills-ring" cx="730" cy="340" r="215"/>
+            <path id="p-you" class="wire" d="M172 340 H326"/>
+            <path id="p-soul" class="wire" d="M474 340 H690"/>
+            <path id="p-skill" class="wire" d="M770 340 H1020"/>
+            <path id="p-back" class="wire wire--gold" d="M1090 370 C 1150 450 1130 612 930 612 H 200 C 60 612 20 540 20 440 C 20 380 36 342 64 340"/>
           </svg>
-          <div class="node node--you" style="--x:110;--y:290"><svg class="ic"><use href="#i-phone"/></svg><span>You</span></div>
-          <div class="node node--apex" style="--x:430;--y:290"><img src="img/agent-apex.webp" alt=""><span>APEX<small>orchestrator</small></span></div>
-          <div class="node node--clock" style="--x:600;--y:575"><svg class="ic"><use href="#i-clock"/></svg><span>Schedule</span></div>
+          <div class="toolsbar"><span class="toolsbar__label">Tools</span></div>
+          <div class="node node--you" style="--x:120;--y:340">
+            <span class="youdial">
+              <svg class="youdial__ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg>
+              <i class="youdial__hand"></i>
+              <svg class="ic"><use href="#i-phone"/></svg>
+            </span>
+            <span class="node__label">You<small>or a schedule</small></span>
+          </div>
+          <div class="node node--soul" style="--x:400;--y:340"><img src="img/agent-apex.webp" alt=""><span class="node__label">Soul<small>APEX · the LLM</small></span></div>
+          <span class="ringlabel">Skills</span>
           <div class="stage__musicians"></div>
-          <div class="node node--colony" style="--x:600;--y:655"><img src="img/agent-colony.webp" alt=""><span>COLONY · the stagehands</span></div>
+          <div class="node node--colony" style="--x:1060;--y:340"><img src="img/agent-colony.webp" alt=""><span class="node__label">Scripts<small>COLONY</small></span></div>
           <i class="packet" data-path="p-you"></i>
-          <i class="packet" data-path="p-apex"></i>
-          <i class="packet packet--gold" data-path="p-clock"></i>
-          <i class="packet" data-path="p-colony"></i>
+          <i class="packet" data-path="p-soul"></i>
+          <i class="packet" data-path="p-skill"></i>
+          <i class="packet packet--gold" data-path="p-back"></i>
         </div>
       </div>
     </div>

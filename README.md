@@ -135,3 +135,13 @@ As the five steps scroll past, APEX builds himself in the right-hand column: bar
 - **The grid stays single-column until a layer actually loads** (`.setup__grid.has-rig`, set from an `img` load event). Without it the steps give up 400px to an empty sticky box on desktop and a blank opaque 30vh band on phones.
 - Step triggers fire at `top 55%`, not `70%`: a step is only ~520px tall, so at 70% the *next* step crossed the line while the current one still filled the screen and the rig ran a beat ahead of the copy.
 - Pure-Python per-pixel loops over a 900×1125 canvas time out. Use `ImageChops` + `point` + `getbbox` (C speed) and confine the flood fill to the quarter-scale copy. And **macOS has no `timeout`** (RULES 20) — a `timeout 110 python …` line fails as "command not found" and the heredoc silently never runs, which looks exactly like a successful no-op.
+
+## How they work together (section 05)
+
+Four layers, one per caption, in the order a request travels: **you** (or a schedule) → **the soul** (APEX, the LLM) → **skills** → **scripts** (COLONY), and a gold wire back round to you, which stands for the reply or the next schedule. The specialists (MISO, TUSK and the rest) are drawn *as* the skills layer, a honeycomb inside one ring, and not as a separate tier.
+
+- **You and the schedule share one circle.** The phone is you. The ticks round its rim are the clock, and its hand only runs on the scripts step, the caption that says who fires schedules.
+- **The tools layer is optional.** It's a dashed band across the soul, skills and scripts, holding a sample of the tools from section 04 (`layerTools` in `content.js`, deliberately not all of them). The switch under the captions flips `aria-pressed`, and `.stage[data-tools]` follows it.
+- **The stage is a query container** (`container: orch / inline-size`), so avatars size in `cqw` and the diagram scales as one picture. With page-sized avatars, at 1024px wide FORGE and BOLT sat on the wire line and the Voice chip spilled out of the band. For the same reason the chips drop their icons below a 760px stage and their names below 520px.
+- **A node's box is its art alone**, centred on (x, y), and `.node__label` hangs below it (or above it for FORGE and BOLT, either side of the wire line). A label in the flow lifts the art off the wires. Labels carry the page ink as a background, so where the return wire passes one on a narrow stage it goes behind.
+- Wires run through the honeycomb's gaps: soul → MISO between FORGE and KITSUNE, MISO → scripts between BOLT and BULLSEYE. Move a skill and you move a gap.

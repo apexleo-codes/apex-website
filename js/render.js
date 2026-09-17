@@ -151,12 +151,20 @@
   $(".tools").innerHTML = D.tools.map((t) => `
     <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
 
-  // 05 · musicians on an arc to the right of APEX (stage units: 1200 × 700)
-  const arc = [["tusk", 895, 70], ["bolt", 991, 115], ["bullseye", 1057, 196], ["miso", 1080, 290], ["nyx", 1057, 396], ["kitsune", 991, 478], ["forge", 895, 522]];
-  $(".stage__musicians").innerHTML = arc.map(([k, x, y]) => {
+  // 05 · the skills: the specialists as one honeycomb inside the skills ring,
+  // MISO at the centre because the walk-through follows her job (stage units:
+  // 1200 × 700). The wires run through the gaps either side of the centre: soul
+  // → MISO between FORGE and KITSUNE, MISO → scripts between BOLT and BULLSEYE.
+  const hex = [["miso", 730, 340], ["tusk", 730, 190], ["bolt", 860, 265], ["bullseye", 860, 415],
+    ["nyx", 730, 490], ["kitsune", 600, 415], ["forge", 600, 265]];
+  $(".stage__musicians").innerHTML = hex.map(([k, x, y]) => {
     const t = D.team.find((m) => m.key === k);
-    return `<div class="node node--m" data-key="${k}" style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span>${t.name}</span></div>`;
+    // the upper pair beside the wire line carry their names on top, clear of it
+    const above = y === 265 ? ` data-label="above"` : "";
+    return `<div class="node node--m" data-key="${k}"${above} style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span class="node__label">${t.name}</span></div>`;
   }).join("");
+  $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
+    `<span class="toolsbar__chip">${icon(t.icon)}<span>${t.name}</span></span>`).join(""));
 
   // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
