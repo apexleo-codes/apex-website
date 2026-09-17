@@ -29,37 +29,115 @@
   .tool__alt { grid-row: 2; transform: none; opacity: 1; font-size: .8rem; }
 }
 
-/* 05 · how they work together */
+/* 05 · how they work together — four layers in the caption order: you (or a
+   schedule) → the soul → skills → scripts, and back round to you. The tools
+   layer runs across the top over the three that use it, and can be switched off
+   when the stage feels busy. */
 .orch__pin { min-height: 100vh; display: flex; flex-direction: column; padding: 118px var(--pad) 44px; }
-.orch__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(230px, 290px) 1fr; gap: clamp(26px, 4vw, 64px); align-items: center; margin-top: 24px; }
-.orch__captions { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; }
-.orch__captions li { padding-left: 18px; border-left: 2px solid var(--line); color: var(--dim); font-size: .92rem; transition: color .5s, border-color .5s; }
-.orch__captions b { display: block; font-size: 1.05rem; color: var(--cream-2); font-weight: 600; transition: color .5s; }
+.orch__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(240px, 300px) 1fr; gap: clamp(26px, 4vw, 64px); align-items: center; margin-top: 24px; }
+.orch__captions { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
+.orch__captions li { padding-left: 20px; border-left: 2px solid var(--line); color: var(--dim); font-size: clamp(1rem, 1.3vw, 1.22rem); line-height: 1.38; transition: color .5s, border-color .5s; }
+.orch__captions b { font-weight: 600; text-transform: uppercase; color: rgba(233, 173, 79, .6); transition: color .5s; }
 .orch__captions li.is-on { border-color: var(--gold); color: var(--cream); }
 .orch__captions li.is-on b { color: var(--gold); }
-.stage { position: relative; width: 100%; max-width: min(100%, calc((100vh - 310px) * 1200 / 700)); aspect-ratio: 1200 / 700; justify-self: center; }
+
+/* the switch: aria-pressed is the state, the stage's data-tools follows it */
+.orch__toggle {
+  display: inline-flex; align-items: center; gap: 12px; margin: 34px 0 0 22px; padding: 0; border: 0; background: none; cursor: pointer;
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-2);
+}
+.orch__toggle i { position: relative; width: 34px; height: 18px; border-radius: 999px; border: 1px solid var(--line-2); transition: border-color .35s; }
+.orch__toggle i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--dim); transition: transform .35s var(--ease), background .35s; }
+.orch__toggle[aria-pressed="true"] i { border-color: var(--mint); }
+.orch__toggle[aria-pressed="true"] i::after { transform: translateX(16px); background: var(--mint); }
+.orch__toggle:focus-visible { outline: 1px solid var(--gold); outline-offset: 6px; }
+
+/* A query container, so the art sizes in cqw and the whole diagram scales as one
+   picture: at 1024px wide, page-sized avatars ran into the wires and labels. */
+.stage { position: relative; width: 100%; max-width: min(100%, calc((100vh - 310px) * 1200 / 700)); aspect-ratio: 1200 / 700; justify-self: center; container: orch / inline-size; }
 .stage__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wire { fill: none; stroke: var(--mint); stroke-width: 2; stroke-linecap: round; }
 .wire--gold { stroke: var(--gold); }
+.skills-ring { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 2 7; transition: stroke .5s; }
+.tlink { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 3 6; transition: opacity .45s, stroke .5s; }
+
+/* A node's box is its art alone, centred on (x, y); the label hangs below it.
+   In the flow, the label would lift the art above the wires, which all run
+   through the centre line. */
 .node {
   position: absolute; left: calc(var(--x) / 1200 * 100%); top: calc(var(--y) / 700 * 100%); transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; transition: transform .5s var(--ease), opacity .5s;
+  display: grid; place-items: center; transition: transform .5s var(--ease), opacity .5s;
 }
-.node img { width: clamp(38px, 4.2vw, 60px); border-radius: 50%; transition: box-shadow .5s; }
-.node span { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-2); white-space: nowrap; }
+.node img { width: clamp(24px, 6.2cqw, 60px); border-radius: 50%; transition: box-shadow .5s; }
+.node__label {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); text-align: center;
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-2); white-space: nowrap; transition: color .5s;
+  padding: 0 4px; background: var(--ink); /* where the return wire passes a label on narrow stages, it goes behind */
+}
 .node small { display: block; font-size: .54rem; color: var(--dim); letter-spacing: .1em; }
-.node--apex img { width: clamp(60px, 7.8vw, 112px); }
-.node--you .ic, .node--clock .ic { width: clamp(28px, 2.7vw, 42px); height: clamp(28px, 2.7vw, 42px); padding: 13px; box-sizing: content-box; border: 1px solid var(--line-2); border-radius: 50%; transition: color .5s, border-color .5s; }
-.node--colony { flex-direction: row; gap: 12px; padding: 7px 18px 7px 7px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--ink-2); }
-.node--colony img { width: 34px; }
+/* FORGE and BOLT sit either side of the wire line, so their names go on top */
+.node[data-label="above"] .node__label { top: auto; bottom: calc(100% + 6px); }
+.node--soul img { width: clamp(40px, 11.5cqw, 112px); }
+.node--colony img { width: clamp(28px, 7cqw, 68px); }
+
+/* you, or a schedule: one circle. The phone is you; the ticks round its rim are
+   the clock that also starts requests, and the hand only runs once the scripts
+   step shows who fires schedules. */
+.youdial { position: relative; display: grid; place-items: center; width: clamp(36px, 8.6cqw, 84px); aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--line-2); color: var(--cream-2); transition: color .5s, border-color .5s; }
+.youdial .ic { width: 38%; height: 38%; }
+.youdial__ring { position: absolute; inset: 5%; width: 90%; height: 90%; overflow: visible; }
+.youdial__ring circle { fill: none; stroke: var(--line-2); stroke-width: 5; stroke-dasharray: 1.6 22.49; transition: stroke .5s; }
+.youdial__hand { position: absolute; inset: 7%; border-radius: 50%; }
+.youdial__hand::before { content: ""; position: absolute; left: 50%; top: 0; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity .4s; box-shadow: 0 0 10px var(--gold); }
+
+/* the skills layer's name sits on its ring, where the tools link meets it */
+.ringlabel {
+  position: absolute; left: calc(730 / 1200 * 100%); top: calc(125 / 700 * 100%); transform: translate(-50%, -50%);
+  padding: 3px 10px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--ink);
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-2); transition: color .5s, border-color .5s;
+}
+
+/* the tools layer: a dashed band over the soul, skills and scripts (x 300–1160) */
+.toolsbar {
+  position: absolute; left: calc(300 / 1200 * 100%); width: calc(860 / 1200 * 100%); top: calc(22 / 700 * 100%); height: calc(64 / 700 * 100%);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 clamp(10px, 1.4vw, 20px);
+  border: 1px dashed var(--line-2); border-radius: 14px; background: rgba(16, 27, 25, .85);
+  transition: opacity .45s, visibility .45s;
+}
+.toolsbar__label { font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
+.toolsbar__chip { display: inline-flex; align-items: center; gap: 7px; font-size: clamp(.66rem, .8vw, .8rem); color: var(--cream-2); white-space: nowrap; }
+.toolsbar__chip .ic { width: 15px; height: 15px; color: var(--mint); }
+/* narrower stages keep the names and drop the icons; the narrowest keep icons only */
+@container orch (max-width: 760px) { .toolsbar__chip .ic { display: none; } }
+@container orch (max-width: 520px) {
+  .toolsbar__chip .ic { display: block; width: 12px; height: 12px; }
+  .toolsbar__chip span { display: none; }
+  .toolsbar { border-radius: 8px; }
+  .toolsbar__label { font-size: .44rem; }
+}
+.stage[data-tools="off"] .toolsbar { opacity: 0; visibility: hidden; }
+.stage[data-tools="off"] .tlink { opacity: 0; }
+
+/* who's on at each step. Skills sit at half strength until it's their turn;
+   MISO carries the walk-through, so she lights as the soul hands over to her */
 .stage:not([data-step="all"]) .node--m { opacity: .5; }
-.stage[data-step="0"] .node--you, .stage[data-step="1"] .node--apex, .stage[data-step="1"] [data-key="miso"],
-.stage[data-step="2"] .node--clock, .stage[data-step="2"] [data-key="nyx"], .stage[data-step="3"] .node--colony, .stage[data-step="3"] [data-key="miso"] {
+.stage[data-step="0"] .node--you, .stage[data-step="1"] .node--soul, .stage[data-step="1"] [data-key="miso"],
+.stage[data-step="2"] [data-key="miso"], .stage[data-step="3"] .node--colony, .stage[data-step="3"] .node--you {
   transform: translate(-50%, -50%) scale(1.12); opacity: 1;
 }
-.stage[data-step="1"] .node--apex img, .stage[data-step="1"] [data-key="miso"] img, .stage[data-step="2"] [data-key="nyx"] img,
-.stage[data-step="3"] .node--colony img, .stage[data-step="3"] [data-key="miso"] img { box-shadow: 0 0 0 3px var(--gold), 0 0 44px rgba(233, 173, 79, .5); }
-.stage[data-step="0"] .node--you .ic, .stage[data-step="2"] .node--clock .ic { color: var(--gold); border-color: var(--gold); }
+.stage[data-step="2"] .node--m { opacity: 1; }
+.stage[data-step="1"] .node--soul img, .stage[data-step="1"] [data-key="miso"] img, .stage[data-step="2"] [data-key="miso"] img,
+.stage[data-step="3"] .node--colony img { box-shadow: 0 0 0 3px var(--gold), 0 0 44px rgba(233, 173, 79, .5); }
+.stage[data-step="0"] .node--you .node__label, .stage[data-step="1"] .node--soul .node__label, .stage[data-step="3"] .node--colony .node__label { color: var(--gold); }
+.stage[data-step="0"] .youdial { color: var(--gold); border-color: var(--gold); }
+.stage[data-step="2"] .skills-ring { stroke: var(--gold); }
+.stage[data-step="2"] .ringlabel { color: var(--gold); border-color: var(--gold); }
+.stage[data-step="3"] .youdial__ring circle { stroke: var(--gold); }
+.stage[data-step="3"] .youdial__hand::before { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .stage[data-step="3"] .youdial__hand { animation: youdial-tick 4s linear infinite; }
+}
+@keyframes youdial-tick { to { transform: rotate(360deg); } }
 .packet { position: absolute; left: 0; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--mint); opacity: 0; box-shadow: 0 0 0 6px rgba(114, 209, 174, .2), 0 0 26px var(--mint); }
 .packet--gold { background: var(--gold); box-shadow: 0 0 0 6px rgba(233, 173, 79, .2), 0 0 26px var(--gold); }
 
@@ -188,13 +266,11 @@
   .cnode:last-child { grid-column: 1 / -1; }
   .cycle__center { position: static; order: -1; }
 }
-@media (max-width: 700px) { /* the stage gets tight: drop the musician labels rather than overlap them */
-  .node--m span { display: none; }
-  .node img { width: 32px; }
-  .node--apex img { width: 50px; }
-  .node--colony img { width: 24px; }
-  .node--colony span { font-size: .46rem; letter-spacing: .04em; }
-  .node--you .ic, .node--clock .ic { padding: 9px; }
+@media (max-width: 700px) { /* the stage gets tight: drop the skill names rather than overlap them */
+  .node--m .node__label { display: none; }
+  .node__label { font-size: .44rem; letter-spacing: .06em; top: calc(100% + 3px); }
+  .node small { font-size: .4rem; letter-spacing: .04em; }
+  .ringlabel { font-size: .44rem; padding: 1px 6px; }
 }
 @media (max-width: 560px) {
   .model { grid-template-columns: 1fr auto; }

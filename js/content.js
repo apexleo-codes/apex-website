@@ -229,6 +229,17 @@ window.APEX = {
     { need: "Code home", uses: "Hermes's own GitHub: apexleo-codes", alt: "Kept apart from my personal repos", icon: "code" }
   ],
 
+  // slide 7 · how they work together: the chips on the tools layer. A sample of
+  // the tools above, by what they do - the layer shows that tools exist and who
+  // reaches for them, and "brains and tools" already names every service.
+  layerTools: [
+    { name: "Web search", icon: "search" },
+    { name: "Browser", icon: "cart" },
+    { name: "Maps", icon: "pin" },
+    { name: "Market data", icon: "chart" },
+    { name: "Voice", icon: "mic" }
+  ],
+
   // slide 8 · MISO recipe → cart
   task: [
     { head: "APEX wakes MISO", body: "A health-tuned model writes the recipe and a shopping list.", visual: "tg-t06" },
