@@ -147,12 +147,15 @@
     orchStage.dataset.tools = on ? "on" : "off";
   });
 
+  // inside a real skill · parked with the journey flow in depricated_for_now.html
   const shotBox = $(".skillx__shot");
-  shotBox.dataset.hl = "1";
-  $$(".skillnote").forEach((b) => {
-    const on = () => { $$(".skillnote").forEach((x) => x.classList.toggle("is-on", x === b)); shotBox.dataset.hl = b.dataset.hl; };
-    ["pointerenter", "focus", "click"].forEach((ev) => b.addEventListener(ev, on));
-  });
+  if (shotBox) {
+    shotBox.dataset.hl = "1";
+    $$(".skillnote").forEach((b) => {
+      const on = () => { $$(".skillnote").forEach((x) => x.classList.toggle("is-on", x === b)); shotBox.dataset.hl = b.dataset.hl; };
+      ["pointerenter", "focus", "click"].forEach((ev) => b.addEventListener(ev, on));
+    });
+  }
   // 02 · the setup. The progress bar is the spine running down the step-number
   // gutter: the numbers were already sitting in that column, so the bar costs no
   // layout at all. Step state is a class toggle (kept under reduced motion too -
@@ -229,10 +232,12 @@
     gsap.fromTo(".spine__fill", { scaleY: 0 }, { scaleY: 1, ease: "none",
       scrollTrigger: { trigger: ".steps", start: "top 72%", end: "bottom 72%", scrub: 0.4 } });
 
-    // journey flow: the line draws, nodes arrive in order
+    // journey flow: the line draws, nodes arrive in order · parked
     const flowPath = $(".flow__line path");
-    gsap.fromTo(flowPath, { strokeDasharray: 960, strokeDashoffset: 960 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: ".flow", start: "top 80%", end: "bottom 50%", scrub: true } });
-    gsap.from(".fnode", { y: 70, autoAlpha: 0, duration: 1.1, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".flow", start: "top 78%" } });
+    if (flowPath) {
+      gsap.fromTo(flowPath, { strokeDasharray: 960, strokeDashoffset: 960 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: ".flow", start: "top 80%", end: "bottom 50%", scrub: true } });
+      gsap.from(".fnode", { y: 70, autoAlpha: 0, duration: 1.1, ease: "expo.out", stagger: 0.14, scrollTrigger: { trigger: ".flow", start: "top 78%" } });
+    }
 
 
     // thank you
@@ -289,13 +294,16 @@
       }
     });
 
-    // build loop: the ring fills, a runner laps it, nodes light up
-    const fill = $(".cycle__fill"), C = 2 * Math.PI * 240, cnodes = $$(".cnode");
-    gsap.set(fill, { strokeDasharray: C, strokeDashoffset: C });
-    gsap.timeline({
-      scrollTrigger: { trigger: ".cycle", start: "center center", end: "+=150%", pin: true, scrub: 0.6,
-        onUpdate: (s) => cnodes.forEach((n, i) => n.classList.toggle("is-on", s.progress >= i / 5 - 0.001)) }
-    }).to(fill, { strokeDashoffset: 0, ease: "none" }, 0).to(".cycle__runner", { rotation: 360, ease: "none" }, 0);
+    // build loop: the ring fills, a runner laps it, nodes light up · parked
+    const fill = $(".cycle__fill"), cnodes = $$(".cnode");
+    if (fill) {
+      const C = 2 * Math.PI * 240;
+      gsap.set(fill, { strokeDasharray: C, strokeDashoffset: C });
+      gsap.timeline({
+        scrollTrigger: { trigger: ".cycle", start: "center center", end: "+=150%", pin: true, scrub: 0.6,
+          onUpdate: (s) => cnodes.forEach((n, i) => n.classList.toggle("is-on", s.progress >= i / 5 - 0.001)) }
+      }).to(fill, { strokeDashoffset: 0, ease: "none" }, 0).to(".cycle__runner", { rotation: 360, ease: "none" }, 0);
+    }
 
     // the frontend chat plays itself, but only while the section is on screen
     ScrollTrigger.create({ trigger: ".front", start: "top 75%", end: "bottom 25%",

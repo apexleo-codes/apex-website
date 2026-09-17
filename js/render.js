@@ -136,26 +136,33 @@
       im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
   }
 
-  // 04 · the journey flow
-  $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
+  // Parked sections (the journey flow, brains and tools, the build loop) live in
+  // depricated_for_now.html, so their containers aren't in the page. Each block
+  // below asks for its container first and skips when it isn't there - move a
+  // section back into index.html and it fills itself again, no edit needed here.
+
+  // the journey flow · parked
+  if ($(".flow__nodes")) $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
     <div class="fnode" data-i="${i}">
       <div class="fnode__icon">${icon(n.icon)}</div>
       <span class="fnode__n">${pad(i + 1)}</span>
       <h3>${n.head}</h3><p>${n.body}</p>
     </div>`).join("");
 
-  // 05 · brains and tools
-  $(".models").innerHTML = D.models.map((m) => `
-    <li class="model"><b>${m.name}</b><span>${m.why}</span><i>${m.agents.map((k) => av(k)).join("")}</i></li>`).join("");
-  $(".backups__chain").innerHTML = D.backups.map((b) => `<span>${b}</span>`).join(icon("arrow"));
-  $(".tools").innerHTML = D.tools.map((t) => `
-    <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
+  // brains and tools · parked
+  if ($(".models")) {
+    $(".models").innerHTML = D.models.map((m) => `
+      <li class="model"><b>${m.name}</b><span>${m.why}</span><i>${m.agents.map((k) => av(k)).join("")}</i></li>`).join("");
+    $(".backups__chain").innerHTML = D.backups.map((b) => `<span>${b}</span>`).join(icon("arrow"));
+    $(".tools").innerHTML = D.tools.map((t) => `
+      <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
+  }
 
   // 03 · the skills: seven small avatars on a tight arc (centre 500,340, radius
   // 160, 20° apart), convex towards the scripts. MISO sits at its apex, on the
   // soul's wire line, because the walk-through follows her Sunday job; when the
-  // soul picks her she steps forward out of the arc (CSS). Names and skills show
-  // on hover, so the arc stays quiet (stage units: 1200 × 700).
+  // soul picks her she grows where she stands (CSS). Names and skills show on
+  // hover, so the arc stays quiet (stage units: 1200 × 700).
   const arc = ["tusk", "bolt", "bullseye", "miso", "nyx", "kitsune", "forge"].map((k, i) => {
     const a = (i - 3) * 20 * Math.PI / 180;
     return [k, Math.round(500 + 160 * Math.cos(a)), Math.round(340 + 160 * Math.sin(a))];
@@ -194,8 +201,8 @@
   $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => `
     <li data-i="${i}" class="${i ? "" : "is-on"}"><b>${st.t}</b>${av(st.key)}<span>${st.label}</span></li>`).join("");
 
-  // 08 · build loop nodes around the ring
-  $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `
+  // the build loop's nodes around the ring · parked
+  if ($(".cycle__nodes")) $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `
     <div class="cnode${s.me ? " cnode--me" : ""}" style="--a:${-90 + i * 72}deg" data-i="${i}">
       <span class="cnode__n">${s.n}</span><b>${s.head}</b><em>${s.who}</em>
     </div>`).join("");

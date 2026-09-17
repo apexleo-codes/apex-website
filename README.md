@@ -1,8 +1,10 @@
 # APEX website
 
-A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with three deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — section 02 is *the setup*, which the deck never covered, and the build loop is an extra, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
+A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and section 02 is *the setup*, which the deck never covered. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · how they work together · the journey flow · brains and tools · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · thank you.
+
+**Parked sections** live in `depricated_for_now.html`, out of the page on the user's note because section 03 and recipe → cart already cover the same ground: *the journey flow*, *brains and tools*, and *the build loop*. Their words, markup, motion and styles all stay in the repo, so putting one back means moving its `<section>` into `index.html` and renumbering — the render and motion blocks ask for their container first and skip while it's parked. That file is a holding pen, not a working page: it loads the CSS but not the scripts, so the lists inside it stay empty.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -20,6 +22,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | Path | What |
 |---|---|
 | `index.html` | Page skeleton: one `<section data-chapter>` per chapter, plus the static copy |
+| `depricated_for_now.html` | Parked sections, kept whole and out of the page: the journey flow · brains and tools · the build loop |
 | `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, setup steps); edit words here |
 | `js/render.js` | Turns `content.js` into markup |
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
@@ -34,7 +37,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 
 ## How sections move
 
-- **Pinned** (desktop only, above 900px): how they work together (messages travel along the wires), daily rhythm (a clock dial, day turns to night), the build-loop ring.
+- **Pinned** (desktop only, above 900px): how they work together (a request travels the wires), daily rhythm (a clock dial, day turns to night). The build-loop ring pinned the same way, and still would if it came back.
 - **Sticky**: recipe → cart — the phone stays put while the steps scroll past and its screen changes. This needs `overflow-x: clip` (not `hidden`) on `body`; `hidden` makes body a scroll container and sticky silently breaks.
 - **Phones and reduced motion**: the same content with no pinning. Screenshots sit inline and every step is shown.
 
@@ -141,7 +144,7 @@ As the five steps scroll past, APEX builds himself in the right-hand column: bar
 Moved above the journey flow, so the layers come before the deep dive into a skill. Four layers, one per caption: **you** (or a schedule) → **the soul** (APEX, the LLM) → **skills** → **scripts** (COLONY), plus an optional tools layer. The stage walks **one real job, MISO's Sunday recipe**, leg by leg:
 
 1. you (or the schedule) → the soul
-2. the soul → the skills arc. The seven specialists sit small and close on an arc; MISO, on the wire line, is picked, steps forward off the arc, grows, and shows her skill (`gut-health-chef`)
+2. the soul → the skills arc. The seven specialists sit small and close on an arc; MISO, on the wire line, is picked and **grows where she stands**, on top of her neighbours (`z-index`), showing her skill (`gut-health-chef`)
 3. MISO → the script, carrying `{ shopping list }`, the fenced JSON her cron prompt asks her to end with
 4. the script → the browser tool (**Browser → Zepto**), to fill the cart
 5. the tool → the script, carrying `{ cart · nothing ordered }`
@@ -149,6 +152,8 @@ Moved above the journey flow, so the layers come before the deep dive into a ski
 
 Why this route and not "the skill calls the tool and hands its answer back to APEX": the Sunday job (`dash-cron-edit-recipe.webp`) runs on the health-tuned model with the skill loaded and **delivers to Local**, not to a chat. The shopping is a script's job ("A script shops" in section 06), the result reaches Telegram without passing through APEX's chat (SOUL.md's context-recovery rule exists because of exactly that), and the SOUL.md rules say carts are filled but **never ordered**.
 
+- **The section carries no heading**, on the user's note: the eyebrow and the four captions say it. `.shead--row` still belongs to the daily rhythm, so leave it in `base.css`.
+- **The wires stop at the size MISO grows to** (radius ~42 units), not at her arc size, so the line never crosses her. Her label goes out to the **left**, into the gap between the soul and the arc: above and below are the next skills along, and to the right the shopping-list tag rides the wire into the scripts' own label. Labels are px while the diagram is `cqw`, so below an 820px stage she keeps her name and drops the skill under it, which would otherwise reach the soul.
 - **`legs` in `motion.js` sets when each packet leaves**, in timeline seconds. The caption step, MISO's pick (`data-pick`) and the lit tool chip (`data-tool`) all read the **timeline's own clock** in its `onUpdate`, not the ScrollTrigger's progress. Scroll progress runs ahead of a scrubbed timeline, so MISO stepped forward before the packet reached her.
 - **What a packet carries rides with it**: `data-tag` on the `.packet` becomes a label (`::after`), above it on flat wires and beside it (`data-side="left"`) on the climb to the tool.
 - **You and the schedule share one circle.** The phone is you; the ticks round its rim are the clock, and its hand only runs on the scripts step.
