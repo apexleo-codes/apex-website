@@ -168,11 +168,15 @@
     setupSteps.forEach((x, k) => { x.classList.toggle("is-on", k === i); x.classList.toggle("is-past", k < i); });
     setupSegs.forEach((x, k) => x.classList.toggle("is-on", k <= i));
     // Exclusive, NOT cumulative. Each file is already a complete stage of the
-    // build (skeleton -> +head -> armoured -> +skills) and the art is transparent,
+    // build (skeleton -> +brain -> armoured -> awake) and the art is transparent,
     // so stacking them would show the skeleton's splayed arms poking out from
-    // behind the finished lion. One stage at a time, cross-faded. A layer may name
-    // several steps: the armoured stage holds through the soul, whose glow and
-    // motes are the only layers that join it.
+    // behind the finished lion. One stage at a time. A layer may name several
+    // steps: the armoured stage holds through the soul, whose aura and motes are
+    // the only layers that join it.
+    // `is-on` is the layer's own state, and the only thing the effects listen to -
+    // the brain's pulse, the soul's rays, the shake and the flames all run off it,
+    // so none of them burn a frame while their step is off screen. The convergence
+    // below is separate: it moves and fades the layers between these latches.
     rigParts.forEach((p) => p.classList.toggle("is-on", p.dataset.at.split(" ").includes(String(i))));
   };
   // onEnter/onEnterBack, never an isActive window: a step shorter than the gap
@@ -188,6 +192,65 @@
     onEnter: () => setStep(i), onEnterBack: () => setStep(i)
   }));
   setStep(0);
+
+  // …and the rig converges between those latches. The four stages are the same
+  // figure, cut and placed on one canvas by tools/build-rig.py, so they sit on
+  // top of each other to the pixel below the neck — which means a plain fade
+  // between them looks like nothing happening. So they implode instead: the stage
+  // you're scrolling towards starts oversized and out of focus and collapses onto
+  // the one in place, which shrinks into it as it goes. The lion never travels;
+  // the change arrives on him.
+  //
+  // It's driven off a continuous position BETWEEN steps, not the latched index,
+  // read from the same 55% line the latches use, and interpolated per step so the
+  // steps' unequal heights don't make the middle ones converge faster. Layers name
+  // their steps in data-at ("2 3" = it holds across both), and a layer at home is
+  // untouched: scale 1, sharp, opaque.
+  const rig = $(".rig");
+  if (rig && rigParts.length && !reduce) {
+    const IN = 0.3, OUT = 0.14, BLUR = 12;   // how far out it starts, how far in it collapses, px
+    const at = rigParts.map((p) => p.dataset.at.split(" ").map(Number));
+    // A normalised cubic sigmoid, and the reason the lion isn't soft the whole way
+    // down the section. sharp(k) + sharp(1 - k) === 1, so a pair of stages still
+    // cross-fades to exactly 1 and neither dips; but with a plain 1 - k the two
+    // overlap across the entire gap between steps, and the figure is only ever
+    // properly sharp at the instant a step latches. This holds each stage at full
+    // strength through most of its step and does the whole implosion in the middle
+    // third of the gap, which is also what makes it read as arriving, not drifting.
+    const sharp = (k) => { const a = k * k * k, b = (1 - k) * (1 - k) * (1 - k); return a / (a + b); };
+    let tops = [];
+    const measure = () => { tops = setupSteps.map((st) => st.getBoundingClientRect().top + scrollY); };
+    const position = () => {
+      const line = scrollY + innerHeight * 0.55;
+      if (!tops.length || line <= tops[0]) return 0;
+      for (let i = 0; i < tops.length - 1; i++) {
+        if (line < tops[i + 1]) return i + (line - tops[i]) / (tops[i + 1] - tops[i]);
+      }
+      return tops.length - 1;
+    };
+    const paint = () => {
+      const p = position();
+      rigParts.forEach((el, i) => {
+        const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
+        // signed distance in steps: negative while the layer is still ahead of you,
+        // positive once it's behind, and exactly 0 anywhere inside its own span
+        const d = p < lo ? p - lo : p > hi ? p - hi : 0;
+        const k = Math.min(1, Math.abs(d));
+        if (k >= 1) { el.style.visibility = "hidden"; el.style.opacity = "0"; return; }
+        const m = sharp(k);                       // 0 while it's at home, 1 a full step away
+        el.style.visibility = "visible";
+        el.style.opacity = 1 - m;
+        el.style.transform = `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
+        el.style.filter = m > 0.002 ? `blur(${(m * m * BLUR).toFixed(2)}px)` : "";
+      });
+    };
+    rig.classList.add("is-converging");
+    ScrollTrigger.create({
+      trigger: ".setup", start: "top bottom", end: "bottom top",
+      onUpdate: paint, onRefresh: () => { measure(); paint(); }
+    });
+    measure(); paint();
+  }
 
   // rhythm stop display  // rhythm stop display (the dial on desktop, the list on small screens)
   const R = D.rhythm, rhythmSec = $(".rhythm"), timeEl = $(".dial__time"), agentEl = $(".dial__agent"), labelEl = $(".dial__label");
