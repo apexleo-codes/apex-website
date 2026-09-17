@@ -157,10 +157,12 @@
     setupSteps.forEach((x, k) => { x.classList.toggle("is-on", k === i); x.classList.toggle("is-past", k < i); });
     setupSegs.forEach((x, k) => x.classList.toggle("is-on", k <= i));
     // Exclusive, NOT cumulative. Each file is already a complete stage of the
-    // build (skeleton -> +head -> armoured -> +skills -> awake) and the art is
-    // transparent, so stacking them would show the skeleton's splayed arms
-    // poking out from behind the finished lion. One layer at a time, cross-faded.
-    rigParts.forEach((p) => p.classList.toggle("is-on", +p.dataset.at === i));
+    // build (skeleton -> +head -> armoured -> +skills) and the art is transparent,
+    // so stacking them would show the skeleton's splayed arms poking out from
+    // behind the finished lion. One stage at a time, cross-faded. A layer may name
+    // several steps: the armoured stage holds through the soul, whose glow and
+    // motes are the only layers that join it.
+    rigParts.forEach((p) => p.classList.toggle("is-on", p.dataset.at.split(" ").includes(String(i))));
   };
   // onEnter/onEnterBack, never an isActive window: a step shorter than the gap
   // between its top and the trigger line never straddles that line with both

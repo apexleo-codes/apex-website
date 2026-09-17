@@ -93,8 +93,8 @@
    above: the official Hermes docs ship no screenshots of the wizard, a borrowed
    one is someone else's machine, and a bitmap carries neither a highlight that
    holds its place at every width nor a hotspot you can hover. Real commands and
-   real prompt text (Hermes 0.21.2, hermes_cli/setup.py). Step 04 ends on a real
-   capture, which is ours.
+   real prompt text (Hermes 0.21.2, hermes_cli/setup.py). Step 04 quotes the real
+   SOUL.md, and step 05 is a real capture, which is ours.
    The progress bar is the spine down the step-number gutter: the numbers already
    occupied that column, so the bar costs no layout. Below 900px the gutter is
    gone, so it becomes a 3px five-segment rail that sticks under the nav. */
@@ -103,7 +103,7 @@
 .setup__bar { display: none; }
 
 /* the assembly rig: APEX gains a part as each step passes — body, brain, face,
-   limbs, then fully awake. Each layer is a complete stage, so exactly one is
+   a soul, then skilled limbs. Each layer is a complete stage, so exactly one is
    visible at a time and they cross-fade; they're pre-normalised onto one shared
    900x1125 canvas (feet on a common baseline, centred) so nothing jumps between
    stages. Transparent art — never re-introduce an opaque backing, a flat field
@@ -124,6 +124,37 @@
 }
 .rig__part.is-on { opacity: 1; transform: none; }
 
+/* the soul: no new art. The armoured stage holds while a gold copy of him, blurred
+   into a halo, breathes behind him and motes drift up in front. The filter chain
+   turns every opaque pixel gold (black, then white, then sepia pushed to gold) and
+   the blur spreads it past his outline. Motion only runs while the step is on. */
+.rig__soul { z-index: 0; }
+.rig__soul::before {
+  content: ""; position: absolute; left: 50%; top: 46%; width: 88%; aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(233, 173, 79, .3), rgba(233, 173, 79, .1) 60%, transparent);
+}
+.rig__soul img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(-8deg) blur(14px); opacity: .7;
+}
+img.rig__part { z-index: 1; }
+.rig__motes { z-index: 2; }
+.rig__motes i {
+  position: absolute; left: var(--x); bottom: var(--y); width: 6px; height: 6px; border-radius: 50%;
+  background: #ffe2a6; box-shadow: 0 0 10px 3px rgba(255, 196, 102, .8); opacity: .6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rig__soul.is-on img, .rig__soul.is-on::before { animation: soul-breathe 3.6s ease-in-out infinite; }
+  .rig__motes i { opacity: 0; }
+  .rig__motes.is-on i { animation: soul-rise var(--d) linear var(--w) infinite; }
+}
+@keyframes soul-breathe { 50% { opacity: .35; } }
+@keyframes soul-rise {
+  0% { opacity: 0; transform: translateY(0) scale(.5); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--rise, -110px)) scale(1.1); }
+}
+
 .steps { position: relative; display: grid; gap: clamp(62px, 10vh, 124px); }
 .spine { position: absolute; left: 21px; top: 10px; bottom: 10px; width: 2px; background: var(--line); }
 .spine__fill { display: block; width: 100%; height: 100%; background: var(--gold); transform: scaleY(0); transform-origin: top; }
@@ -142,7 +173,7 @@
 .step__tag { font-family: var(--mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin: .55em 0 .6em; }
 .step__title { font-size: clamp(1.45rem, 2.7vw, 2.5rem); line-height: 1.06; letter-spacing: -.035em; font-weight: 700; margin: 0 0 .5em; max-width: 21ch; }
 .step__lede { color: var(--cream-2); font-size: clamp(.95rem, 1.05vw, 1.08rem); max-width: 58ch; margin: 0 0 30px; }
-.step__frames { display: grid; gap: 20px; }
+.step__frames { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .step__frames--two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 
 /* the terminal frame */
@@ -150,7 +181,7 @@
 .term__bar { display: flex; align-items: center; gap: 7px; padding: 11px 15px; border-bottom: 1px solid var(--line); }
 .term__bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); flex: none; }
 .term__name { margin-left: 8px; font-family: var(--mono); font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
-.term__av { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #2aabee; color: #fff; font-family: var(--mono); font-size: .52rem; font-weight: 600; flex: none; }
+.term__logo { width: 22px; height: 22px; flex: none; }
 /* sized up on the user's note: the old setting was too small to read at a glance */
 .term__body { padding: 20px 22px 22px; font-family: var(--mono); font-size: clamp(.78rem, .92vw, .95rem); line-height: 1.95; }
 /* break-word, not anywhere: `anywhere` splits mid-token and chopped commands in half */
@@ -164,9 +195,9 @@
 /* the one line that carries the step's point — meant to read from across a room */
 .ln--big { font-size: 1.24em; line-height: 1.55; padding: 3px 0; }
 .ln b { color: var(--cream); font-weight: 600; }
-.ln mark, .bmsg mark { background: rgba(233, 173, 79, .15); color: var(--gold); padding: 1px 5px; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.ln mark, .bmsg mark, .term--soul mark { background: rgba(233, 173, 79, .15); color: var(--gold); padding: 1px 5px; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
-/* the BotFather exchange: the same frame, wearing Telegram */
+/* the bot-creation chat: the same frame, wearing Telegram */
 .term--tg { background: #0e1621; }
 .term--tg .term__bar { background: #17212b; border-radius: 13px 13px 0 0; border-bottom-color: rgba(0, 0, 0, .3); }
 .term--tg .term__body { font-family: var(--display); font-size: clamp(.72rem, .85vw, .84rem); line-height: 1.5; display: grid; gap: 7px; justify-items: start; }
@@ -174,28 +205,41 @@
 .bmsg--me { justify-self: end; border-radius: 12px 12px 4px 12px; background: #2b5278; }
 .bmsg b { color: #fff; font-weight: 600; }
 
+/* step 03: the chat, squeezed 10% from its old half-width, with where it keeps
+   things beside it. The column is 90% of what a two-up column used to get. */
+.step__frames--store { grid-template-columns: calc((100% - 20px) / 2 * .9) auto; justify-content: start; align-items: center; gap: 20px clamp(28px, 4vw, 60px); }
+.store { display: grid; gap: 14px; }
+.store__label { margin: 0 0 2px; font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.store__item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 22px 14px 16px;
+  border: 1px solid var(--line-2); border-radius: 14px; background: #080e0d;
+}
+.store__logo { width: 38px; height: 38px; flex: none; color: var(--cream); }
+.store__item b { font-size: clamp(1rem, 1.15vw, 1.15rem); font-weight: 600; color: var(--cream); letter-spacing: -.01em; }
+
+/* step 04: SOUL.md. Prose in the display face, markdown marks in mono, and a warm
+   ring round the frame, the page's one nod to glow outside the rig. */
+.term--soul { border-color: rgba(233, 173, 79, .34); box-shadow: 0 0 0 1px rgba(233, 173, 79, .06), 0 0 60px rgba(233, 173, 79, .1), 0 30px 80px rgba(0, 0, 0, .45); }
+.term--soul .term__body { font-family: var(--display); font-size: clamp(.84rem, .95vw, .98rem); line-height: 1.55; }
+.term--soul p { margin: 0; color: var(--cream-2); }
+.term--soul b { color: var(--cream); font-weight: 600; }
+.term--soul .ps { display: inline-block; min-width: 2em; margin: 0; text-indent: 0; font-family: var(--mono); color: var(--gold); }
+.term--soul .soul__lead { font-size: 1.12em; color: var(--cream); margin-bottom: 4px; }
+.term--soul .soul__h { margin: 16px 0 6px; font-family: var(--mono); font-size: .8em; letter-spacing: .14em; text-transform: uppercase; color: var(--mint); }
+.term--soul .soul__h .ps { min-width: 0; margin-right: 8px; color: var(--mint); }
+/* hanging indent, so a wrapped rule lines up under its own text, not the marker */
+.term--soul .soul__li { padding: 2px 0 2px 2em; text-indent: -2em; }
+
 /* The hover "?" hotspots and their readout panels were removed on the user's
    note: they made the section verbose, and this audience skims rather than
    hunts. The reasoning now lives in the step's single line — and in what he
    says out loud over the slide. Don't reintroduce them. */
 
-/* the one real capture in this section, with the parts worth looking at boxed.
-   The legend lives under the shot, not on it: labels pinned inside the frame
-   either clip at the top edge or collide with the boxes they name. */
+/* the one real capture in this section: just the skills list, cropped from the
+   Skills tab. The numbered boxes and legend went with the rest of the tab. */
 .shot2 { margin: 0; }
 .shot2__box { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
 .shot2__box img { width: 100%; }
-.hlz {
-  position: absolute; top: calc(var(--t) * 1%); left: calc(var(--l) * 1%); width: calc(var(--w) * 1%); height: calc(var(--h) * 1%);
-  border: 1.5px solid var(--gold); border-radius: 6px; background: rgba(233, 173, 79, .07);
-}
-.hlz b {
-  position: absolute; left: -1px; top: -10px; width: 19px; height: 19px; border-radius: 50%;
-  display: grid; place-items: center; background: var(--gold); color: var(--ink); font-family: var(--mono); font-size: .58rem; font-weight: 700;
-}
-.shot2 figcaption { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font-family: var(--mono); font-size: .62rem; color: var(--dim); }
-.shot2 figcaption span { display: inline-flex; align-items: center; gap: 7px; }
-.shot2 figcaption b { width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--gold); color: var(--gold); font-size: .54rem; }
 
 @media (max-width: 900px) {
   /* no number gutter left, so the progress bar becomes a rail under the nav */
@@ -204,15 +248,23 @@
   .setup__bar i.is-on { background: var(--gold); }
   .spine { display: none; }
   .steps { gap: 58px; }
-  .step { grid-template-columns: 1fr; opacity: 1; }
+  .step { grid-template-columns: minmax(0, 1fr); opacity: 1; }
   .step__n { margin-bottom: 15px; }
   .step__dot { width: 38px; height: 38px; }
-  .step__frames--two { grid-template-columns: 1fr; }
+  .step__frames--two, .step__frames--store { grid-template-columns: minmax(0, 1fr); }
+  .store { grid-template-columns: repeat(2, minmax(0, max-content)); }
+  .store__label { grid-column: 1 / -1; }
+  .store__logo { width: 30px; height: 30px; }
+  .rig__motes i { --rise: -60px; }
   .setup__note { padding-left: 0; }
   /* no room for a column beside the steps: APEX rides along at the top instead,
      sticky under the segment rail, and still gains a part per step. He needs an
      opaque backing or the step text scrolls through him. */
-  .setup__grid.has-rig { grid-template-columns: 1fr; gap: 0; }
+  /* minmax(0, …), not 1fr, here, on .step and on .step__frames: a bare 1fr (or
+     an implicit auto track) floors at min-content,
+     and the unbreakable install command in step 01 pushed every frame 31px past
+     the screen edge */
+  .setup__grid.has-rig { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .setup__grid.has-rig .rig {
     order: -1; position: sticky; top: 64px; z-index: 4; height: 30vh; aspect-ratio: auto;
     margin-bottom: 20px; background: var(--ink); box-shadow: 0 14px 22px -10px var(--ink);

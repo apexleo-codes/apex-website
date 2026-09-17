@@ -80,21 +80,25 @@ window.APEX = {
 
   // 02 · the setup, told as an assembly: each step bolts one more part onto APEX,
   // and the rig on the right builds him as the section scrolls (parts: setupRig).
-  // Body = the install · brain = the model · face and mouth = Telegram · belly =
-  // the accounts it stores things in · hands and legs = the skills.
+  // Body = the install · brain = the model · face = Telegram, armour badges =
+  // Gmail and GitHub, where it keeps things · soul = SOUL.md · hands and legs =
+  // the skills.
   // Real commands, read off the Hermes 0.21.2 install on this Mac
-  // (hermes_cli/setup.py, setup_platforms.py). Frames are markup, not screen
-  // grabs: the official docs ship no screenshots of the wizard, and a bitmap
-  // can't hold a highlight that stays put at every width. The token shows hidden,
-  // the way the wizard hides it.
+  // (hermes_cli/setup.py). Frames are markup, not screen grabs: the official docs
+  // ship no screenshots of the wizard, and a bitmap can't hold a highlight that
+  // stays put at every width. The token shows hidden, the way the wizard hides it.
   // ONE line per step, on the user's note - the reasoning is his to say out loud,
   // and a CXO skims the page rather than reading it. The hover readouts that used
   // to carry it were removed for the same reason.
+  // No BotFather branding and no terminal beside the chat: nobody outside Telegram
+  // knows the name, so the frame wears Telegram's own mark.
+  // The soul is quoted from the real SOUL.md, trimmed. Its "Who you serve" block
+  // names the child and his DOB, so it never appears here - this repo is public.
   // (The Models-tab shot is deliberately NOT used: its Mixture-of-Agents row
   // displays a Claude model this assistant never uses, and this repo is public.)
   setup: [
     {
-      n: "01", tag: "Install", key: "install",
+      n: "01", tag: "Install Hermes Agent", key: "install",
       title: "Give it a body",
       lede: "One command puts everything on the machine.",
       frames: [{ kind: "term", chrome: "Give it a rebooted machine, or a Mac mini", lines: [
@@ -105,7 +109,7 @@ window.APEX = {
     },
     {
       n: "02", tag: "The engine", key: "brain",
-      title: "Install its brain",
+      title: "Access to brain (AI)",
       lede: "A model attaches. Now there is something in the room that understands English.",
       frames: [{ kind: "term", chrome: "Terminal — hermes setup", lines: [
         { p: "$", big: true, html: "hermes setup" },
@@ -117,10 +121,10 @@ window.APEX = {
     },
     {
       n: "03", tag: "The connections", key: "door",
-      title: "Give it a mouth",
-      lede: "Telegram is how it speaks to me. Google and GitHub are where it keeps things.",
+      title: "Ability to chat & store",
+      lede: "Telegram is how it speaks to me. Gmail and GitHub are where it keeps things.",
       frames: [
-        { kind: "tg", chrome: "BotFather", lines: [
+        { kind: "tg", chrome: "Telegram", lines: [
           { by: "me", html: "/newbot" },
           { by: "bot", html: "Alright, a new bot. Please choose a name." },
           { by: "me", html: "Apex" },
@@ -128,60 +132,59 @@ window.APEX = {
           { by: "me", html: "Apexleo_bot" },
           { by: "bot", html: "Done! Use this token to access the HTTP API:\n<mark>••••••••:••••••••••••••••••</mark>" }
         ] },
-        { kind: "term", chrome: "Terminal — hermes gateway setup", lines: [
-          { p: "$", big: true, html: "hermes gateway setup" },
-          { c: "ok", html: "✓ Telegram token saved" },
-          { c: "warn", big: true, html: "⚠ <mark>No user allowlist</mark> — anyone can use your bot!" },
-          { c: "ok", html: "✓ Only listed users can use the bot" }
+        { kind: "store", label: "Keeps things in", items: [
+          { logo: "gmail", name: "Gmail" },
+          { logo: "github", name: "GitHub" }
         ] }
       ]
     },
     {
-      n: "04", tag: "Skills", key: "skills",
+      n: "04", tag: "The soul", key: "soul",
+      title: "Give it a soul",
+      lede: "One file says who it is, how it talks, and the rules it never breaks.",
+      frames: [{ kind: "soul", chrome: "~/.hermes/SOUL.md", lines: [
+        { c: "lead", html: "You are <b>APEX</b> 🦁, the user's personal chief-of-staff. You lead a small team of specialist agents and you <mark>own the outcome.</mark>" },
+        { c: "h", html: "How you talk" },
+        { c: "li", html: "Lead with the answer or the action taken." },
+        { c: "li", html: "Every message you send must be worth the notification." },
+        { c: "li", html: "Match the language the user writes in (English or Hinglish)." },
+        { c: "h", html: "Hard rules" },
+        { c: "ol", html: "<b>Emergencies first</b> — always give <mark>112</mark> and <mark>108</mark> in the first reply." },
+        { c: "ol", html: "<b>Human in the loop</b> — never message anyone other than the user." },
+        { c: "ol", html: "<b>No spending</b> — carts may be filled; checkout is always the user's call." },
+        { c: "ol", html: "<b>No medical diagnosis</b> — push towards a doctor when it's serious." },
+        { c: "ol", html: "<b>Honesty</b> — never claim it's done unless the tool output confirms it." }
+      ] }]
+    },
+    {
+      n: "05", tag: "Skills", key: "skills",
       title: "Teach it the work",
       lede: "Plain-English briefs become its hands and legs.",
       frames: [
-        { kind: "term", chrome: "Terminal — teaching it", lines: [
-          { p: "$", big: true, html: "hermes skills browse" },
-          { c: "out", big: true, html: "<mark>64 skills</mark> available · <mark>7</mark> written for this assistant" },
-          { p: "$", html: "hermes plugins install …" },
-          { p: "$", html: "hermes mcp add …" }
-        ] },
-        { kind: "shot", img: "dash-skills-personal",
-          alt: "The Hermes dashboard, Skills tab, showing the seven skills written for this assistant",
-          zones: [{ n: 1, t: 1.5, l: 17, w: 14, h: 6 }, { n: 2, t: 45.5, l: 0.8, w: 16.5, h: 18 }, { n: 3, t: 22, l: 33.5, w: 65, h: 34 }],
-          legend: ["64 skills on the shelf", "Skills · Plugins · MCP", "the seven written for this one"] }
+        { kind: "shot", img: "dash-skills-list",
+          alt: "The Hermes dashboard, Skills tab: the personal skills written for this assistant" }
       ]
-    },
-    {
-      n: "05", tag: "Always on", key: "live",
-      title: "Then let it run",
-      lede: "It wakes on schedule, with or without me.",
-      frames: [{ kind: "term", chrome: "Terminal — handing over the keys", lines: [
-        { p: "$", big: true, html: "hermes gateway start" },
-        { c: "ok", html: "✓ gateway running · telegram connected" },
-        { c: "out", html: "scheduled jobs: <mark>9</mark> · survives reboot" },
-        { c: "menu", html: "— 07:30 —" },
-        { c: "ok", big: true, html: "→ telegram · “☀️ Good morning — your brief is ready.”" }
-      ] }]
     }
   ],
 
   // the rig: APEX assembling on the right as the steps go by. Each file is a
   // COMPLETE stage of the build, not a single part - skeleton, then +head, then
-  // armoured, then +skills, then awake - so exactly one shows at a time and they
-  // cross-fade (motion.js). They were generated separately and share no framing,
-  // so they're normalised here onto one 900x1125 canvas: feet on a common
-  // baseline, centred, hand-tuned scale per image. Backgrounds are transparent -
-  // filling them with the page ink and saving lossy WebP drifted the flat field
-  // off #0b1312 and drew a visible rectangle. `at` is the step that shows it.
+  // armoured, then +skills - so exactly one shows at a time and they cross-fade
+  // (motion.js). They were generated separately and share no framing, so they're
+  // normalised here onto one 900x1125 canvas: feet on a common baseline, centred,
+  // hand-tuned scale per image. Backgrounds are transparent - filling them with
+  // the page ink and saving lossy WebP drifted the flat field off #0b1312 and drew
+  // a visible rectangle. `at` is the step (or steps) that show it.
+  // The soul is not new art: the armoured stage stays on through steps 3 and 4,
+  // and `fx: "soul"` adds a golden glow behind him and motes rising in front, so
+  // the lion doesn't blink out and back in between the two.
   // A layer whose file is missing removes itself, and the column then collapses.
   setupRig: [
     { at: 0, img: "apex-rig-1-body" },
     { at: 1, img: "apex-rig-2-brain" },
-    { at: 2, img: "apex-rig-3-face" },
-    { at: 3, img: "apex-rig-4-limbs" },
-    { at: 4, img: "apex-rig-5-alive" }
+    { at: [2, 3], img: "apex-rig-3-face" },
+    { at: 3, img: "apex-rig-3-face", fx: "soul" },
+    { at: 4, img: "apex-rig-4-limbs" }
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)

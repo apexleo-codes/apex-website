@@ -69,19 +69,35 @@
     </div>`;
   const tgFrame = (f) => `
     <div class="term term--tg">
-      <div class="term__bar"><span class="term__av">BF</span><span class="term__name">${f.chrome}</span></div>
+      <div class="term__bar"><svg class="term__logo" role="img" aria-label="Telegram"><use href="#i-telegram"/></svg><span class="term__name">${f.chrome}</span></div>
       <div class="term__body">${f.lines.map((l) =>
         `<p class="bmsg${l.by === "me" ? " bmsg--me" : ""}">${l.html}</p>`).join("")}</div>
     </div>`;
+  // where it keeps things: brand marks beside the chat, not another frame
+  const storeFrame = (f) => `
+    <div class="store">
+      <p class="store__label">${f.label}</p>
+      ${f.items.map((it) => `<span class="store__item"><svg class="store__logo" aria-hidden="true"><use href="#i-${it.logo}"/></svg><b>${it.name}</b></span>`).join("")}
+    </div>`;
+  // SOUL.md, set as the markdown it is: `##` headings, `-` bullets, numbered rules
+  const soulFrame = (f) => {
+    let rule = 0;
+    const mark = { h: "##", li: "-" };
+    return `
+    <div class="term term--soul">
+      <div class="term__bar"><i></i><i></i><i></i><span class="term__name">${f.chrome}</span></div>
+      <div class="term__body">${f.lines.map((l) =>
+        `<p class="soul__${l.c === "ol" ? "li" : l.c}">${l.c === "lead" ? "" : `<span class="ps">${l.c === "ol" ? `${++rule}.` : mark[l.c]}</span>`}${l.html}</p>`).join("")}</div>
+    </div>`;
+  };
   const shotFrame = (f) => `
     <figure class="shot2">
-      <div class="shot2__box">
-        <img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy">
-        ${f.zones.map((z) => `<span class="hlz" style="--t:${z.t};--l:${z.l};--w:${z.w};--h:${z.h}"><b>${z.n}</b></span>`).join("")}
-      </div>
-      <figcaption>${f.legend.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join("")}</figcaption>
+      <div class="shot2__box"><img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy"></div>
     </figure>`;
-  const frame = (f) => (f.kind === "tg" ? tgFrame(f) : f.kind === "shot" ? shotFrame(f) : termFrame(f));
+  const frames = { tg: tgFrame, store: storeFrame, soul: soulFrame, shot: shotFrame };
+  const frame = (f) => (frames[f.kind] || termFrame)(f);
+  const framesMod = (s) => (s.frames.some((f) => f.kind === "store") ? " step__frames--store"
+    : s.frames.length > 1 && !s.frames.some((f) => f.kind === "shot") ? " step__frames--two" : "");
 
   $(".steps").innerHTML = `<span class="spine" aria-hidden="true"><i class="spine__fill"></i></span>` +
     D.setup.map((s) => `
@@ -91,21 +107,32 @@
           <p class="step__tag">${s.tag}</p>
           <h3 class="step__title">${s.title}</h3>
           <p class="step__lede">${s.lede}</p>
-          <div class="step__frames${s.frames.length > 1 && !s.frames.some((f) => f.kind === "shot") ? " step__frames--two" : ""}">${s.frames.map(frame).join("")}</div>
+          <div class="step__frames${framesMod(s)}">${s.frames.map(frame).join("")}</div>
         </div>
       </article>`).join("");
 
   // the rig: stacked transparent layers that assemble APEX as the steps go by.
   // onerror removes a layer whose art isn't in img/ yet, so the column degrades
   // to whatever exists instead of showing broken-image icons.
+  // `at` can list several steps ("2 3"): a stage that stays on across them never
+  // cross-fades out and back in. The soul is two extra layers round the stage it
+  // lifts: a blurred gold copy of him behind, and motes rising in front.
   const rig = $(".rig");
   if (rig) {
-    rig.innerHTML = D.setupRig.map((p) =>
-      `<img class="rig__part" data-at="${p.at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`).join("");
+    const motes = [[30, 36, 5.2, 0], [66, 28, 6, 1.4], [46, 60, 4.6, 2.6], [76, 50, 5.6, .7], [22, 58, 6.4, 3.2],
+      [56, 18, 5, 2], [36, 16, 5.8, 4], [70, 68, 4.8, 3.6], [52, 42, 6.2, .3], [28, 76, 5.4, 1.9], [62, 80, 4.4, 4.4], [80, 34, 6.6, 2.2]]
+      .map(([x, y, d, w]) => `<i style="--x:${x}%;--y:${y}%;--d:${d}s;--w:${w}s"></i>`).join("");
+    rig.innerHTML = D.setupRig.map((p) => {
+      const at = [].concat(p.at).join(" ");
+      return p.fx === "soul"
+        ? `<div class="rig__part rig__soul" data-at="${at}"><img src="img/${p.img}.webp" alt="" onerror="this.parentNode.remove()"></div>
+           <div class="rig__part rig__motes" data-at="${at}">${motes}</div>`
+        : `<img class="rig__part" data-at="${at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`;
+    }).join("");
     // The art is generated separately. Until at least one layer really loads the
     // grid stays single-column - otherwise the steps give up 400px to an empty
     // sticky box on desktop, and a blank opaque 30vh band on phones.
-    $$(".rig__part", rig).forEach((im) =>
+    $$("img", rig).forEach((im) =>
       im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
   }
 
