@@ -166,10 +166,7 @@
        Skill nodes and tool chips come from js/render.js; stage units are 1200 × 700. -->
   <section class="orch" id="orchestra" data-chapter="How they work">
     <div class="orch__pin">
-      <header class="shead shead--row">
-        <div><span class="shead__num">03</span><p class="eyebrow">How they work together</p></div>
-        <h2 class="big">An orchestrator, <em>musicians</em> and stagehands</h2>
-      </header>
+      <header class="shead"><span class="shead__num">03</span><p class="eyebrow">How they work together</p></header>
       <div class="orch__body">
         <div class="orch__side">
           <ol class="orch__captions">
@@ -185,8 +182,8 @@
             <path class="tlink" d="M380 86 V270 M600 86 V140"/>
             <path class="skills-arc" d="M565 194 A160 160 0 0 1 565 486"/>
             <path id="p-you" class="wire" d="M172 340 H310"/>
-            <path id="p-soul" class="wire" d="M450 340 H730"/>
-            <path id="p-skill" class="wire" d="M810 340 H954"/>
+            <path id="p-soul" class="wire" d="M450 340 H616"/>
+            <path id="p-skill" class="wire" d="M704 340 H954"/>
             <path id="p-tool" class="wire" d="M1010 298 L1046 92"/>
             <path id="p-tool-back" class="wire" d="M1046 92 L1010 298"/>
             <path id="p-back" class="wire wire--gold" d="M1030 372 C 1090 450 1070 612 870 612 H 200 C 60 612 20 540 20 440 C 20 380 36 342 64 340"/>
@@ -215,52 +212,9 @@
     </div>
   </section>
 
-  <!-- 04 · THE JOURNEY FLOW (slide 4) -->
-  <section class="section journey" id="journey" data-chapter="The magic">
-    <header class="shead"><span class="shead__num">04</span><p class="eyebrow">How the magic happens</p></header>
-    <h2 class="big">The <em>Journey Flow</em></h2>
-    <div class="flow">
-      <svg class="flow__line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="M20 20 H980"/></svg>
-      <div class="flow__nodes"></div>
-    </div>
-    <div class="skillx">
-      <div class="skillx__shot">
-        <img src="img/dash-skill-edit.webp" alt="The MISO skill open in the Hermes skill editor">
-        <span class="hl hl--1" data-hl="1"><b>1</b></span>
-        <span class="hl hl--2" data-hl="2"><b>2</b></span>
-      </div>
-      <div class="skillx__notes">
-        <p class="eyebrow">Inside a real skill</p>
-        <button class="skillnote is-on" data-hl="1" type="button"><b>1</b><span><strong>The menu card</strong>A name and a one-line description. The AI scans only these, across all 64 skills, to pick the right one.</span></button>
-        <button class="skillnote" data-hl="2" type="button"><b>2</b><span><strong>The playbook</strong>Steps, rules and the exact output. Opened only once the skill is picked, so the AI stays fast and focused.</span></button>
-        <div class="selfimprove">
-          <svg class="ic"><use href="#i-spark"/></svg>
-          <p><strong>Self-improving.</strong> No skill for a task? Hermes finds another way, can write a new script, and turns what worked into a new or better skill. I review those changes before they stick.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05 · BRAINS AND TOOLS (slide 6) -->
-  <section class="section brains" id="brains" data-chapter="Brains & tools">
-    <header class="shead"><span class="shead__num">05</span><p class="eyebrow">Brains and tools</p></header>
-    <h2 class="big">The right model and tool <em>for each job</em></h2>
-    <div class="brains__grid">
-      <div>
-        <p class="eyebrow eyebrow--dim">Targeted models <span class="hint">agents that use them</span></p>
-        <ul class="models"></ul>
-        <div class="backups"><span class="backups__label">If one is busy</span><div class="backups__chain"></div></div>
-      </div>
-      <div>
-        <p class="eyebrow eyebrow--dim">Tools <span class="hint">hover a row to see the paid option</span></p>
-        <ul class="tools"></ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 06 · MISO RECIPE → CART (slide 8) -->
+  <!-- 04 · MISO RECIPE → CART (slide 8) -->
   <section class="section task" id="task" data-chapter="Recipe → cart">
-    <header class="shead"><span class="shead__num">06</span><p class="eyebrow"><img class="eyebrow__av" src="img/agent-miso.webp" alt="">Feature · MISO · recipe + cart</p></header>
+    <header class="shead"><span class="shead__num">04</span><p class="eyebrow"><img class="eyebrow__av" src="img/agent-miso.webp" alt="">Feature · MISO · recipe + cart</p></header>
     <h2 class="big">Sunday recipe → <em>grocery cart</em></h2>
     <div class="task__grid">
       <div class="task__sticky">
@@ -282,11 +236,11 @@
     </div>
   </section>
 
-  <!-- 07 · A DAY WITH APEX (slide 9) -->
+  <!-- 05 · A DAY WITH APEX (slide 9) -->
   <section class="rhythm" id="rhythm" data-chapter="Daily rhythm">
     <div class="rhythm__pin">
       <header class="shead shead--row">
-        <div><span class="shead__num">07</span><p class="eyebrow">The daily rhythm</p></div>
+        <div><span class="shead__num">05</span><p class="eyebrow">The daily rhythm</p></div>
       </header>
       <div class="rhythm__body">
         <div class="dial">
@@ -307,42 +261,7 @@
     </div>
   </section>
 
-  <!-- 08 · THE BUILD LOOP (extra) -->
-  <section class="section loop" id="loop" data-chapter="Build loop">
-    <header class="shead"><span class="shead__num">08</span><p class="eyebrow">The build loop</p></header>
-    <h2 class="big">I direct. <em>Claude Code builds.</em> Hermes runs.</h2>
-    <div class="roles">
-      <article class="role role--me">
-        <p class="role__tag">the director</p><h3>Me</h3>
-        <p>Choose the jobs, set the rules, test on my phone, flag what's off.</p>
-      </article>
-      <article class="role">
-        <p class="role__tag">the engineer</p><h3>Claude Code</h3>
-        <p>Writes the scripts and skills, deploys them, fixes what I flag.</p>
-      </article>
-      <article class="role">
-        <p class="role__tag">the runtime</p><h3>Hermes Agent</h3>
-        <p>Runs the agents on my Mac, day and night.</p>
-      </article>
-    </div>
-    <div class="cycle">
-      <div class="cycle__ring">
-        <svg viewBox="0 0 600 600" aria-hidden="true">
-          <circle class="cycle__track" cx="300" cy="300" r="240"/>
-          <circle class="cycle__fill" cx="300" cy="300" r="240"/>
-        </svg>
-        <div class="cycle__runner"></div>
-        <div class="cycle__nodes"></div>
-        <div class="cycle__center">
-          <p class="eyebrow">every round</p>
-          <p class="cycle__mantra">my feedback → a fix → a one-line rule → <em>repeat</em></p>
-        </div>
-      </div>
-      <p class="cycle__note">Shared notes (HANDOFF · RULES · PROGRESS · LOG) let every new session pick up where we left off.</p>
-    </div>
-  </section>
-
-  <!-- 09 · THANK YOU (slide 10) -->
+  <!-- 06 · THANK YOU (slide 10) -->
   <section class="section outro" id="outro" data-chapter="Thank you">
     <div class="thanks">
       <p class="thanks__word"><span>Thank</span> <em>you.</em></p>
