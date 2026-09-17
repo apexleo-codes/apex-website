@@ -139,7 +139,7 @@
   addEventListener("load", remeasure);
   setCase(0, true);
 
-  // 05 · the tools layer can be switched off when the stage feels busy
+  // 03 · the tools layer can be switched off when the stage feels busy
   const toolsBtn = $(".orch__toggle"), orchStage = $(".stage");
   toolsBtn.addEventListener("click", () => {
     const on = toolsBtn.getAttribute("aria-pressed") !== "true";
@@ -244,24 +244,37 @@
 
   // ---------- pinned scroll stories (desktop) ----------
   mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
-    // how they work together: a request travels you → soul → skills → scripts,
-    // and the gold one comes back round to you (a reply, or the next schedule)
+    // how they work together: MISO's Sunday job, leg by leg. you → soul; the soul
+    // picks MISO off the arc; her JSON shopping list goes to a script; the script
+    // takes it to the browser tool (Zepto) and brings the cart back; the result
+    // goes to you on Telegram. `legs` is when each packet sets off, in timeline
+    // seconds, and the timeline's own clock drives every state below - scroll
+    // progress runs ahead of a scrubbed timeline, so MISO would step forward
+    // before the packet reached her.
     const stage = $(".stage"), caps = $$(".orch__captions li");
     $$(".stage .wire").forEach((w) => { const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L; });
     const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0 } }));
     const place = (pk) => { const L = pk.path.getTotalLength(), pt = pk.path.getPointAtLength(pk.p.t * L), r = stage.clientWidth / 1200; gsap.set(pk.el, { x: pt.x * r, y: pt.y * r }); };
+    const legs = [0, 1, 2, 3, 3.8, 4.6], LEG = 0.8;
     const orch = gsap.timeline({
       defaults: { ease: "none" },
-      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=280%", pin: true, scrub: 0.6,
-        onUpdate: (s) => { const k = Math.min(3, Math.floor(s.progress * 4)); caps.forEach((c, i) => c.classList.toggle("is-on", i === k)); stage.dataset.step = k; } }
+      onUpdate: () => {
+        const t = orch.time(), k = t < 1 ? 0 : t < 2 ? 1 : t < 3 ? 2 : 3;
+        caps.forEach((c, i) => c.classList.toggle("is-on", i === k));
+        stage.dataset.step = k;
+        stage.dataset.pick = t >= legs[1] + LEG ? "miso" : "";
+        stage.dataset.tool = t >= legs[3] && t < legs[5] ? "on" : "";
+      },
+      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=420%", pin: true, scrub: 0.6 }
     });
     packets.forEach((pk, i) => {
-      orch.to(pk.path, { strokeDashoffset: 0, duration: 0.9 }, i)
-        .fromTo(pk.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, i)
-        .to(pk.p, { t: 1, duration: 0.9, onUpdate: () => place(pk) }, i)
-        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, i + 0.9);
+      const at = legs[i];
+      orch.to(pk.path, { strokeDashoffset: 0, duration: LEG }, at)
+        .fromTo(pk.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, at)
+        .to(pk.p, { t: 1, duration: LEG, onUpdate: () => place(pk) }, at)
+        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, at + LEG);
     });
-    orch.to({}, { duration: 0.1 });
+    orch.to({}, { duration: 0.3 });
     stage.dataset.step = 0;
 
     // daily rhythm: equal scroll per stop; the hand swings to each stop's hour
@@ -296,6 +309,7 @@
     $$(".cnode").forEach((n) => n.classList.add("is-on"));
     $$(".orch__captions li").forEach((c) => c.classList.add("is-on"));
     $(".stage").dataset.step = "all";
+    $(".stage").dataset.pick = "miso";
     rItems.forEach((li, i) => ScrollTrigger.create({ trigger: li, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setStop(i) }));
     // no autoplay on touch or under reduced motion: each job drives the phone as it scrolls past
     stopAuto();

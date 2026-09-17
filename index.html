@@ -158,9 +158,66 @@
     </div>
   </section>
 
-  <!-- 03 · THE JOURNEY FLOW (slide 4) -->
+  <!-- 03 · HOW THEY WORK TOGETHER (slide 7) · four layers, one per caption:
+       you (or a schedule) → the soul → skills → scripts, with an optional tools
+       layer across the top. It walks MISO's Sunday job end to end: the soul picks
+       her from the skills arc, she writes a JSON shopping list, a script fills the
+       Zepto cart through the browser, and the result goes straight to Telegram.
+       Skill nodes and tool chips come from js/render.js; stage units are 1200 × 700. -->
+  <section class="orch" id="orchestra" data-chapter="How they work">
+    <div class="orch__pin">
+      <header class="shead shead--row">
+        <div><span class="shead__num">03</span><p class="eyebrow">How they work together</p></div>
+        <h2 class="big">An orchestrator, <em>musicians</em> and stagehands</h2>
+      </header>
+      <div class="orch__body">
+        <div class="orch__side">
+          <ol class="orch__captions">
+            <li class="is-on"><b>You</b> make a request, a goal in natural language.</li>
+            <li><b>Soul</b>, the core engine (LLM), interprets context and plans.</li>
+            <li><b>Skills</b> are special-purpose agent capabilities.</li>
+            <li><b>Scripts</b> handle non-AI automated tasks and schedules.</li>
+          </ol>
+          <button class="orch__toggle" type="button" aria-pressed="true"><i aria-hidden="true"></i>Tools layer</button>
+        </div>
+        <div class="stage" data-tools="on">
+          <svg class="stage__svg" viewBox="0 0 1200 700" aria-hidden="true">
+            <path class="tlink" d="M380 86 V270 M600 86 V140"/>
+            <path class="skills-arc" d="M565 194 A160 160 0 0 1 565 486"/>
+            <path id="p-you" class="wire" d="M172 340 H310"/>
+            <path id="p-soul" class="wire" d="M450 340 H730"/>
+            <path id="p-skill" class="wire" d="M810 340 H954"/>
+            <path id="p-tool" class="wire" d="M1010 298 L1046 92"/>
+            <path id="p-tool-back" class="wire" d="M1046 92 L1010 298"/>
+            <path id="p-back" class="wire wire--gold" d="M1030 372 C 1090 450 1070 612 870 612 H 200 C 60 612 20 540 20 440 C 20 380 36 342 64 340"/>
+          </svg>
+          <div class="toolsbar"><span class="toolsbar__label">Tools</span></div>
+          <div class="node node--you" style="--x:120;--y:340">
+            <span class="youdial">
+              <svg class="youdial__ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg>
+              <i class="youdial__hand"></i>
+              <svg class="ic"><use href="#i-phone"/></svg>
+            </span>
+            <span class="node__label">You<small>or a schedule</small></span>
+          </div>
+          <div class="node node--soul" style="--x:380;--y:340"><img src="img/agent-apex.webp" alt=""><span class="node__label">Soul<small>APEX · the LLM</small></span></div>
+          <span class="ringlabel">Skills</span>
+          <div class="stage__musicians"></div>
+          <div class="node node--colony" style="--x:1000;--y:340"><img src="img/agent-colony.webp" alt=""><span class="node__label">Scripts<small>COLONY</small></span></div>
+          <i class="packet" data-path="p-you"></i>
+          <i class="packet" data-path="p-soul"></i>
+          <i class="packet" data-path="p-skill" data-tag="{ shopping list }"></i>
+          <i class="packet" data-path="p-tool" data-tag="fill the cart" data-side="left"></i>
+          <i class="packet" data-path="p-tool-back" data-tag="{ cart · nothing ordered }" data-side="left"></i>
+          <i class="packet packet--gold" data-path="p-back" data-tag="Telegram"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · THE JOURNEY FLOW (slide 4) -->
   <section class="section journey" id="journey" data-chapter="The magic">
-    <header class="shead"><span class="shead__num">03</span><p class="eyebrow">How the magic happens</p></header>
+    <header class="shead"><span class="shead__num">04</span><p class="eyebrow">How the magic happens</p></header>
     <h2 class="big">The <em>Journey Flow</em></h2>
     <div class="flow">
       <svg class="flow__line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="M20 20 H980"/></svg>
@@ -184,9 +241,9 @@
     </div>
   </section>
 
-  <!-- 04 · BRAINS AND TOOLS (slide 6) -->
+  <!-- 05 · BRAINS AND TOOLS (slide 6) -->
   <section class="section brains" id="brains" data-chapter="Brains & tools">
-    <header class="shead"><span class="shead__num">04</span><p class="eyebrow">Brains and tools</p></header>
+    <header class="shead"><span class="shead__num">05</span><p class="eyebrow">Brains and tools</p></header>
     <h2 class="big">The right model and tool <em>for each job</em></h2>
     <div class="brains__grid">
       <div>
@@ -197,57 +254,6 @@
       <div>
         <p class="eyebrow eyebrow--dim">Tools <span class="hint">hover a row to see the paid option</span></p>
         <ul class="tools"></ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05 · HOW THEY WORK TOGETHER (slide 7) · four layers, one per caption:
-       you (or a schedule) → the soul → skills → scripts, with an optional tools
-       layer across the top. Skill nodes and tool chips come from js/render.js;
-       stage units are 1200 × 700. -->
-  <section class="orch" id="orchestra" data-chapter="How they work">
-    <div class="orch__pin">
-      <header class="shead shead--row">
-        <div><span class="shead__num">05</span><p class="eyebrow">How they work together</p></div>
-        <h2 class="big">An orchestrator, <em>musicians</em> and stagehands</h2>
-      </header>
-      <div class="orch__body">
-        <div class="orch__side">
-          <ol class="orch__captions">
-            <li class="is-on"><b>You</b> make a request, a goal in natural language.</li>
-            <li><b>Soul</b>, the core engine (LLM), interprets context and plans.</li>
-            <li><b>Skills</b> are special-purpose agent capabilities.</li>
-            <li><b>Scripts</b> handle non-AI automated tasks and schedules.</li>
-          </ol>
-          <button class="orch__toggle" type="button" aria-pressed="true"><i aria-hidden="true"></i>Tools layer</button>
-        </div>
-        <div class="stage" data-tools="on">
-          <svg class="stage__svg" viewBox="0 0 1200 700" aria-hidden="true">
-            <path class="tlink" d="M400 86 V266 M730 86 V114 M1060 86 V298"/>
-            <circle class="skills-ring" cx="730" cy="340" r="215"/>
-            <path id="p-you" class="wire" d="M172 340 H326"/>
-            <path id="p-soul" class="wire" d="M474 340 H690"/>
-            <path id="p-skill" class="wire" d="M770 340 H1020"/>
-            <path id="p-back" class="wire wire--gold" d="M1090 370 C 1150 450 1130 612 930 612 H 200 C 60 612 20 540 20 440 C 20 380 36 342 64 340"/>
-          </svg>
-          <div class="toolsbar"><span class="toolsbar__label">Tools</span></div>
-          <div class="node node--you" style="--x:120;--y:340">
-            <span class="youdial">
-              <svg class="youdial__ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg>
-              <i class="youdial__hand"></i>
-              <svg class="ic"><use href="#i-phone"/></svg>
-            </span>
-            <span class="node__label">You<small>or a schedule</small></span>
-          </div>
-          <div class="node node--soul" style="--x:400;--y:340"><img src="img/agent-apex.webp" alt=""><span class="node__label">Soul<small>APEX · the LLM</small></span></div>
-          <span class="ringlabel">Skills</span>
-          <div class="stage__musicians"></div>
-          <div class="node node--colony" style="--x:1060;--y:340"><img src="img/agent-colony.webp" alt=""><span class="node__label">Scripts<small>COLONY</small></span></div>
-          <i class="packet" data-path="p-you"></i>
-          <i class="packet" data-path="p-soul"></i>
-          <i class="packet" data-path="p-skill"></i>
-          <i class="packet packet--gold" data-path="p-back"></i>
-        </div>
       </div>
     </div>
   </section>

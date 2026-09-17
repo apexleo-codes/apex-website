@@ -191,15 +191,16 @@ window.APEX = {
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)
+  // `skill` is the skill each specialist runs, as named in SOUL.md and the Skills tab
   team: [
     { key: "apex", name: "APEX", color: "#e8a84a" },
-    { key: "tusk", name: "TUSK", color: "#35b3a1" },
-    { key: "bolt", name: "BOLT", color: "#e25c50" },
-    { key: "bullseye", name: "BULLSEYE", color: "#4fae68" },
-    { key: "miso", name: "MISO", color: "#f08a3c" },
-    { key: "nyx", name: "NYX", color: "#7d6ef0" },
-    { key: "kitsune", name: "KITSUNE", color: "#4583ea" },
-    { key: "forge", name: "FORGE", color: "#8c9db2" },
+    { key: "tusk", name: "TUSK", color: "#35b3a1", skill: "vaccine-tracker" },
+    { key: "bolt", name: "BOLT", color: "#e25c50", skill: "emergency-care" },
+    { key: "bullseye", name: "BULLSEYE", color: "#4fae68", skill: "market-brief" },
+    { key: "miso", name: "MISO", color: "#f08a3c", skill: "gut-health-chef" },
+    { key: "nyx", name: "NYX", color: "#7d6ef0", skill: "idea-incubator" },
+    { key: "kitsune", name: "KITSUNE", color: "#4583ea", skill: "trend-scout" },
+    { key: "forge", name: "FORGE", color: "#8c9db2", skill: "project-steward" },
     { key: "colony", name: "COLONY", color: "#d6b33c" }
   ],
 
@@ -232,12 +233,14 @@ window.APEX = {
   // slide 7 · how they work together: the chips on the tools layer. A sample of
   // the tools above, by what they do - the layer shows that tools exist and who
   // reaches for them, and "brains and tools" already names every service.
+  // `flow` marks the one the walk-through uses, and it goes LAST: the script's
+  // wire rises to the band's right end, where that chip sits.
   layerTools: [
     { name: "Web search", icon: "search" },
-    { name: "Browser", icon: "cart" },
     { name: "Maps", icon: "pin" },
     { name: "Market data", icon: "chart" },
-    { name: "Voice", icon: "mic" }
+    { name: "Voice", icon: "mic" },
+    { name: "Browser", icon: "cart", flow: "Zepto" }
   ],
 
   // slide 8 · MISO recipe → cart

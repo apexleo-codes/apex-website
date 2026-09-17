@@ -1,6 +1,6 @@
 /* APEX site · brains & tools, how they work together, recipe → cart, daily rhythm, build loop, thank you */
 
-/* 04 · brains & tools */
+/* 05 · brains & tools */
 .brains__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(34px, 5vw, 92px); margin-top: 20px; }
 .models, .tools { list-style: none; padding: 0; margin: 18px 0 0; }
 .model { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) auto; align-items: center; gap: 16px; padding: 18px 4px; border-bottom: 1px solid var(--line); transition: padding .5s var(--ease), background .4s; }
@@ -29,10 +29,13 @@
   .tool__alt { grid-row: 2; transform: none; opacity: 1; font-size: .8rem; }
 }
 
-/* 05 · how they work together — four layers in the caption order: you (or a
-   schedule) → the soul → skills → scripts, and back round to you. The tools
-   layer runs across the top over the three that use it, and can be switched off
-   when the stage feels busy. */
+/* 03 · how they work together — four layers in the caption order: you (or a
+   schedule) → the soul → skills → scripts, and back round to you. It walks one
+   real job, MISO's Sunday recipe: the soul picks her off the skills arc, she
+   hands a JSON shopping list to a script, the script fills the Zepto cart through
+   the browser tool and gets the cart back, and the result goes to Telegram.
+   The tools layer runs across the top and can be switched off when the stage
+   feels busy; the one tool the walk-through uses stays. */
 .orch__pin { min-height: 100vh; display: flex; flex-direction: column; padding: 118px var(--pad) 44px; }
 .orch__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(240px, 300px) 1fr; gap: clamp(26px, 4vw, 64px); align-items: center; margin-top: 24px; }
 .orch__captions { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
@@ -58,7 +61,7 @@
 .stage__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wire { fill: none; stroke: var(--mint); stroke-width: 2; stroke-linecap: round; }
 .wire--gold { stroke: var(--gold); }
-.skills-ring { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 2 7; transition: stroke .5s; }
+.skills-arc { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 2 7; transition: stroke .5s; }
 .tlink { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 3 6; transition: opacity .45s, stroke .5s; }
 
 /* A node's box is its art alone, centred on (x, y); the label hangs below it.
@@ -75,8 +78,6 @@
   padding: 0 4px; background: var(--ink); /* where the return wire passes a label on narrow stages, it goes behind */
 }
 .node small { display: block; font-size: .54rem; color: var(--dim); letter-spacing: .1em; }
-/* FORGE and BOLT sit either side of the wire line, so their names go on top */
-.node[data-label="above"] .node__label { top: auto; bottom: calc(100% + 6px); }
 .node--soul img { width: clamp(40px, 11.5cqw, 112px); }
 .node--colony img { width: clamp(28px, 7cqw, 68px); }
 
@@ -90,23 +91,41 @@
 .youdial__hand { position: absolute; inset: 7%; border-radius: 50%; }
 .youdial__hand::before { content: ""; position: absolute; left: 50%; top: 0; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity .4s; box-shadow: 0 0 10px var(--gold); }
 
-/* the skills layer's name sits on its ring, where the tools link meets it */
+/* the skills: small avatars close together on an arc. Names and skills stay
+   hidden until hovered, and the one the soul picks steps forward (left moves it
+   110 units off the arc onto the wire line), grows, and keeps its label on. */
+.node--m { transition: left .7s var(--ease), transform .5s var(--ease), opacity .5s; }
+.node--m img { width: clamp(14px, 3.4cqw, 34px); transition: width .6s var(--ease), box-shadow .5s; }
+.node--m .node__label { opacity: 0; transition: opacity .35s, color .5s; }
+.node--m:hover { z-index: 3; }
+.node--m:hover .node__label { opacity: 1; }
+.stage[data-pick="miso"] [data-key="miso"] { left: calc(770 / 1200 * 100%); z-index: 2; }
+.stage[data-pick="miso"] [data-key="miso"] img { width: clamp(28px, 6.6cqw, 66px); }
+.stage[data-pick="miso"] [data-key="miso"] .node__label { opacity: 1; color: var(--cream); }
+.stage[data-pick="miso"] [data-key="miso"] small { color: var(--gold); }
+
+/* the skills layer's name sits above the arc, where the tools link meets it */
 .ringlabel {
-  position: absolute; left: calc(730 / 1200 * 100%); top: calc(125 / 700 * 100%); transform: translate(-50%, -50%);
+  position: absolute; left: calc(600 / 1200 * 100%); top: calc(150 / 700 * 100%); transform: translate(-50%, -50%);
   padding: 3px 10px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--ink);
   font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-2); transition: color .5s, border-color .5s;
 }
 
-/* the tools layer: a dashed band over the soul, skills and scripts (x 300–1160) */
+/* the tools layer: a dashed band over the soul, skills and scripts (x 300–1160).
+   The walk-through's tool (browser → Zepto) is the last chip, above the script. */
 .toolsbar {
   position: absolute; left: calc(300 / 1200 * 100%); width: calc(860 / 1200 * 100%); top: calc(22 / 700 * 100%); height: calc(64 / 700 * 100%);
-  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 clamp(10px, 1.4vw, 20px);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 clamp(8px, 1vw, 14px) 0 clamp(10px, 1.4vw, 20px);
   border: 1px dashed var(--line-2); border-radius: 14px; background: rgba(16, 27, 25, .85);
-  transition: opacity .45s, visibility .45s;
+  transition: border-color .45s, background .45s;
 }
+.toolsbar > * { transition: opacity .45s, visibility .45s; }
 .toolsbar__label { font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
 .toolsbar__chip { display: inline-flex; align-items: center; gap: 7px; font-size: clamp(.66rem, .8vw, .8rem); color: var(--cream-2); white-space: nowrap; }
 .toolsbar__chip .ic { width: 15px; height: 15px; color: var(--mint); }
+.toolsbar__chip--flow { padding: 4px 10px; border: 1px solid transparent; border-radius: 999px; transition: color .4s, border-color .4s, background .4s, box-shadow .4s; }
+.stage[data-tool="on"] .toolsbar__chip--flow { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 24px rgba(233, 173, 79, .3); }
+.stage[data-tool="on"] .toolsbar__chip--flow .ic { color: var(--gold); }
 /* narrower stages keep the names and drop the icons; the narrowest keep icons only */
 @container orch (max-width: 760px) { .toolsbar__chip .ic { display: none; } }
 @container orch (max-width: 520px) {
@@ -115,23 +134,25 @@
   .toolsbar { border-radius: 8px; }
   .toolsbar__label { font-size: .44rem; }
 }
-.stage[data-tools="off"] .toolsbar { opacity: 0; visibility: hidden; }
-.stage[data-tools="off"] .tlink { opacity: 0; }
+/* switched off, the band and its sample go, but the tool the walk-through uses
+   stays as a pill of its own - the script still has somewhere to send the list */
+.stage[data-tools="off"] .toolsbar { border-color: transparent; background: none; }
+.stage[data-tools="off"] .toolsbar > :not(.toolsbar__chip--flow), .stage[data-tools="off"] .tlink { opacity: 0; visibility: hidden; }
+.stage[data-tools="off"] .toolsbar__chip--flow { border-color: var(--line-2); background: var(--ink-2); }
 
-/* who's on at each step. Skills sit at half strength until it's their turn;
-   MISO carries the walk-through, so she lights as the soul hands over to her */
-.stage:not([data-step="all"]) .node--m { opacity: .5; }
-.stage[data-step="0"] .node--you, .stage[data-step="1"] .node--soul, .stage[data-step="1"] [data-key="miso"],
-.stage[data-step="2"] [data-key="miso"], .stage[data-step="3"] .node--colony, .stage[data-step="3"] .node--you {
-  transform: translate(-50%, -50%) scale(1.12); opacity: 1;
+/* who's on at each step */
+.stage:not([data-step="all"]) .node--m { opacity: .65; }
+.stage[data-pick="miso"] .node--m:not([data-key="miso"]) { opacity: .3; }
+.stage[data-step="0"] .node--you, .stage[data-step="1"] .node--soul, .stage[data-step="3"] .node--colony, .stage[data-step="3"] .node--you {
+  transform: translate(-50%, -50%) scale(1.12);
 }
-.stage[data-step="2"] .node--m { opacity: 1; }
-.stage[data-step="1"] .node--soul img, .stage[data-step="1"] [data-key="miso"] img, .stage[data-step="2"] [data-key="miso"] img,
+.stage[data-pick="miso"] [data-key="miso"] { opacity: 1; }
+.stage[data-step="1"] .node--soul img, .stage[data-step="2"] [data-key="miso"] img,
 .stage[data-step="3"] .node--colony img { box-shadow: 0 0 0 3px var(--gold), 0 0 44px rgba(233, 173, 79, .5); }
 .stage[data-step="0"] .node--you .node__label, .stage[data-step="1"] .node--soul .node__label, .stage[data-step="3"] .node--colony .node__label { color: var(--gold); }
 .stage[data-step="0"] .youdial { color: var(--gold); border-color: var(--gold); }
-.stage[data-step="2"] .skills-ring { stroke: var(--gold); }
-.stage[data-step="2"] .ringlabel { color: var(--gold); border-color: var(--gold); }
+.stage[data-step="1"] .skills-arc { stroke: var(--gold); }
+.stage[data-step="1"] .ringlabel { color: var(--gold); border-color: var(--gold); }
 .stage[data-step="3"] .youdial__ring circle { stroke: var(--gold); }
 .stage[data-step="3"] .youdial__hand::before { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
@@ -140,6 +161,14 @@
 @keyframes youdial-tick { to { transform: rotate(360deg); } }
 .packet { position: absolute; left: 0; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--mint); opacity: 0; box-shadow: 0 0 0 6px rgba(114, 209, 174, .2), 0 0 26px var(--mint); }
 .packet--gold { background: var(--gold); box-shadow: 0 0 0 6px rgba(233, 173, 79, .2), 0 0 26px var(--gold); }
+/* what a packet carries rides with it: above on the flat wires, beside on the climb to the tool */
+.packet[data-tag]::after {
+  content: attr(data-tag); position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%);
+  padding: 3px 8px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--ink-2);
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .03em; color: var(--cream); white-space: nowrap;
+}
+.packet[data-side="left"]::after { left: auto; right: calc(100% + 14px); bottom: 50%; transform: translateY(50%); }
+.packet--gold[data-tag]::after { color: var(--gold); }
 
 /* 06 · recipe → cart (left column stays put while the steps scroll) */
 .task__grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(34px, 6vw, 110px); align-items: start; }
@@ -267,7 +296,7 @@
   .cycle__center { position: static; order: -1; }
 }
 @media (max-width: 700px) { /* the stage gets tight: drop the skill names rather than overlap them */
-  .node--m .node__label { display: none; }
+  .node--m:not([data-key="miso"]) .node__label { display: none; }
   .node__label { font-size: .44rem; letter-spacing: .06em; top: calc(100% + 3px); }
   .node small { font-size: .4rem; letter-spacing: .04em; }
   .ringlabel { font-size: .44rem; padding: 1px 6px; }
