@@ -107,18 +107,36 @@
         </video>
       </div>
     </div>
-    <a class="hero__scroll" href="#idea" data-goto="#idea"><span>Scroll</span><i></i></a>
+    <a class="hero__scroll" href="#frontend" data-goto="#frontend"><span>Scroll</span><i></i></a>
   </section>
 
   <div class="marquee" aria-hidden="true"><div class="marquee__track"></div></div>
 
-  <!-- 01 · THE IDEA (slide 2) -->
-  <section class="section idea" id="idea" data-chapter="The idea">
-    <header class="shead"><span class="shead__num">01</span><p class="eyebrow">The idea</p></header>
-    <h2 class="big">Switch off alert mode. <em>APEX is here!</em></h2>
-    <p class="words">A baby turning 2, markets to watch, ideas to grow. Each job gets its own specialist agent.</p>
-    <ul class="jobs"></ul>
-    <img class="jobs__float" src="img/agent-tusk.webp" alt="" aria-hidden="true">
+  <!-- 01 · THE FRONTEND (Telegram) -->
+  <section class="section front" id="frontend" data-chapter="The frontend">
+    <header class="shead"><span class="shead__num">01</span><p class="eyebrow">The frontend · Telegram</p></header>
+    <h2 class="big">Six jobs, <em>one chat.</em></h2>
+    <div class="front__grid">
+
+      <div class="front__stage">
+        <div class="phone phone--tg">
+          <div class="phone__notch"></div>
+          <div class="phone__screen">
+            <div class="tgbar">
+              <svg class="tgbar__back" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+              <img class="tgbar__av" src="img/agent-apex.webp" alt="">
+              <span class="tgbar__id"><b>Apex</b><em class="tgbar__status">bot</em></span>
+              <svg class="tgbar__tg" viewBox="0 0 24 24" role="img" aria-label="Telegram"><circle cx="12" cy="12" r="12" fill="#2aabee"/><g transform="translate(12 12) scale(.74) translate(-12 -12)"><path fill="#fff" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></g></svg>
+            </div>
+            <div class="tgview"><div class="tgthread"></div></div>
+            <div class="tgcompose"><span>Message</span><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></div>
+          </div>
+        </div>
+        <p class="front__hint">Hover a job — the chat jumps to it. Otherwise it plays the day through.</p>
+      </div>
+
+      <ol class="cases"></ol>
+    </div>
   </section>
 
   <!-- 02 · WHERE EVERYTHING LIVES (slide 3) -->

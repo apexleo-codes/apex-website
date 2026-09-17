@@ -9,7 +9,7 @@
   const color = Object.fromEntries(D.team.map((t) => [t.key, t.color]));
 
   // menu: one entry per chapter
-  const chapterAgent = { "Intro": "apex", "The idea": "tusk", "Under the hood": "forge", "The magic": "nyx",
+  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Under the hood": "forge", "The magic": "nyx",
     "Brains & tools": "bullseye", "How they work": "colony", "Recipe → cart": "miso", "Daily rhythm": "kitsune", "Build loop": "forge", "Thank you": "apex" };
   $(".menu__list").innerHTML = $$("[data-chapter]").map((sec, i) =>
     `<a href="#${sec.id}" data-goto="#${sec.id}" data-img="${chapterAgent[sec.dataset.chapter] || "apex"}"><span>${pad(i)}</span>${sec.dataset.chapter}</a>`).join("");
@@ -24,13 +24,37 @@
   // "8 AI agents" a few lines away, and the team gets proper room further down
   // the page - the hero is stronger with just APEX and his message.
 
-  // 01 · the idea: hover-reveal list
-  $(".jobs").innerHTML = D.jobs.map((j, i) => `
-    <li class="job" data-img="${j.key}" data-cursor="${j.name.toLowerCase()}" style="--c:${color[j.key]}">
-      <span class="job__num">${pad(i + 1)}</span>
-      <span class="job__title">${j.title}</span>
-      <span class="job__meta">${av(j.key, "job__av")}<b>${j.name}</b><em>${j.sub}</em></span>
-      ${icon("arrow")}
+  // 01 · the frontend: the Telegram thread, and the six jobs beside it.
+  // Messages are markup, not screenshots - see the note in content.js.
+  const name = Object.fromEntries(D.team.map((t) => [t.key, t.name]));
+  const body = (m) => {
+    if (m.kind === "voice") return `<span class="tgvoice">${icon("mic")}<i class="tgwave" aria-hidden="true"></i><span>${m.html}</span></span>`;
+    if (m.kind === "button") return `<span class="tgbtn">${m.html}</span>`;
+    if (m.kind === "photo") return `<img class="tgphoto" src="img/${m.img}.webp" alt="" loading="lazy"><span class="tgtext">${m.html}</span>`;
+    return `<span class="tgtext">${m.html}</span>`;
+  };
+  const bubble = (m, i) => {
+    const mine = m.by === "me";
+    return `<div class="tgmsg${mine ? " tgmsg--me" : ""}" style="--i:${i}">
+      ${mine ? "" : `<span class="tgwho" style="--c:${color[m.by]}">${av(m.by, "tgav")}<b>${name[m.by]}</b></span>`}
+      ${body(m)}
+      <span class="tgtime">${m.t}</span>
+    </div>`;
+  };
+  $(".tgthread").innerHTML = D.frontend.map((c, i) => `
+    <div class="tgchapter" data-i="${i}" data-state="idle">
+      <span class="tgday">${c.when}</span>
+      ${c.msgs.map(bubble).join("")}
+    </div>`).join("");
+
+  $(".cases").innerHTML = D.frontend.map((c, i) => `
+    <li class="case" data-i="${i}" tabindex="0" style="--c:${color[c.key]}">
+      <span class="case__num">${pad(i + 1)}</span>
+      <span class="case__title">${c.title}</span>
+      <span class="case__sub">${c.sub}</span>
+      <span class="case__agents">${c.agents.map((k) => `<i style="--c:${color[k]}">${av(k, "case__av")}<b>${name[k]}</b></i>`).join("")}</span>
+      <span class="case__when">${c.when}</span>
+      <span class="case__bar" aria-hidden="true"><i></i></span>
     </li>`).join("");
 
   // 02 · where everything lives
@@ -61,7 +85,8 @@
 
   // 07 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
-  $(".phone__screen").innerHTML = D.task.map((s, i) => `<div class="screen${i ? "" : " is-on"}" data-i="${i}">${screen(s.visual)}</div>`).join("");
+  // scoped to .task: the frontend section has a phone too, and it comes first in the DOM
+  $(".task .phone__screen").innerHTML = D.task.map((s, i) => `<div class="screen${i ? "" : " is-on"}" data-i="${i}">${screen(s.visual)}</div>`).join("");
   $(".task__steps").innerHTML = D.task.map((s, i) => `
     <li class="tstep${i ? "" : " is-on"}" data-i="${i}">
       <span class="tstep__n">${pad(i + 1)}</span>

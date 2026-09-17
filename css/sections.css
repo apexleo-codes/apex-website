@@ -3,32 +3,90 @@
 .shead .eyebrow { display: flex; align-items: center; gap: 9px; }
 .eyebrow__av { width: 24px; height: 24px; border-radius: 50%; }
 
-/* 01 · the idea */
-.words { font-size: clamp(1.15rem, 1.9vw, 1.75rem); line-height: 1.45; letter-spacing: -.015em; font-weight: 500; color: var(--cream-2); max-width: 40ch; margin: 0 0 clamp(56px, 9vh, 110px); text-wrap: pretty; }
-.jobs { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
-.job {
-  position: relative; display: grid; grid-template-columns: 58px minmax(0, 1.25fr) minmax(0, 1fr) 32px; align-items: center; gap: 22px;
-  padding: 26px 0; border-bottom: 1px solid var(--line); isolation: isolate; transition: padding .6s var(--ease);
+/* 01 · the frontend (Telegram) */
+/* The phone is a real DOM chat, not a recording. It has to jump to whichever job
+   is under the pointer - a clip has no seek - and it has to stay crisp, weigh
+   nothing, and carry none of the personal detail the real crops do (this repo is
+   public). Words and sources: js/content.js. */
+.front__grid { display: grid; grid-template-columns: minmax(270px, .82fr) minmax(0, 1.18fr); gap: clamp(30px, 5vw, 88px); align-items: center; }
+.front__stage { display: grid; justify-items: center; gap: 16px; }
+.front .phone { height: min(76vh, 700px); }
+.front__hint { font-family: var(--mono); font-size: .6rem; line-height: 1.7; color: var(--dim); text-align: center; max-width: 32ch; margin: 0; }
+
+/* the Telegram chrome */
+.phone--tg .phone__screen { background: #0e1621; }
+.tgbar { position: absolute; inset: 0 0 auto; z-index: 3; height: 56px; display: flex; align-items: center; gap: 8px; padding: 16px 12px 0; background: #17212b; }
+.tgbar__back { width: 15px; height: 15px; flex: none; fill: none; stroke: #6ab3f3; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tgbar__av { width: 26px; height: 26px; border-radius: 50%; flex: none; }
+.tgbar__id { display: grid; line-height: 1.25; margin-right: auto; }
+.tgbar__id b { font-size: .7rem; color: #fff; }
+.tgbar__status { font-family: var(--display); font-style: normal; font-size: .55rem; color: #7d8b99; transition: color .3s; }
+.tgbar__status.is-typing { color: #6ab3f3; }
+.tgbar__tg { width: 15px; height: 15px; flex: none; }
+.tgview { position: absolute; inset: 56px 0 46px; overflow: hidden; }
+.tgthread { position: relative; padding: 10px 9px 0; will-change: transform; }
+.tgcompose { position: absolute; inset: auto 0 0; z-index: 3; height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 14px 10px; background: #17212b; }
+.tgcompose span { flex: 1; font-size: .62rem; color: #6d7a87; }
+.tgcompose .ic { width: 16px; height: 16px; color: #6ab3f3; }
+
+/* one chapter per job; the active one is lit, the ones already played stay dim */
+.tgchapter { padding-bottom: 14px; }
+/* the pill fades with its chapter: left always-on it hangs over an empty screen
+   with no messages under it, because the bubbles below are still idle */
+.tgday { display: block; width: fit-content; margin: 0 auto 10px; padding: 2px 9px; border-radius: 999px; background: rgba(0, 0, 0, .3); font-family: var(--mono); font-size: .46rem; letter-spacing: .1em; text-transform: uppercase; color: #a8b6c3; opacity: 0; transition: opacity .55s var(--ease); }
+.tgchapter[data-state="on"] .tgday { opacity: 1; transition-delay: .12s; }
+.tgchapter[data-state="past"] .tgday { opacity: .26; }
+.tgmsg {
+  max-width: 88%; width: fit-content; margin-bottom: 6px; padding: 6px 9px 4px;
+  border-radius: 12px 12px 12px 4px; background: #1e2c3a; font-size: .66rem; line-height: 1.45; color: #e9eef3;
+  opacity: 0; transform: translateY(9px); transition: opacity .55s var(--ease), transform .55s var(--ease);
 }
-.job::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; background: color-mix(in oklab, var(--c) 16%, transparent);
-  transform: scaleY(0); transform-origin: bottom; transition: transform .6s var(--ease);
+.tgmsg--me { margin-left: auto; border-radius: 12px 12px 4px 12px; background: #2b5278; }
+.tgchapter[data-state="on"] .tgmsg { opacity: 1; transform: none; transition-delay: calc(var(--i) * .14s + .12s); }
+.tgchapter[data-state="past"] .tgmsg { opacity: .26; transform: none; transition-delay: 0s; }
+.tgtext { display: block; white-space: pre-wrap; }
+.tgtext b { color: #fff; font-weight: 600; }
+.tgtext i { color: #a8b6c3; }
+.tgwho { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+.tgav { width: 14px; height: 14px; border-radius: 50%; }
+.tgwho b { font-family: var(--mono); font-size: .48rem; letter-spacing: .1em; color: var(--c); }
+.tgtime { display: block; text-align: right; font-family: var(--mono); font-size: .44rem; color: rgba(233, 238, 243, .45); margin-top: 2px; }
+.tgvoice { display: flex; align-items: center; gap: 7px; }
+.tgvoice .ic { width: 14px; height: 14px; color: #6ab3f3; flex: none; }
+.tgwave {
+  flex: none; width: 52px; height: 13px; color: #6ab3f3; opacity: .6;
+  background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px);
+  -webkit-mask-image: radial-gradient(ellipse 52% 100% at 50% 50%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 52% 100% at 50% 50%, #000 45%, transparent 100%);
 }
-.job:hover { padding-inline: 20px; }
-.job:hover::before { transform: scaleY(1); transform-origin: top; }
-.job__num { font-family: var(--mono); font-size: .72rem; color: var(--dim); }
-.job__title { font-size: clamp(1.35rem, 2.6vw, 2.4rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.05; }
-.job__meta { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; }
-.job__meta b { font-family: var(--mono); font-size: .68rem; letter-spacing: .16em; color: var(--c); }
-.job__meta em { grid-column: 1 / -1; font-family: var(--display); font-style: normal; font-size: .92rem; color: var(--cream-2); }
-.job__av { width: 36px; height: 36px; border-radius: 50%; grid-row: 1; }
-.job > .ic { width: 24px; height: 24px; transform: rotate(-45deg); transition: transform .5s var(--ease), color .4s; }
-.job:hover > .ic { transform: none; color: var(--c); }
-@media (pointer: fine) { .job__av { display: none; } }
-.jobs__float {
-  position: fixed; left: 0; top: 0; z-index: 60; width: 180px; height: 180px; margin: -90px 0 0 -90px; border-radius: 50%;
-  pointer-events: none; opacity: 0; visibility: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+.tgbtn { display: block; text-align: center; padding: 6px 10px; border-radius: 9px; background: rgba(106, 179, 243, .16); border: 1px solid rgba(106, 179, 243, .4); color: #6ab3f3; font-size: .64rem; }
+/* the ratio is declared so the chapter heights don't shift when the shot loads */
+.tgphoto { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; margin-bottom: 5px; }
+
+/* the six jobs */
+.cases { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.case {
+  position: relative; display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 3px 16px;
+  padding: 16px 0; border-bottom: 1px solid var(--line); isolation: isolate; cursor: pointer; transition: padding .55s var(--ease);
 }
+.case::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: color-mix(in oklab, var(--c) 15%, transparent);
+  transform: scaleY(0); transform-origin: bottom; transition: transform .55s var(--ease);
+}
+.case.is-on { padding-inline: 18px; }
+.case.is-on::before { transform: scaleY(1); transform-origin: top; }
+.case:focus-visible { outline: 1px solid var(--c); outline-offset: 3px; }
+.case__num { grid-row: 1 / 3; font-family: var(--mono); font-size: .72rem; color: var(--dim); padding-top: .3em; transition: color .4s; }
+.case.is-on .case__num { color: var(--c); }
+.case__title { font-size: clamp(1.05rem, 1.85vw, 1.6rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+.case__sub { grid-column: 2; font-family: var(--display); font-size: .88rem; color: var(--cream-2); }
+.case__when { grid-column: 3; grid-row: 1; font-family: var(--mono); font-size: .58rem; color: var(--dim); white-space: nowrap; padding-top: .45em; }
+.case__agents { grid-column: 3; grid-row: 2; display: flex; gap: 12px; justify-content: flex-end; align-items: center; }
+.case__agents i { display: inline-flex; align-items: center; gap: 5px; font-style: normal; }
+.case__av { width: 20px; height: 20px; border-radius: 50%; }
+.case__agents b { font-family: var(--mono); font-size: .53rem; letter-spacing: .1em; color: var(--c); }
+.case__bar { position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; overflow: hidden; }
+.case__bar i { display: block; height: 100%; background: var(--c); transform: scaleX(0); transform-origin: left; }
 
 /* 02 · where everything lives */
 .dash__grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(34px, 5vw, 86px); align-items: center; }
@@ -74,11 +132,35 @@
 .selfimprove p { margin: 0; color: var(--cream-2); font-size: .95rem; }
 
 @media (max-width: 900px) {
-  .job { grid-template-columns: 34px 1fr; gap: 10px 14px; }
-  .job__meta { grid-column: 2; }
-  .job > .ic { display: none; }
+  /* The phone stays put while the six jobs scroll past it. Sticky means the rest
+     of the grid slides up behind it, so the stage needs its own opaque band -
+     full-bleed past the section padding - or the job rows read straight through
+     the gaps around the phone. The top padding is the fixed nav's clearance. */
+  .front__grid { grid-template-columns: 1fr; gap: 26px; align-items: start; }
+  .front__stage {
+    position: sticky; top: 0; z-index: 2; background: var(--ink);
+    margin-inline: calc(var(--pad) * -1); padding: 58px var(--pad) 16px;
+    box-shadow: 0 16px 26px -10px var(--ink);
+  }
+  .front .phone { height: min(44vh, 360px); }
+  .front__hint { display: none; }
+  .case { grid-template-columns: 34px 1fr; gap: 4px 14px; padding: 20px 0; }
+  .case__when { grid-column: 2; grid-row: 3; padding-top: 7px; }
+  .case__agents { grid-column: 2; grid-row: 4; justify-content: flex-start; padding-top: 8px; }
   .dash__grid, .skillx { grid-template-columns: 1fr; }
   .flow__line { display: none; }
   .flow__nodes { grid-template-columns: 1fr 1fr; row-gap: 40px; }
 }
 @media (max-width: 560px) { .flow__nodes { grid-template-columns: 1fr; } }
+
+/* No transform-driven thread here: the chat scrolls like a chat, all of it visible.
+   Both !importants are load-bearing. A media query carries no specificity of its
+   own, so a plain `.tgchapter .tgmsg` loses to the `[data-state="past"]` rule above
+   and the messages stay dimmed to .26; and the transform is written inline by
+   GSAP, which no selector can outrank. */
+@media (prefers-reduced-motion: reduce) {
+  .tgview { overflow-y: auto; }
+  .tgthread { transform: none !important; }
+  .tgchapter[data-state] .tgmsg { opacity: 1 !important; transform: none !important; }
+  .tgchapter[data-state] .tgday { opacity: 1 !important; }
+}

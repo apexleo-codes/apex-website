@@ -91,11 +91,54 @@
   }));
 
   // ---------- content switches (kept even with reduced motion) ----------
-  const screens = $$(".phone__screen .screen"), tsteps = $$(".tstep");
+  const screens = $$(".task .screen"), tsteps = $$(".tstep");
   tsteps.forEach((st, i) => ScrollTrigger.create({
     trigger: st, start: "top 62%", end: "bottom 62%",
     onToggle: (s) => { if (!s.isActive) return; tsteps.forEach((x, k) => x.classList.toggle("is-on", k === i)); screens.forEach((x, k) => x.classList.toggle("is-on", k === i)); }
   }));
+  // 01 · the frontend: one day in the chat, six jobs. It plays the day through on
+  // its own, and hovering a job jumps the thread straight to it. That jump is the
+  // whole reason the thread is markup: a recorded clip has no seek, so it could
+  // never answer the pointer. GSAP owns only the thread's transform; CSS owns
+  // every fade (the bubbles' staggered reveal) - one owner per property.
+  const thread = $(".tgthread"), tgview = $(".tgview"), tgStatus = $(".tgbar__status");
+  const chapters = $$(".tgchapter"), cases = $$(".case"), bars = $$(".case__bar i");
+  let curCase = -1, autoT = 0, typeT = 0;
+  const setCase = (i, instant) => {
+    const ch = chapters[i];
+    // a chapter taller than the screen drifts slowly through the rest of its dwell
+    const over = Math.max(0, ch.offsetHeight - tgview.clientHeight + 14);
+    const dwell = 4200 + Math.min(over, 420) * 7;
+    if (i === curCase) return dwell;
+    curCase = i;
+    cases.forEach((c, k) => c.classList.toggle("is-on", k === i));
+    chapters.forEach((c, k) => (c.dataset.state = k === i ? "on" : k < i ? "past" : "idle"));
+    gsap.killTweensOf(thread); gsap.killTweensOf(bars); gsap.set(bars, { scaleX: 0 });
+    // Reduced motion: a plain scrollable chat, never transformed. A transform here
+    // fights .tgview's native scrolling - the container's scrollHeight knows
+    // nothing about it, so the early chapters end up above its top edge, out of
+    // reach, with the same distance left as dead space at the bottom.
+    if (reduce) { tgview.scrollTop = Math.max(0, ch.offsetTop - 8); return dwell; }
+    const y = -ch.offsetTop + 8;
+    if (instant) { gsap.set(thread, { y }); return dwell; }
+    gsap.to(thread, { y, duration: 0.8, ease: "expo.out",
+      onComplete: () => { if (over > 4) gsap.to(thread, { y: y - over, duration: (dwell - 1000) / 1000, ease: "none" }); } });
+    gsap.to(bars[i], { scaleX: 1, duration: dwell / 1000, ease: "none" });
+    clearTimeout(typeT);
+    tgStatus.textContent = "typing…"; tgStatus.classList.add("is-typing");
+    typeT = setTimeout(() => { tgStatus.textContent = "bot"; tgStatus.classList.remove("is-typing"); }, 320 + ch.children.length * 140);
+    return dwell;
+  };
+  const advance = () => { autoT = setTimeout(advance, setCase((curCase + 1) % chapters.length)); };
+  const stopAuto = () => clearTimeout(autoT);
+  const resumeAuto = () => { stopAuto(); autoT = setTimeout(advance, 1600); };
+  // offsets are measured from the laid-out thread, so re-place the chapter after a resize
+  const remeasure = () => { const k = Math.max(0, curCase); curCase = -1; setCase(k, true); };
+  cases.forEach((c, i) => ["pointerenter", "focus", "click"].forEach((ev) => c.addEventListener(ev, () => { stopAuto(); setCase(i); })));
+  addEventListener("resize", remeasure);
+  addEventListener("load", remeasure);
+  setCase(0, true);
+
   const shotBox = $(".skillx__shot");
   shotBox.dataset.hl = "1";
   $$(".skillnote").forEach((b) => {
@@ -136,25 +179,10 @@
     const settle = () => { gsap.to(loopTween, { timeScale: 1, duration: 0.8 }); skewTo(0); };
     ScrollTrigger.addEventListener("scrollEnd", settle);
 
-    // the idea: the line lights up as you read
-    const words = $(".words");
-    words.innerHTML = words.textContent.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(" ");
-    gsap.fromTo(".words .w", { opacity: 0.12 }, { opacity: 1, stagger: 0.1, ease: "none", scrollTrigger: { trigger: words, start: "top 85%", end: "bottom 55%", scrub: true } });
-
     // headings and blocks rise in
-    const risers = $$(".section .big, .roles .role, .job, .dash__shot, .dash__parts li, .skillx, .model, .tool, .backups, .task__notes > *");
+    const risers = $$(".section .big, .roles .role, .case, .dash__shot, .dash__parts li, .skillx, .model, .tool, .backups, .task__notes > *");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
-
-    // job list: avatar follows the pointer
-    const float = $(".jobs__float");
-    if (fine) {
-      const fx = gsap.quickTo(float, "x", { duration: 0.6, ease: "power3" }), fy = gsap.quickTo(float, "y", { duration: 0.6, ease: "power3" });
-      const list = $(".jobs");
-      list.addEventListener("pointermove", (e) => { fx(e.clientX); fy(e.clientY); });
-      $$(".job").forEach((j) => j.addEventListener("pointerenter", () => { float.src = `img/agent-${j.dataset.img}.webp`; gsap.to(float, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "power3.out" }); }));
-      list.addEventListener("pointerleave", () => gsap.to(float, { autoAlpha: 0, scale: 0.5, duration: 0.35 }));
-    }
 
     // journey flow: the line draws, nodes arrive in order
     const flowPath = $(".flow__line path");
@@ -209,6 +237,12 @@
       scrollTrigger: { trigger: ".cycle", start: "center center", end: "+=150%", pin: true, scrub: 0.6,
         onUpdate: (s) => cnodes.forEach((n, i) => n.classList.toggle("is-on", s.progress >= i / 5 - 0.001)) }
     }).to(fill, { strokeDashoffset: 0, ease: "none" }, 0).to(".cycle__runner", { rotation: 360, ease: "none" }, 0);
+
+    // the frontend chat plays itself, but only while the section is on screen
+    ScrollTrigger.create({ trigger: ".front", start: "top 75%", end: "bottom 25%",
+      onToggle: (s) => { stopAuto(); if (s.isActive) autoT = setTimeout(advance, 900); } });
+    $(".cases").addEventListener("pointerleave", resumeAuto);
+    return () => { $(".cases").removeEventListener("pointerleave", resumeAuto); stopAuto(); };
   });
 
   // ---------- small screens or reduced motion: same stories, no pinning ----------
@@ -217,6 +251,9 @@
     $$(".orch__captions li").forEach((c) => c.classList.add("is-on"));
     $(".stage").dataset.step = "all";
     rItems.forEach((li, i) => ScrollTrigger.create({ trigger: li, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setStop(i) }));
+    // no autoplay on touch or under reduced motion: each job drives the phone as it scrolls past
+    stopAuto();
+    cases.forEach((c, i) => ScrollTrigger.create({ trigger: c, start: "top 65%", end: "bottom 65%", onToggle: (s) => s.isActive && setCase(i) }));
   });
 
   refreshAll();

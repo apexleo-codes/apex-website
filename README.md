@@ -1,8 +1,8 @@
 # APEX website
 
-A scrolling story of the APEX build. **The sections mirror deck v6 (the final deck), slide for slide** — the only extra is the build loop, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
+A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and the build loop is an extra, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the idea · where everything lives · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the frontend · where everything lives · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -20,13 +20,13 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | Path | What |
 |---|---|
 | `index.html` | Page skeleton: one `<section data-chapter>` per chapter, plus the static copy |
-| `js/content.js` | Repeated content (agents, features, rhythm, models, tools, dashboard steps, next up); edit words here |
+| `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, dashboard steps); edit words here |
 | `js/render.js` | Turns `content.js` into markup |
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
 | `js/motion.js` | Smooth scroll, loader, cursor, menu, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero layout, marquee |
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
-| `css/sections.css` | the idea · where everything lives · the journey flow |
+| `css/sections.css` | the frontend (the Telegram phone) · where everything lives · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
@@ -43,6 +43,20 @@ Gotcha: ScrollTriggers are created in code order, not page order. `refreshAll()`
 Gotcha: never point GSAP `autoAlpha` at an element that also has a CSS `transition: opacity`. The hero bubble has one, and a `from({ autoAlpha: 0 })` on it left it stranded at `opacity: 0; visibility: hidden` — the transform half of the very same tween finished normally, the opacity half never reverted, and nothing threw, so the bubble simply never appeared while every other animation looked fine. (The lion uses `autoAlpha` happily; it carries no opacity transition.) So each property has one owner: CSS fades the bubble — `opacity: 0` until `js/hero.js` adds `is-live`, then `is-out` between messages — and the intro tween animates transform only. `.bubble-wrap` splits the GSAP owners too: `motion.js` parallaxes the wrapper, the intro tween moves the bubble.
 
 Same rule for initial hidden states: keep them in CSS, not JS. The reduced-motion path takes an early return out of `hero.js`, so anything hidden only on the normal path shows up wrongly for reduced-motion visitors. (An earlier SVG lion left his mouth hanging open exactly this way.)
+
+## The frontend (section 01)
+
+The phone is a **real DOM chat, not a recording**. Six chapters, one per job, in the order they happen across one day: it opens with "good morning APEX", plays itself through while the section is on screen, and hovering a job jumps the thread straight to that chapter. A chapter taller than the screen drifts slowly through the rest of its dwell, which is where the "self-scrolling" feel comes from.
+
+Why not the GIF that was first considered:
+
+- **A clip has no seek.** Hovering a job has to land on that job's messages. One clip plays a single fixed timeline, and six separate clips each restart at frame 0 on every swap, which loses the continuous scroll — the exact effect that was wanted.
+- **Weight.** A readable phone-screen GIF (~390×844, ~20s) runs 8–25 MB in 256 colours, with fringing on the text. The whole `media/` folder is under 900 KB.
+- **Privacy.** The real crops in `tutorial/assets/telegram/crops/` carry the child's name and DOB (t03, t05) and a live map pin (t13), and this repo is public. Markup means every word is chosen. The text is still the real message text from the 14–15 Sep runs (sources in `tutorial/assets/`), with "baby" in place of the name.
+
+Gotcha: **there are two phones in the page now** — this one and recipe → cart. `render.js` fills the task one through `$(".task .phone__screen")`, scoped on purpose. Unscoped, `querySelector` takes the *first* `.phone__screen` in the DOM, which is now this section's: the recipe screenshots get injected over the Telegram chrome, `.tgthread` stops existing, and `setCase` throws on an empty chapter list. The symptom is a phone showing the Ragi porridge crop under the "Six jobs, one chat" heading.
+
+Same property-ownership rule as the hero: **GSAP owns only the thread's `translateY`; CSS owns every fade** — the bubbles' staggered reveal and the day pills, both driven by `data-state` ("on" / "past" / "idle") on each chapter. Never animate a bubble with `autoAlpha`. The day pill fades with its chapter too; left always-on it hangs over an empty screen, because the messages beneath it are still idle.
 
 The lion is a muted loop generated with Veo from the APEX avatar, shipped twice: `media/apex-wave.webm` (VP9, real alpha channel) as the first `<source>`, and `media/apex-wave.mp4` (h264, background keyed to the page ink) as the fallback for anything that can't take alpha. Words he says live in `js/content.js` under `hero`.
 
