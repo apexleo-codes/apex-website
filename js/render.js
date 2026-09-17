@@ -9,7 +9,7 @@
   const color = Object.fromEntries(D.team.map((t) => [t.key, t.color]));
 
   // menu: one entry per chapter
-  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Setup": "forge", "Under the hood": "colony", "The magic": "nyx",
+  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Setup": "forge", "The magic": "nyx",
     "Brains & tools": "bullseye", "How they work": "colony", "Recipe → cart": "miso", "Daily rhythm": "kitsune", "Build loop": "forge", "Thank you": "apex" };
   $(".menu__list").innerHTML = $$("[data-chapter]").map((sec, i) =>
     `<a href="#${sec.id}" data-goto="#${sec.id}" data-img="${chapterAgent[sec.dataset.chapter] || "apex"}"><span>${pad(i)}</span>${sec.dataset.chapter}</a>`).join("");
@@ -69,19 +69,35 @@
     </div>`;
   const tgFrame = (f) => `
     <div class="term term--tg">
-      <div class="term__bar"><span class="term__av">BF</span><span class="term__name">${f.chrome}</span></div>
+      <div class="term__bar"><svg class="term__logo" role="img" aria-label="Telegram"><use href="#i-telegram"/></svg><span class="term__name">${f.chrome}</span></div>
       <div class="term__body">${f.lines.map((l) =>
         `<p class="bmsg${l.by === "me" ? " bmsg--me" : ""}">${l.html}</p>`).join("")}</div>
     </div>`;
+  // where it keeps things: brand marks beside the chat, not another frame
+  const storeFrame = (f) => `
+    <div class="store">
+      <p class="store__label">${f.label}</p>
+      ${f.items.map((it) => `<span class="store__item"><svg class="store__logo" aria-hidden="true"><use href="#i-${it.logo}"/></svg><b>${it.name}</b></span>`).join("")}
+    </div>`;
+  // SOUL.md, set as the markdown it is: `##` headings, `-` bullets, numbered rules
+  const soulFrame = (f) => {
+    let rule = 0;
+    const mark = { h: "##", li: "-" };
+    return `
+    <div class="term term--soul">
+      <div class="term__bar"><i></i><i></i><i></i><span class="term__name">${f.chrome}</span></div>
+      <div class="term__body">${f.lines.map((l) =>
+        `<p class="soul__${l.c === "ol" ? "li" : l.c}">${l.c === "lead" ? "" : `<span class="ps">${l.c === "ol" ? `${++rule}.` : mark[l.c]}</span>`}${l.html}</p>`).join("")}</div>
+    </div>`;
+  };
   const shotFrame = (f) => `
     <figure class="shot2">
-      <div class="shot2__box">
-        <img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy">
-        ${f.zones.map((z) => `<span class="hlz" style="--t:${z.t};--l:${z.l};--w:${z.w};--h:${z.h}"><b>${z.n}</b></span>`).join("")}
-      </div>
-      <figcaption>${f.legend.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join("")}</figcaption>
+      <div class="shot2__box">${f.head ? `<p class="shot2__head">${icon("box")}${f.head}</p>` : ""}<img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy"></div>
     </figure>`;
-  const frame = (f) => (f.kind === "tg" ? tgFrame(f) : f.kind === "shot" ? shotFrame(f) : termFrame(f));
+  const frames = { tg: tgFrame, store: storeFrame, soul: soulFrame, shot: shotFrame };
+  const frame = (f) => (frames[f.kind] || termFrame)(f);
+  const framesMod = (s) => (s.frames.some((f) => f.kind === "store") ? " step__frames--store"
+    : s.frames.length > 1 && !s.frames.some((f) => f.kind === "shot") ? " step__frames--two" : "");
 
   $(".steps").innerHTML = `<span class="spine" aria-hidden="true"><i class="spine__fill"></i></span>` +
     D.setup.map((s) => `
@@ -91,27 +107,34 @@
           <p class="step__tag">${s.tag}</p>
           <h3 class="step__title">${s.title}</h3>
           <p class="step__lede">${s.lede}</p>
-          <div class="step__frames${s.frames.length > 1 && !s.frames.some((f) => f.kind === "shot") ? " step__frames--two" : ""}">${s.frames.map(frame).join("")}</div>
+          <div class="step__frames${framesMod(s)}">${s.frames.map(frame).join("")}</div>
         </div>
       </article>`).join("");
 
   // the rig: stacked transparent layers that assemble APEX as the steps go by.
   // onerror removes a layer whose art isn't in img/ yet, so the column degrades
   // to whatever exists instead of showing broken-image icons.
+  // `at` can list several steps ("2 3"): a stage that stays on across them never
+  // cross-fades out and back in. The soul is two extra layers round the stage it
+  // lifts: a blurred gold copy of him behind, and motes rising in front.
   const rig = $(".rig");
   if (rig) {
-    rig.innerHTML = D.setupRig.map((p) =>
-      `<img class="rig__part" data-at="${p.at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`).join("");
+    const motes = [[30, 36, 5.2, 0], [66, 28, 6, 1.4], [46, 60, 4.6, 2.6], [76, 50, 5.6, .7], [22, 58, 6.4, 3.2],
+      [56, 18, 5, 2], [36, 16, 5.8, 4], [70, 68, 4.8, 3.6], [52, 42, 6.2, .3], [28, 76, 5.4, 1.9], [62, 80, 4.4, 4.4], [80, 34, 6.6, 2.2]]
+      .map(([x, y, d, w]) => `<i style="--x:${x}%;--y:${y}%;--d:${d}s;--w:${w}s"></i>`).join("");
+    rig.innerHTML = D.setupRig.map((p) => {
+      const at = [].concat(p.at).join(" ");
+      return p.fx === "soul"
+        ? `<div class="rig__part rig__soul" data-at="${at}"><img src="img/${p.img}.webp" alt="" onerror="this.parentNode.remove()"></div>
+           <div class="rig__part rig__motes" data-at="${at}">${motes}</div>`
+        : `<img class="rig__part" data-at="${at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`;
+    }).join("");
     // The art is generated separately. Until at least one layer really loads the
     // grid stays single-column - otherwise the steps give up 400px to an empty
     // sticky box on desktop, and a blank opaque 30vh band on phones.
-    $$(".rig__part", rig).forEach((im) =>
+    $$("img", rig).forEach((im) =>
       im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
   }
-
-  // 03 · where everything lives
-  $(".dash__parts").innerHTML = D.dashboard.map((p) => `
-    <li><b>${p.name}</b><span>${p.tab}</span><em>${p.what}</em></li>`).join("");
 
   // 03 · the journey flow
   $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
@@ -121,21 +144,21 @@
       <h3>${n.head}</h3><p>${n.body}</p>
     </div>`).join("");
 
-  // 05 · brains and tools
+  // 04 · brains and tools
   $(".models").innerHTML = D.models.map((m) => `
     <li class="model"><b>${m.name}</b><span>${m.why}</span><i>${m.agents.map((k) => av(k)).join("")}</i></li>`).join("");
   $(".backups__chain").innerHTML = D.backups.map((b) => `<span>${b}</span>`).join(icon("arrow"));
   $(".tools").innerHTML = D.tools.map((t) => `
     <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
 
-  // 06 · musicians on an arc to the right of APEX (stage units: 1200 × 700)
+  // 05 · musicians on an arc to the right of APEX (stage units: 1200 × 700)
   const arc = [["tusk", 895, 70], ["bolt", 991, 115], ["bullseye", 1057, 196], ["miso", 1080, 290], ["nyx", 1057, 396], ["kitsune", 991, 478], ["forge", 895, 522]];
   $(".stage__musicians").innerHTML = arc.map(([k, x, y]) => {
     const t = D.team.find((m) => m.key === k);
     return `<div class="node node--m" data-key="${k}" style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span>${t.name}</span></div>`;
   }).join("");
 
-  // 07 · recipe → cart: phone screens + steps
+  // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
   // scoped to .task: the frontend section has a phone too, and it comes first in the DOM
   $(".task .phone__screen").innerHTML = D.task.map((s, i) => `<div class="screen${i ? "" : " is-on"}" data-i="${i}">${screen(s.visual)}</div>`).join("");
@@ -146,7 +169,7 @@
       <div class="tstep__inline">${screen(s.visual)}</div>
     </li>`).join("");
 
-  // 08 · daily rhythm dial
+  // 07 · daily rhythm dial
   const svg = $(".dial__svg");
   const pt = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
   let ticks = "";
@@ -162,7 +185,7 @@
   $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => `
     <li data-i="${i}" class="${i ? "" : "is-on"}"><b>${st.t}</b>${av(st.key)}<span>${st.label}</span></li>`).join("");
 
-  // 09 · build loop nodes around the ring
+  // 08 · build loop nodes around the ring
   $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `
     <div class="cnode${s.me ? " cnode--me" : ""}" style="--a:${-90 + i * 72}deg" data-i="${i}">
       <span class="cnode__n">${s.n}</span><b>${s.head}</b><em>${s.who}</em>

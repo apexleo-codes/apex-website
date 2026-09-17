@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with three deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — section 02 is *the setup*, which the deck never covered, and the build loop is an extra, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · where everything lives · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the frontend · the setup · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -20,13 +20,13 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | Path | What |
 |---|---|
 | `index.html` | Page skeleton: one `<section data-chapter>` per chapter, plus the static copy |
-| `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, dashboard steps); edit words here |
+| `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, setup steps); edit words here |
 | `js/render.js` | Turns `content.js` into markup |
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
 | `js/motion.js` | Smooth scroll, loader, cursor, menu, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero layout, marquee |
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
-| `css/sections.css` | the frontend (the Telegram phone) · the setup · where everything lives · the journey flow |
+| `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
@@ -82,11 +82,21 @@ No agent ring in the hero. It was tried twice — a flat rotating circle (they r
 
 ## The setup (section 02)
 
-Five steps, in the order they have to happen, told as **building a being**: give it a body (install) → install its brain (the model) → give it a mouth (Telegram, plus Google and GitHub to keep things in) → teach it the work (skills) → then let it run. The brief was explicitly *not* "go here, paste this" — the audience is CXOs, so each step is **one line** and the reasoning is his to say out loud.
+Five steps, in the order they have to happen, told as **building a being**: give it a body (install Hermes Agent) → bring it to life (the brain, a model) → ability to chat & store (Telegram, plus Gmail and GitHub to keep things in) → awakening consciousness (the soul, `SOUL.md`) → teach it the work (skills). The brief was explicitly *not* "go here, paste this" — the audience is CXOs, so each step is **one line** and the reasoning is his to say out loud.
 
 An earlier round put that reasoning in hover "?" readouts on marked words. **They were removed**: they made the section verbose, and this audience skims rather than hunts. Don't reintroduce them.
 
-The commands and prompt text are **real**, read off the Hermes 0.21.2 install on this Mac (`hermes_cli/setup.py`, `setup_platforms.py`, `plugin-catalog/`), not invented. The wizard's own wording is quoted where it matters — the allowlist warning is Hermes's actual line.
+The commands and prompt text are **real**, read off the Hermes 0.21.2 install on this Mac (`hermes_cli/setup.py`), not invented.
+
+Changed on the user's note, and not to be walked back:
+
+- **No "BotFather" and no "mouth".** Nobody outside Telegram knows the name, so the chat frame wears Telegram's own mark, and "Give it a mouth" read wrong. Step 03 is the chat alone, 10% narrower than its old half-width, with Gmail and GitHub marks beside it for storage. The terminal frames that sat beside the chat and above the skills shot are gone.
+- **"Then let it run" is cut** — always-on goes without saying. Its slot went to **the soul**.
+- **The soul frame quotes the real `SOUL.md`, trimmed**: who APEX is, how it talks, the hard rules. Its "Who you serve" block names the child and his date of birth, so it is **never** shown — same rule as the phone in section 01.
+- **The skills shot is just the list**, `img/dash-skills-list.webp`, cropped from `dash-skills-personal.webp` at (488, 134)–(1340, 603). The numbered boxes and legend went with the rest of the tab.
+- **Its "SKILLS" header is typeset, not captured** (`head` on the frame, `.shot2__head`), so it has to pass as part of the shot: the panel ink `#031c1d` and divider `#152e2c` sampled off the capture, a box icon, and wide-tracked capitals like the tab's own "PERSONAL" title. It sizes in `cqw` against the shot box, so it scales with the image rather than the page.
+- **The setup ends on the skills step.** The "Every step also has a screen in the dashboard" note and the section it pointed to ("Where everything lives", the Hermes dashboard tour) were cut, and the sections after it moved up a number: the journey flow is now 03. `dash-skills-personal.webp` stays only as the crop source.
+- The brand marks (`i-telegram`, `i-gmail`, `i-github`) are filled symbols in the sprite at the top of `index.html`. Use them as `.term__logo` / `.store__logo`, never `.ic`, which strokes.
 
 Why the frames are markup and not screenshots, even though screenshots were asked for:
 
@@ -112,13 +122,16 @@ Traps found building it, all of them live:
 
 ### The assembly rig (the lion on the right)
 
-As the five steps scroll past, APEX builds himself in the right-hand column: bare chassis → skull with the AI brain lit → armoured with the Google and GitHub badges → skills glowing at the hands and feet → awake. Art is `img/apex-rig-{1-body,2-brain,3-face,4-limbs,5-alive}.webp`. The originals and the exporter that normalises them live in **`apex_leo/tutorial/assets/rig-src/`** (outside this public repo, since they're large) — `export_rig.py` there regenerates all five, and its `SRC` table holds the hand-tuned scale and offset per image.
+As the five steps scroll past, APEX builds himself in the right-hand column: bare chassis → skull with the AI brain lit → armoured with the Google and GitHub badges → the same stage with a soul glowing round him → fully awake for the skills. Art is `img/apex-rig-{1-body,2-brain,3-face,5-alive}.webp`. **`4-limbs` is not shown**: its "skill.md" lettering over the arms and legs read as noise, so the skills step uses the calm, awake stage instead.
 
-- **Each file is a complete STAGE, not a single part**, so exactly one shows at a time and they cross-fade. `motion.js` uses `=== i`, never `<= i`. Stacking them would show the skeleton's splayed arms poking out from behind the finished lion, because the art is transparent.
+- **The soul is not new art.** The armoured stage lists two steps (`at: [2, 3]`, rendered as `data-at="2 3"`), so it holds instead of fading out and back in, and `fx: "soul"` adds two layers round it: a gold copy of him blurred into a halo behind (`z-index: 0`), and motes rising in front (`z-index: 2`). The halo breathes and the motes rise only while that step is on, and neither moves under reduced motion. The originals and the exporter that normalises them live in **`apex_leo/tutorial/assets/rig-src/`** (outside this public repo, since they're large) — `export_rig.py` there regenerates all five, and its `SRC` table holds the hand-tuned scale and offset per image.
+
+- **Each file is a complete STAGE, not a single part**, so exactly one shows at a time and they cross-fade. `motion.js` tests whether the layer's `data-at` list includes the step, never `<= i`. Stacking them would show the skeleton's splayed arms poking out from behind the finished lion, because the art is transparent.
 - **They share no source framing** and never will: feet sat at 92.0% / 98.2% / 98.0% of three different canvases, one of them 912×1171 rather than square. They're normalised onto one 900×1125 canvas — feet on a common baseline, centred, **scale hand-tuned per image**.
 - **Four automatic scale landmarks were tried and all failed**: total height (oversizes the headless skeleton), figure width (the skeleton's splayed arms vs the lion's tail and aura), leg span (contaminated by hanging hands in some frames and not others), leg length (armour lowers the visible crotch, giving 313/287/**195**), and hip width (skeletal bodies are open, so the run at the midline is a thin strut — 58/152/233/**21**/88, i.e. scale factors up to 14×). These drawings have different anatomy; stop trying to derive it and tune five numbers by eye against drawn guides.
 - **Backgrounds are transparent, never a filled panel.** Filling them with the page ink and saving lossy WebP drifted the flat field off `#0b1312` and drew a visible rectangle — faint on desktop, obvious behind the sticky mobile rig. With alpha there is no flat field to drift, and lossy is then fine: 172.6 KB for all five, against ~900 KB lossless.
 - **Keying is "near background AND reachable from the edge"**, the second test done by flood-filling a quarter-scale copy. Enclosed darks — the lion's black eyes and nose, the skull cage interior, joint shadows — are near-background but *not* edge-reachable, so they stay opaque; the colour test keeps the edge pixel-sharp. A plain colour threshold would have eaten the eyes. Verified by compositing the exports over magenta (`alpha-check.png`), which also shows a dark halo retained around the glow in stages 3–5 — invisible on this page, since it is near-black on near-black.
+- **On phones every column in this section is `minmax(0, 1fr)`, never a bare `1fr`** (`.setup__grid`, `.step`, `.step__frames`). A bare `1fr` floors at min-content, and the unbreakable install command in step 01 pushed every frame 31px past the screen edge.
 - **The grid stays single-column until a layer actually loads** (`.setup__grid.has-rig`, set from an `img` load event). Without it the steps give up 400px to an empty sticky box on desktop and a blank opaque 30vh band on phones.
 - Step triggers fire at `top 55%`, not `70%`: a step is only ~520px tall, so at 70% the *next* step crossed the line while the current one still filled the screen and the rig ran a beat ahead of the copy.
 - Pure-Python per-pixel loops over a 900×1125 canvas time out. Use `ImageChops` + `point` + `getbbox` (C speed) and confine the flood fill to the quarter-scale copy. And **macOS has no `timeout`** (RULES 20) — a `timeout 110 python …` line fails as "command not found" and the heredoc silently never runs, which looks exactly like a successful no-op.
