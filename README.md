@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with three deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — section 02 is *the setup*, which the deck never covered, and the build loop is an extra, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · where everything lives · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the frontend · the setup · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -20,13 +20,13 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | Path | What |
 |---|---|
 | `index.html` | Page skeleton: one `<section data-chapter>` per chapter, plus the static copy |
-| `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, dashboard steps); edit words here |
+| `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, setup steps); edit words here |
 | `js/render.js` | Turns `content.js` into markup |
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
 | `js/motion.js` | Smooth scroll, loader, cursor, menu, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero layout, marquee |
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
-| `css/sections.css` | the frontend (the Telegram phone) · the setup · where everything lives · the journey flow |
+| `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
@@ -82,7 +82,7 @@ No agent ring in the hero. It was tried twice — a flat rotating circle (they r
 
 ## The setup (section 02)
 
-Five steps, in the order they have to happen, told as **building a being**: give it a body (install Hermes Agent) → access to brain (the model) → ability to chat & store (Telegram, plus Gmail and GitHub to keep things in) → give it a soul (`SOUL.md`) → teach it the work (skills). The brief was explicitly *not* "go here, paste this" — the audience is CXOs, so each step is **one line** and the reasoning is his to say out loud.
+Five steps, in the order they have to happen, told as **building a being**: give it a body (install Hermes Agent) → bring it to life (the brain, a model) → ability to chat & store (Telegram, plus Gmail and GitHub to keep things in) → awakening consciousness (the soul, `SOUL.md`) → teach it the work (skills). The brief was explicitly *not* "go here, paste this" — the audience is CXOs, so each step is **one line** and the reasoning is his to say out loud.
 
 An earlier round put that reasoning in hover "?" readouts on marked words. **They were removed**: they made the section verbose, and this audience skims rather than hunts. Don't reintroduce them.
 
@@ -94,6 +94,8 @@ Changed on the user's note, and not to be walked back:
 - **"Then let it run" is cut** — always-on goes without saying. Its slot went to **the soul**.
 - **The soul frame quotes the real `SOUL.md`, trimmed**: who APEX is, how it talks, the hard rules. Its "Who you serve" block names the child and his date of birth, so it is **never** shown — same rule as the phone in section 01.
 - **The skills shot is just the list**, `img/dash-skills-list.webp`, cropped from `dash-skills-personal.webp` at (488, 134)–(1340, 603). The numbered boxes and legend went with the rest of the tab.
+- **Its "SKILLS" header is typeset, not captured** (`head` on the frame, `.shot2__head`), so it has to pass as part of the shot: the panel ink `#031c1d` and divider `#152e2c` sampled off the capture, a box icon, and wide-tracked capitals like the tab's own "PERSONAL" title. It sizes in `cqw` against the shot box, so it scales with the image rather than the page.
+- **The setup ends on the skills step.** The "Every step also has a screen in the dashboard" note and the section it pointed to ("Where everything lives", the Hermes dashboard tour) were cut, and the sections after it moved up a number: the journey flow is now 03. `dash-skills-personal.webp` stays only as the crop source.
 - The brand marks (`i-telegram`, `i-gmail`, `i-github`) are filled symbols in the sprite at the top of `index.html`. Use them as `.term__logo` / `.store__logo`, never `.ic`, which strokes.
 
 Why the frames are markup and not screenshots, even though screenshots were asked for:
@@ -120,7 +122,7 @@ Traps found building it, all of them live:
 
 ### The assembly rig (the lion on the right)
 
-As the five steps scroll past, APEX builds himself in the right-hand column: bare chassis → skull with the AI brain lit → armoured with the Google and GitHub badges → the same stage with a soul glowing round him → skills glowing at the hands and feet. Art is `img/apex-rig-{1-body,2-brain,3-face,4-limbs}.webp`; `5-alive` belonged to the cut "let it run" step and is no longer shown.
+As the five steps scroll past, APEX builds himself in the right-hand column: bare chassis → skull with the AI brain lit → armoured with the Google and GitHub badges → the same stage with a soul glowing round him → fully awake for the skills. Art is `img/apex-rig-{1-body,2-brain,3-face,5-alive}.webp`. **`4-limbs` is not shown**: its "skill.md" lettering over the arms and legs read as noise, so the skills step uses the calm, awake stage instead.
 
 - **The soul is not new art.** The armoured stage lists two steps (`at: [2, 3]`, rendered as `data-at="2 3"`), so it holds instead of fading out and back in, and `fx: "soul"` adds two layers round it: a gold copy of him blurred into a halo behind (`z-index: 0`), and motes rising in front (`z-index: 2`). The halo breathes and the motes rise only while that step is on, and neither moves under reduced motion. The originals and the exporter that normalises them live in **`apex_leo/tutorial/assets/rig-src/`** (outside this public repo, since they're large) — `export_rig.py` there regenerates all five, and its `SRC` table holds the hand-tuned scale and offset per image.
 

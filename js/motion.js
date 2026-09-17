@@ -213,7 +213,7 @@
     ScrollTrigger.addEventListener("scrollEnd", settle);
 
     // headings and blocks rise in
-    const risers = $$(".section .big, .roles .role, .case, .dash__shot, .dash__parts li, .skillx, .model, .tool, .backups, .task__notes > *");
+    const risers = $$(".section .big, .roles .role, .case, .skillx, .model, .tool, .backups, .task__notes > *");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
 

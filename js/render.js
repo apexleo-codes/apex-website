@@ -9,7 +9,7 @@
   const color = Object.fromEntries(D.team.map((t) => [t.key, t.color]));
 
   // menu: one entry per chapter
-  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Setup": "forge", "Under the hood": "colony", "The magic": "nyx",
+  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Setup": "forge", "The magic": "nyx",
     "Brains & tools": "bullseye", "How they work": "colony", "Recipe → cart": "miso", "Daily rhythm": "kitsune", "Build loop": "forge", "Thank you": "apex" };
   $(".menu__list").innerHTML = $$("[data-chapter]").map((sec, i) =>
     `<a href="#${sec.id}" data-goto="#${sec.id}" data-img="${chapterAgent[sec.dataset.chapter] || "apex"}"><span>${pad(i)}</span>${sec.dataset.chapter}</a>`).join("");
@@ -92,7 +92,7 @@
   };
   const shotFrame = (f) => `
     <figure class="shot2">
-      <div class="shot2__box"><img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy"></div>
+      <div class="shot2__box">${f.head ? `<p class="shot2__head">${icon("box")}${f.head}</p>` : ""}<img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy"></div>
     </figure>`;
   const frames = { tg: tgFrame, store: storeFrame, soul: soulFrame, shot: shotFrame };
   const frame = (f) => (frames[f.kind] || termFrame)(f);
@@ -136,10 +136,6 @@
       im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
   }
 
-  // 03 · where everything lives
-  $(".dash__parts").innerHTML = D.dashboard.map((p) => `
-    <li><b>${p.name}</b><span>${p.tab}</span><em>${p.what}</em></li>`).join("");
-
   // 03 · the journey flow
   $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
     <div class="fnode" data-i="${i}">
@@ -148,21 +144,21 @@
       <h3>${n.head}</h3><p>${n.body}</p>
     </div>`).join("");
 
-  // 05 · brains and tools
+  // 04 · brains and tools
   $(".models").innerHTML = D.models.map((m) => `
     <li class="model"><b>${m.name}</b><span>${m.why}</span><i>${m.agents.map((k) => av(k)).join("")}</i></li>`).join("");
   $(".backups__chain").innerHTML = D.backups.map((b) => `<span>${b}</span>`).join(icon("arrow"));
   $(".tools").innerHTML = D.tools.map((t) => `
     <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
 
-  // 06 · musicians on an arc to the right of APEX (stage units: 1200 × 700)
+  // 05 · musicians on an arc to the right of APEX (stage units: 1200 × 700)
   const arc = [["tusk", 895, 70], ["bolt", 991, 115], ["bullseye", 1057, 196], ["miso", 1080, 290], ["nyx", 1057, 396], ["kitsune", 991, 478], ["forge", 895, 522]];
   $(".stage__musicians").innerHTML = arc.map(([k, x, y]) => {
     const t = D.team.find((m) => m.key === k);
     return `<div class="node node--m" data-key="${k}" style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span>${t.name}</span></div>`;
   }).join("");
 
-  // 07 · recipe → cart: phone screens + steps
+  // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
   // scoped to .task: the frontend section has a phone too, and it comes first in the DOM
   $(".task .phone__screen").innerHTML = D.task.map((s, i) => `<div class="screen${i ? "" : " is-on"}" data-i="${i}">${screen(s.visual)}</div>`).join("");
@@ -173,7 +169,7 @@
       <div class="tstep__inline">${screen(s.visual)}</div>
     </li>`).join("");
 
-  // 08 · daily rhythm dial
+  // 07 · daily rhythm dial
   const svg = $(".dial__svg");
   const pt = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
   let ticks = "";
@@ -189,7 +185,7 @@
   $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => `
     <li data-i="${i}" class="${i ? "" : "is-on"}"><b>${st.t}</b>${av(st.key)}<span>${st.label}</span></li>`).join("");
 
-  // 09 · build loop nodes around the ring
+  // 08 · build loop nodes around the ring
   $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `
     <div class="cnode${s.me ? " cnode--me" : ""}" style="--a:${-90 + i * 72}deg" data-i="${i}">
       <span class="cnode__n">${s.n}</span><b>${s.head}</b><em>${s.who}</em>

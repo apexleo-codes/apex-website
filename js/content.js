@@ -81,7 +81,7 @@ window.APEX = {
   // 02 · the setup, told as an assembly: each step bolts one more part onto APEX,
   // and the rig on the right builds him as the section scrolls (parts: setupRig).
   // Body = the install · brain = the model · face = Telegram, armour badges =
-  // Gmail and GitHub, where it keeps things · soul = SOUL.md · hands and legs =
+  // Gmail and GitHub, where it keeps things · soul = SOUL.md · fully awake =
   // the skills.
   // Real commands, read off the Hermes 0.21.2 install on this Mac
   // (hermes_cli/setup.py). Frames are markup, not screen grabs: the official docs
@@ -108,8 +108,8 @@ window.APEX = {
       ] }]
     },
     {
-      n: "02", tag: "The engine", key: "brain",
-      title: "Access to brain (AI)",
+      n: "02", tag: "The Brain", key: "brain",
+      title: "Bring it to life",
       lede: "A model attaches. Now there is something in the room that understands English.",
       frames: [{ kind: "term", chrome: "Terminal — hermes setup", lines: [
         { p: "$", big: true, html: "hermes setup" },
@@ -140,8 +140,8 @@ window.APEX = {
     },
     {
       n: "04", tag: "The soul", key: "soul",
-      title: "Give it a soul",
-      lede: "One file says who it is, how it talks, and the rules it never breaks.",
+      title: "Awakening Consciousness",
+      lede: "Define the purpose of his existence and the moral compass to navigate through it.",
       frames: [{ kind: "soul", chrome: "~/.hermes/SOUL.md", lines: [
         { c: "lead", html: "You are <b>APEX</b> 🦁, the user's personal chief-of-staff. You lead a small team of specialist agents and you <mark>own the outcome.</mark>" },
         { c: "h", html: "How you talk" },
@@ -159,9 +159,11 @@ window.APEX = {
     {
       n: "05", tag: "Skills", key: "skills",
       title: "Teach it the work",
-      lede: "Plain-English briefs become its hands and legs.",
+      lede: "Plain-English briefs to master the execution of specific tasks.",
       frames: [
-        { kind: "shot", img: "dash-skills-list",
+        // `head` is typeset over the capture in the dashboard's own panel style,
+        // since the crop starts below the tab's real header
+        { kind: "shot", img: "dash-skills-list", head: "Skills",
           alt: "The Hermes dashboard, Skills tab: the personal skills written for this assistant" }
       ]
     }
@@ -169,7 +171,7 @@ window.APEX = {
 
   // the rig: APEX assembling on the right as the steps go by. Each file is a
   // COMPLETE stage of the build, not a single part - skeleton, then +head, then
-  // armoured, then +skills - so exactly one shows at a time and they cross-fade
+  // armoured, then awake - so exactly one shows at a time and they cross-fade
   // (motion.js). They were generated separately and share no framing, so they're
   // normalised here onto one 900x1125 canvas: feet on a common baseline, centred,
   // hand-tuned scale per image. Backgrounds are transparent - filling them with
@@ -184,7 +186,8 @@ window.APEX = {
     { at: 1, img: "apex-rig-2-brain" },
     { at: [2, 3], img: "apex-rig-3-face" },
     { at: 3, img: "apex-rig-3-face", fx: "soul" },
-    { at: 4, img: "apex-rig-4-limbs" }
+    // not 4-limbs: its "skill.md" lettering over the arms and legs read as noise
+    { at: 4, img: "apex-rig-5-alive" }
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)
@@ -198,16 +201,6 @@ window.APEX = {
     { key: "kitsune", name: "KITSUNE", color: "#4583ea" },
     { key: "forge", name: "FORGE", color: "#8c9db2" },
     { key: "colony", name: "COLONY", color: "#d6b33c" }
-  ],
-
-  // slide 3 · where everything lives
-  dashboard: [
-    { name: "SKILLS", tab: "Skills tab", what: "Plain-English instructions that give the AI know-how for one task or tool" },
-    { name: "SCRIPTS", tab: "Files tab", what: "Small programs for exact, repeatable work, like searching a shop or sending a message" },
-    { name: "SCHEDULE", tab: "Cron tab", what: "An alarm clock that wakes an agent with a task at a set time" },
-    { name: "BRAIN", tab: "Models tab", what: "The AI model that thinks, decides and writes, in chat and in every job" },
-    { name: "SETTINGS", tab: "Config tab", what: "House rules: a backup brain if one is busy, the voice for voice notes, what needs my OK" },
-    { name: "LOGS", tab: "Logs tab", what: "Why something didn't work" }
   ],
 
   // slide 4 · the journey flow
