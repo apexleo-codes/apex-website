@@ -166,7 +166,10 @@
        Skill nodes and tool chips come from js/render.js; stage units are 1200 × 700. -->
   <section class="orch" id="orchestra" data-chapter="How they work">
     <div class="orch__pin">
-      <header class="shead"><span class="shead__num">03</span><p class="eyebrow">How they work together</p></header>
+      <header class="shead shead--row">
+        <div><span class="shead__num">03</span><p class="eyebrow">How they work together</p></div>
+        <h2 class="big">The <em>Journey Flow</em></h2>
+      </header>
       <div class="orch__body">
         <div class="orch__side">
           <ol class="orch__captions">
@@ -179,13 +182,12 @@
         </div>
         <div class="stage" data-tools="on">
           <svg class="stage__svg" viewBox="0 0 1200 700" aria-hidden="true">
-            <path class="tlink" d="M380 86 V270 M600 86 V140"/>
             <path class="skills-arc" d="M565 194 A160 160 0 0 1 565 486"/>
             <path id="p-you" class="wire" d="M172 340 H310"/>
             <path id="p-soul" class="wire" d="M450 340 H616"/>
             <path id="p-skill" class="wire" d="M704 340 H954"/>
-            <path id="p-tool" class="wire" d="M1010 298 L1046 92"/>
-            <path id="p-tool-back" class="wire" d="M1046 92 L1010 298"/>
+            <path id="p-tool" class="wire" d="M1000 298 V92"/>
+            <path id="p-tool-back" class="wire" d="M1000 92 V298"/>
             <path id="p-back" class="wire wire--gold" d="M1030 372 C 1090 450 1070 612 870 612 H 200 C 60 612 20 540 20 440 C 20 380 36 342 64 340"/>
           </svg>
           <div class="toolsbar"><span class="toolsbar__label">Tools</span></div>

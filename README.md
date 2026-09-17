@@ -146,13 +146,15 @@ Moved above the journey flow, so the layers come before the deep dive into a ski
 1. you (or the schedule) → the soul
 2. the soul → the skills arc. The seven specialists sit small and close on an arc; MISO, on the wire line, is picked and **grows where she stands**, on top of her neighbours (`z-index`), showing her skill (`gut-health-chef`)
 3. MISO → the script, carrying `{ shopping list }`, the fenced JSON her cron prompt asks her to end with
-4. the script → the browser tool (**Browser → Zepto**), to fill the cart
+4. the script → the browser tool (**Browser → Zepto**), straight up, to fill the cart
 5. the tool → the script, carrying `{ cart · nothing ordered }`
 6. the script → you, on Telegram (the gold wire)
 
 Why this route and not "the skill calls the tool and hands its answer back to APEX": the Sunday job (`dash-cron-edit-recipe.webp`) runs on the health-tuned model with the skill loaded and **delivers to Local**, not to a chat. The shopping is a script's job ("A script shops" in section 06), the result reaches Telegram without passing through APEX's chat (SOUL.md's context-recovery rule exists because of exactly that), and the SOUL.md rules say carts are filled but **never ordered**.
 
-- **The section carries no heading**, on the user's note: the eyebrow and the four captions say it. `.shead--row` still belongs to the daily rhythm, so leave it in `base.css`.
+- **The heading is "The Journey Flow"**, which came over from the section this one replaced. It sits beside the eyebrow (`.shead--row`), not above it, because the pinned screen has no height to spare.
+- **Pinning has to arrive and leave gently.** Three things do that together, and all three were added after it felt like the page "jumped to full screen and stuck": `anticipatePin: 1` (pins a touch early, which is what smooth scrolling needs), padding on `.orch` itself (the section scrolls normally through it before the pin catches and after it lets go), and a **short pin** — 300% over six legs, about 380px of scroll each. It was 420%, which froze the page for more than four screens. The daily rhythm pin got the same padding and `anticipatePin`.
+- **The tools layer hangs off the scripts alone**, by one straight drop at x 1000; the dashed links up to the soul and the skills are gone. The band ends at x 1060 so its last chip, browser → Zepto, always sits over that drop however wide the chip's text runs.
 - **The wires stop at the size MISO grows to** (radius ~42 units), not at her arc size, so the line never crosses her. Her label goes out to the **left**, into the gap between the soul and the arc: above and below are the next skills along, and to the right the shopping-list tag rides the wire into the scripts' own label. Labels are px while the diagram is `cqw`, so below an 820px stage she keeps her name and drops the skill under it, which would otherwise reach the soul.
 - **`legs` in `motion.js` sets when each packet leaves**, in timeline seconds. The caption step, MISO's pick (`data-pick`) and the lit tool chip (`data-tool`) all read the **timeline's own clock** in its `onUpdate`, not the ScrollTrigger's progress. Scroll progress runs ahead of a scrubbed timeline, so MISO stepped forward before the packet reached her.
 - **What a packet carries rides with it**: `data-tag` on the `.packet` becomes a label (`::after`), above it on flat wires and beside it (`data-side="left"`) on the climb to the tool.
