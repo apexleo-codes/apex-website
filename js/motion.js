@@ -145,6 +145,37 @@
     const on = () => { $$(".skillnote").forEach((x) => x.classList.toggle("is-on", x === b)); shotBox.dataset.hl = b.dataset.hl; };
     ["pointerenter", "focus", "click"].forEach((ev) => b.addEventListener(ev, on));
   });
+  // 02 · the setup. The progress bar is the spine running down the step-number
+  // gutter: the numbers were already sitting in that column, so the bar costs no
+  // layout at all. Step state is a class toggle (kept under reduced motion too -
+  // it's information, not decoration); only the fill itself is scrubbed, and CSS
+  // parks it at full height when motion is reduced. GSAP owns the fill's scaleY
+  // and nothing else - .step's dimming is a CSS opacity transition, so no tween
+  // may ever touch its opacity.
+  const setupSteps = $$(".setup .step"), setupSegs = $$(".setup__bar i"), rigParts = $$(".rig__part");
+  const setStep = (i) => {
+    setupSteps.forEach((x, k) => { x.classList.toggle("is-on", k === i); x.classList.toggle("is-past", k < i); });
+    setupSegs.forEach((x, k) => x.classList.toggle("is-on", k <= i));
+    // Exclusive, NOT cumulative. Each file is already a complete stage of the
+    // build (skeleton -> +head -> armoured -> +skills -> awake) and the art is
+    // transparent, so stacking them would show the skeleton's splayed arms
+    // poking out from behind the finished lion. One layer at a time, cross-faded.
+    rigParts.forEach((p) => p.classList.toggle("is-on", +p.dataset.at === i));
+  };
+  // onEnter/onEnterBack, never an isActive window: a step shorter than the gap
+  // between its top and the trigger line never straddles that line with both
+  // edges, so an isActive test leaves a dead zone - the last and shortest step
+  // sat dim with its dot unlit while it filled the screen. Entering latches.
+  // 55%, not 70%: a step is only ~520px tall, so at "top 70%" the NEXT step
+  // crossed the line while the current one still filled the screen - the rig
+  // showed the brain while you were still reading "Give it a body". Entering
+  // still latches, so the short last step keeps its dead-zone fix.
+  setupSteps.forEach((st, i) => ScrollTrigger.create({
+    trigger: st, start: "top 55%", end: "bottom 30%",
+    onEnter: () => setStep(i), onEnterBack: () => setStep(i)
+  }));
+  setStep(0);
+
   // rhythm stop display  // rhythm stop display (the dial on desktop, the list on small screens)
   const R = D.rhythm, rhythmSec = $(".rhythm"), timeEl = $(".dial__time"), agentEl = $(".dial__agent"), labelEl = $(".dial__label");
   const rItems = $$(".rhythm__list li"), dots = $$(".stopdot");
@@ -183,6 +214,10 @@
     const risers = $$(".section .big, .roles .role, .case, .dash__shot, .dash__parts li, .skillx, .model, .tool, .backups, .task__notes > *");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
+
+    // the setup spine fills as the five steps go past
+    gsap.fromTo(".spine__fill", { scaleY: 0 }, { scaleY: 1, ease: "none",
+      scrollTrigger: { trigger: ".steps", start: "top 72%", end: "bottom 72%", scrub: 0.4 } });
 
     // journey flow: the line draws, nodes arrive in order
     const flowPath = $(".flow__line path");

@@ -88,7 +88,141 @@
 .case__bar { position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; overflow: hidden; }
 .case__bar i { display: block; height: 100%; background: var(--c); transform: scaleX(0); transform-origin: left; }
 
-/* 02 · where everything lives */
+/* 02 · the setup — five steps from a bare machine to a working assistant.
+   The frames are markup, not screen grabs, for the same reasons as the phone
+   above: the official Hermes docs ship no screenshots of the wizard, a borrowed
+   one is someone else's machine, and a bitmap carries neither a highlight that
+   holds its place at every width nor a hotspot you can hover. Real commands and
+   real prompt text (Hermes 0.21.2, hermes_cli/setup.py). Step 04 ends on a real
+   capture, which is ours.
+   The progress bar is the spine down the step-number gutter: the numbers already
+   occupied that column, so the bar costs no layout. Below 900px the gutter is
+   gone, so it becomes a 3px five-segment rail that sticks under the nav. */
+.setup__lede { max-width: 56ch; color: var(--cream-2); font-size: clamp(1rem, 1.2vw, 1.15rem); margin: -.5em 0 clamp(48px, 7vh, 88px); }
+.setup__note { font-family: var(--mono); font-size: .68rem; line-height: 1.9; color: var(--dim); max-width: 60ch; margin: clamp(56px, 8vh, 96px) 0 0; padding-left: 76px; }
+.setup__bar { display: none; }
+
+/* the assembly rig: APEX gains a part as each step passes — body, brain, face,
+   limbs, then fully awake. Each layer is a complete stage, so exactly one is
+   visible at a time and they cross-fade; they're pre-normalised onto one shared
+   900x1125 canvas (feet on a common baseline, centred) so nothing jumps between
+   stages. Transparent art — never re-introduce an opaque backing, a flat field
+   that close to the page ink shows up as a rectangle the moment it drifts.
+   Sticky, so he stays in view through the steps. */
+.setup__grid { display: grid; gap: clamp(28px, 4.5vw, 76px); align-items: start; }
+/* the second column exists only once a layer has actually loaded — until the art
+   is generated the steps keep the full width instead of facing a dead gap */
+.setup__grid.has-rig { grid-template-columns: minmax(0, 1fr) clamp(240px, 27vw, 400px); }
+.rig { display: none; }
+/* 4:5, matching the exported art — the figures are tall (mane plus full body),
+   so a square box would letterbox them and waste the column's width */
+.setup__grid.has-rig .rig { display: block; position: sticky; top: 108px; aspect-ratio: 4 / 5; }
+.rig__part {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transform: translateY(16px) scale(.97);
+  transition: opacity .8s var(--ease), transform .8s var(--ease);
+}
+.rig__part.is-on { opacity: 1; transform: none; }
+
+.steps { position: relative; display: grid; gap: clamp(62px, 10vh, 124px); }
+.spine { position: absolute; left: 21px; top: 10px; bottom: 10px; width: 2px; background: var(--line); }
+.spine__fill { display: block; width: 100%; height: 100%; background: var(--gold); transform: scaleY(0); transform-origin: top; }
+
+/* .step's dimming is a CSS opacity transition — never point a GSAP autoAlpha at it */
+.step { position: relative; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 clamp(18px, 2.6vw, 40px); opacity: .42; transition: opacity .6s var(--ease); }
+.step.is-on, .step.is-past { opacity: 1; }
+.step__n { position: relative; z-index: 1; }
+.step__dot {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ink); border: 1px solid var(--line-2); font-family: var(--mono); font-size: .7rem; color: var(--dim);
+  transition: background .5s var(--ease), border-color .5s var(--ease), color .5s var(--ease);
+}
+.step.is-past .step__dot { border-color: var(--gold); color: var(--gold); }
+.step.is-on .step__dot { border-color: var(--gold); background: var(--gold); color: var(--ink); }
+.step__tag { font-family: var(--mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin: .55em 0 .6em; }
+.step__title { font-size: clamp(1.45rem, 2.7vw, 2.5rem); line-height: 1.06; letter-spacing: -.035em; font-weight: 700; margin: 0 0 .5em; max-width: 21ch; }
+.step__lede { color: var(--cream-2); font-size: clamp(.95rem, 1.05vw, 1.08rem); max-width: 58ch; margin: 0 0 30px; }
+.step__frames { display: grid; gap: 20px; }
+.step__frames--two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+
+/* the terminal frame */
+.term { border: 1px solid var(--line-2); border-radius: 14px; background: #080e0d; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
+.term__bar { display: flex; align-items: center; gap: 7px; padding: 11px 15px; border-bottom: 1px solid var(--line); }
+.term__bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); flex: none; }
+.term__name { margin-left: 8px; font-family: var(--mono); font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.term__av { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #2aabee; color: #fff; font-family: var(--mono); font-size: .52rem; font-weight: 600; flex: none; }
+/* sized up on the user's note: the old setting was too small to read at a glance */
+.term__body { padding: 20px 22px 22px; font-family: var(--mono); font-size: clamp(.78rem, .92vw, .95rem); line-height: 1.95; }
+/* break-word, not anywhere: `anywhere` splits mid-token and chopped commands in half */
+.ln { margin: 0; color: var(--cream-2); white-space: pre-wrap; overflow-wrap: break-word; }
+.ps { color: var(--mint); margin-right: 9px; }
+.ln--out { color: var(--dim); }
+.ln--ok { color: var(--mint); }
+.ln--warn { color: var(--gold); }
+.ln--menu { color: var(--cream); }
+.ln--sel { color: var(--gold); }
+/* the one line that carries the step's point — meant to read from across a room */
+.ln--big { font-size: 1.24em; line-height: 1.55; padding: 3px 0; }
+.ln b { color: var(--cream); font-weight: 600; }
+.ln mark, .bmsg mark { background: rgba(233, 173, 79, .15); color: var(--gold); padding: 1px 5px; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+/* the BotFather exchange: the same frame, wearing Telegram */
+.term--tg { background: #0e1621; }
+.term--tg .term__bar { background: #17212b; border-radius: 13px 13px 0 0; border-bottom-color: rgba(0, 0, 0, .3); }
+.term--tg .term__body { font-family: var(--display); font-size: clamp(.72rem, .85vw, .84rem); line-height: 1.5; display: grid; gap: 7px; justify-items: start; }
+.bmsg { max-width: 92%; margin: 0; padding: 7px 10px 6px; border-radius: 12px 12px 12px 4px; background: #1e2c3a; color: #e9eef3; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bmsg--me { justify-self: end; border-radius: 12px 12px 4px 12px; background: #2b5278; }
+.bmsg b { color: #fff; font-weight: 600; }
+
+/* The hover "?" hotspots and their readout panels were removed on the user's
+   note: they made the section verbose, and this audience skims rather than
+   hunts. The reasoning now lives in the step's single line — and in what he
+   says out loud over the slide. Don't reintroduce them. */
+
+/* the one real capture in this section, with the parts worth looking at boxed.
+   The legend lives under the shot, not on it: labels pinned inside the frame
+   either clip at the top edge or collide with the boxes they name. */
+.shot2 { margin: 0; }
+.shot2__box { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
+.shot2__box img { width: 100%; }
+.hlz {
+  position: absolute; top: calc(var(--t) * 1%); left: calc(var(--l) * 1%); width: calc(var(--w) * 1%); height: calc(var(--h) * 1%);
+  border: 1.5px solid var(--gold); border-radius: 6px; background: rgba(233, 173, 79, .07);
+}
+.hlz b {
+  position: absolute; left: -1px; top: -10px; width: 19px; height: 19px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--gold); color: var(--ink); font-family: var(--mono); font-size: .58rem; font-weight: 700;
+}
+.shot2 figcaption { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font-family: var(--mono); font-size: .62rem; color: var(--dim); }
+.shot2 figcaption span { display: inline-flex; align-items: center; gap: 7px; }
+.shot2 figcaption b { width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--gold); color: var(--gold); font-size: .54rem; }
+
+@media (max-width: 900px) {
+  /* no number gutter left, so the progress bar becomes a rail under the nav */
+  .setup__bar { display: flex; gap: 4px; position: sticky; top: 58px; z-index: 5; height: 3px; margin: 0 0 34px; }
+  .setup__bar i { flex: 1; background: var(--line); transition: background .45s var(--ease); }
+  .setup__bar i.is-on { background: var(--gold); }
+  .spine { display: none; }
+  .steps { gap: 58px; }
+  .step { grid-template-columns: 1fr; opacity: 1; }
+  .step__n { margin-bottom: 15px; }
+  .step__dot { width: 38px; height: 38px; }
+  .step__frames--two { grid-template-columns: 1fr; }
+  .setup__note { padding-left: 0; }
+  /* no room for a column beside the steps: APEX rides along at the top instead,
+     sticky under the segment rail, and still gains a part per step. He needs an
+     opaque backing or the step text scrolls through him. */
+  .setup__grid.has-rig { grid-template-columns: 1fr; gap: 0; }
+  .setup__grid.has-rig .rig {
+    order: -1; position: sticky; top: 64px; z-index: 4; height: 30vh; aspect-ratio: auto;
+    margin-bottom: 20px; background: var(--ink); box-shadow: 0 14px 22px -10px var(--ink);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spine__fill { transform: scaleY(1); }
+}
+
+/* 03 · where everything lives */
 .dash__grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(34px, 5vw, 86px); align-items: center; }
 .dash__shot { margin: 0; }
 .dash__shot img { width: 100%; border-radius: 16px; border: 1px solid var(--line-2); box-shadow: 0 40px 100px rgba(0, 0, 0, .5); }

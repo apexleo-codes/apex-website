@@ -9,7 +9,7 @@
   const color = Object.fromEntries(D.team.map((t) => [t.key, t.color]));
 
   // menu: one entry per chapter
-  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Under the hood": "forge", "The magic": "nyx",
+  const chapterAgent = { "Intro": "apex", "The frontend": "tusk", "Setup": "forge", "Under the hood": "colony", "The magic": "nyx",
     "Brains & tools": "bullseye", "How they work": "colony", "Recipe → cart": "miso", "Daily rhythm": "kitsune", "Build loop": "forge", "Thank you": "apex" };
   $(".menu__list").innerHTML = $$("[data-chapter]").map((sec, i) =>
     `<a href="#${sec.id}" data-goto="#${sec.id}" data-img="${chapterAgent[sec.dataset.chapter] || "apex"}"><span>${pad(i)}</span>${sec.dataset.chapter}</a>`).join("");
@@ -57,7 +57,59 @@
       <span class="case__bar" aria-hidden="true"><i></i></span>
     </li>`).join("");
 
-  // 02 · where everything lives
+  // 02 · the setup. Frames are markup for the same reasons as the phone above
+  // (see content.js). No hover readouts any more - they made the section verbose,
+  // and this audience skims: one line per step, one highlighted command per frame.
+  // `big` marks the line that carries the point, so it reads from a metre away.
+  const termFrame = (f) => `
+    <div class="term">
+      <div class="term__bar"><i></i><i></i><i></i><span class="term__name">${f.chrome}</span></div>
+      <div class="term__body">${f.lines.map((l) =>
+        `<p class="ln${l.c ? ` ln--${l.c}` : ""}${l.big ? " ln--big" : ""}">${l.p ? `<span class="ps">${l.p}</span>` : ""}${l.html}</p>`).join("")}</div>
+    </div>`;
+  const tgFrame = (f) => `
+    <div class="term term--tg">
+      <div class="term__bar"><span class="term__av">BF</span><span class="term__name">${f.chrome}</span></div>
+      <div class="term__body">${f.lines.map((l) =>
+        `<p class="bmsg${l.by === "me" ? " bmsg--me" : ""}">${l.html}</p>`).join("")}</div>
+    </div>`;
+  const shotFrame = (f) => `
+    <figure class="shot2">
+      <div class="shot2__box">
+        <img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy">
+        ${f.zones.map((z) => `<span class="hlz" style="--t:${z.t};--l:${z.l};--w:${z.w};--h:${z.h}"><b>${z.n}</b></span>`).join("")}
+      </div>
+      <figcaption>${f.legend.map((t, i) => `<span><b>${i + 1}</b>${t}</span>`).join("")}</figcaption>
+    </figure>`;
+  const frame = (f) => (f.kind === "tg" ? tgFrame(f) : f.kind === "shot" ? shotFrame(f) : termFrame(f));
+
+  $(".steps").innerHTML = `<span class="spine" aria-hidden="true"><i class="spine__fill"></i></span>` +
+    D.setup.map((s) => `
+      <article class="step" data-key="${s.key}">
+        <div class="step__n"><span class="step__dot">${s.n}</span></div>
+        <div class="step__body">
+          <p class="step__tag">${s.tag}</p>
+          <h3 class="step__title">${s.title}</h3>
+          <p class="step__lede">${s.lede}</p>
+          <div class="step__frames${s.frames.length > 1 && !s.frames.some((f) => f.kind === "shot") ? " step__frames--two" : ""}">${s.frames.map(frame).join("")}</div>
+        </div>
+      </article>`).join("");
+
+  // the rig: stacked transparent layers that assemble APEX as the steps go by.
+  // onerror removes a layer whose art isn't in img/ yet, so the column degrades
+  // to whatever exists instead of showing broken-image icons.
+  const rig = $(".rig");
+  if (rig) {
+    rig.innerHTML = D.setupRig.map((p) =>
+      `<img class="rig__part" data-at="${p.at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`).join("");
+    // The art is generated separately. Until at least one layer really loads the
+    // grid stays single-column - otherwise the steps give up 400px to an empty
+    // sticky box on desktop, and a blank opaque 30vh band on phones.
+    $$(".rig__part", rig).forEach((im) =>
+      im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
+  }
+
+  // 03 · where everything lives
   $(".dash__parts").innerHTML = D.dashboard.map((p) => `
     <li><b>${p.name}</b><span>${p.tab}</span><em>${p.what}</em></li>`).join("");
 
