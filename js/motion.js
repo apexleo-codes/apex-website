@@ -249,7 +249,11 @@
 
   // ---------- pinned scroll stories (desktop) ----------
   mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
-    // how they work together: MISO's Sunday job, leg by leg. you → soul; the soul
+    // how they work together: MISO's Sunday job, leg by leg. anticipatePin pins a
+    // touch early, which is what stops the section snapping to full screen under
+    // Lenis, and .orch's padding gives it room to arrive and leave in ordinary
+    // scrolling. Keep the pin short enough that the page isn't held for screens
+    // on end: 300% over six legs is ~380px of scroll each. you → soul; the soul
     // picks MISO off the arc; her JSON shopping list goes to a script; the script
     // takes it to the browser tool (Zepto) and brings the cart back; the result
     // goes to you on Telegram. `legs` is when each packet sets off, in timeline
@@ -270,7 +274,7 @@
         stage.dataset.pick = t >= legs[1] + LEG ? "miso" : "";
         stage.dataset.tool = t >= legs[3] && t < legs[5] ? "on" : "";
       },
-      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=420%", pin: true, scrub: 0.6 }
+      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5, anticipatePin: 1 }
     });
     packets.forEach((pk, i) => {
       const at = legs[i];
@@ -285,7 +289,7 @@
     // daily rhythm: equal scroll per stop; the hand swings to each stop's hour
     gsap.set(".dial__hand", { rotation: (R[0].h / 24) * 360 });
     ScrollTrigger.create({
-      trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true,
+      trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true, anticipatePin: 1,
       onUpdate: (s) => {
         const k = Math.min(R.length - 1, Math.floor(s.progress * R.length));
         if (k === curStop) return;
