@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with three deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — section 02 is *the setup*, which the deck never covered, and the build loop is an extra, kept late in the page. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · the journey flow · brains and tools · how they work together · recipe → cart · a day with APEX · the build loop (extra) · thank you.
+Page order: hero · the frontend · the setup · how they work together · the journey flow · brains and tools · recipe → cart · a day with APEX · the build loop (extra) · thank you.
 
 Repo: <https://github.com/apexleo-codes/apex-website> (public) · Live: <https://apexleo-codes.github.io/apex-website/>
 
@@ -136,12 +136,24 @@ As the five steps scroll past, APEX builds himself in the right-hand column: bar
 - Step triggers fire at `top 55%`, not `70%`: a step is only ~520px tall, so at 70% the *next* step crossed the line while the current one still filled the screen and the rig ran a beat ahead of the copy.
 - Pure-Python per-pixel loops over a 900×1125 canvas time out. Use `ImageChops` + `point` + `getbbox` (C speed) and confine the flood fill to the quarter-scale copy. And **macOS has no `timeout`** (RULES 20) — a `timeout 110 python …` line fails as "command not found" and the heredoc silently never runs, which looks exactly like a successful no-op.
 
-## How they work together (section 05)
+## How they work together (section 03)
 
-Four layers, one per caption, in the order a request travels: **you** (or a schedule) → **the soul** (APEX, the LLM) → **skills** → **scripts** (COLONY), and a gold wire back round to you, which stands for the reply or the next schedule. The specialists (MISO, TUSK and the rest) are drawn *as* the skills layer, a honeycomb inside one ring, and not as a separate tier.
+Moved above the journey flow, so the layers come before the deep dive into a skill. Four layers, one per caption: **you** (or a schedule) → **the soul** (APEX, the LLM) → **skills** → **scripts** (COLONY), plus an optional tools layer. The stage walks **one real job, MISO's Sunday recipe**, leg by leg:
 
-- **You and the schedule share one circle.** The phone is you. The ticks round its rim are the clock, and its hand only runs on the scripts step, the caption that says who fires schedules.
-- **The tools layer is optional.** It's a dashed band across the soul, skills and scripts, holding a sample of the tools from section 04 (`layerTools` in `content.js`, deliberately not all of them). The switch under the captions flips `aria-pressed`, and `.stage[data-tools]` follows it.
-- **The stage is a query container** (`container: orch / inline-size`), so avatars size in `cqw` and the diagram scales as one picture. With page-sized avatars, at 1024px wide FORGE and BOLT sat on the wire line and the Voice chip spilled out of the band. For the same reason the chips drop their icons below a 760px stage and their names below 520px.
-- **A node's box is its art alone**, centred on (x, y), and `.node__label` hangs below it (or above it for FORGE and BOLT, either side of the wire line). A label in the flow lifts the art off the wires. Labels carry the page ink as a background, so where the return wire passes one on a narrow stage it goes behind.
-- Wires run through the honeycomb's gaps: soul → MISO between FORGE and KITSUNE, MISO → scripts between BOLT and BULLSEYE. Move a skill and you move a gap.
+1. you (or the schedule) → the soul
+2. the soul → the skills arc. The seven specialists sit small and close on an arc; MISO, on the wire line, is picked, steps forward off the arc, grows, and shows her skill (`gut-health-chef`)
+3. MISO → the script, carrying `{ shopping list }`, the fenced JSON her cron prompt asks her to end with
+4. the script → the browser tool (**Browser → Zepto**), to fill the cart
+5. the tool → the script, carrying `{ cart · nothing ordered }`
+6. the script → you, on Telegram (the gold wire)
+
+Why this route and not "the skill calls the tool and hands its answer back to APEX": the Sunday job (`dash-cron-edit-recipe.webp`) runs on the health-tuned model with the skill loaded and **delivers to Local**, not to a chat. The shopping is a script's job ("A script shops" in section 06), the result reaches Telegram without passing through APEX's chat (SOUL.md's context-recovery rule exists because of exactly that), and the SOUL.md rules say carts are filled but **never ordered**.
+
+- **`legs` in `motion.js` sets when each packet leaves**, in timeline seconds. The caption step, MISO's pick (`data-pick`) and the lit tool chip (`data-tool`) all read the **timeline's own clock** in its `onUpdate`, not the ScrollTrigger's progress. Scroll progress runs ahead of a scrubbed timeline, so MISO stepped forward before the packet reached her.
+- **What a packet carries rides with it**: `data-tag` on the `.packet` becomes a label (`::after`), above it on flat wires and beside it (`data-side="left"`) on the climb to the tool.
+- **You and the schedule share one circle.** The phone is you; the ticks round its rim are the clock, and its hand only runs on the scripts step.
+- **The tools layer is optional**, but the walk-through's tool is not: switched off, the band and its sample chips go, and **Browser → Zepto** stays as a pill on its own, so the script still has somewhere to send the list. `flow` marks that chip in `layerTools`, and it goes **last**, because the script's wire rises to the band's right end.
+- **Skill names and skills show on hover** (`skill` on each `team` entry, as named in SOUL.md); only the picked skill keeps its label on. On phones and under reduced motion the stage is static, with MISO already picked.
+- **The stage is a query container** (`container: orch / inline-size`), so avatars size in `cqw` and the diagram scales as one picture. Chips drop their icons below a 760px stage and their names below 520px.
+- **A node's box is its art alone**, centred on (x, y), and `.node__label` hangs below it; a label in the flow lifts the art off the wires. Labels carry the page ink as a background, so where the return wire passes one on a narrow stage it goes behind.
+- The soul's wire reaches MISO through the gap between BULLSEYE and NYX. Move a skill on the arc and you move the gap.

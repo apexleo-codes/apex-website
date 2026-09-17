@@ -136,7 +136,7 @@
       im.addEventListener("load", () => $(".setup__grid").classList.add("has-rig"), { once: true }));
   }
 
-  // 03 · the journey flow
+  // 04 · the journey flow
   $(".flow__nodes").innerHTML = D.journey.map((n, i) => `
     <div class="fnode" data-i="${i}">
       <div class="fnode__icon">${icon(n.icon)}</div>
@@ -144,27 +144,28 @@
       <h3>${n.head}</h3><p>${n.body}</p>
     </div>`).join("");
 
-  // 04 · brains and tools
+  // 05 · brains and tools
   $(".models").innerHTML = D.models.map((m) => `
     <li class="model"><b>${m.name}</b><span>${m.why}</span><i>${m.agents.map((k) => av(k)).join("")}</i></li>`).join("");
   $(".backups__chain").innerHTML = D.backups.map((b) => `<span>${b}</span>`).join(icon("arrow"));
   $(".tools").innerHTML = D.tools.map((t) => `
     <li class="tool" tabindex="0">${icon(t.icon)}<b>${t.need}</b><span class="tool__uses">${t.uses}</span><span class="tool__alt">${t.alt}</span></li>`).join("");
 
-  // 05 · the skills: the specialists as one honeycomb inside the skills ring,
-  // MISO at the centre because the walk-through follows her job (stage units:
-  // 1200 × 700). The wires run through the gaps either side of the centre: soul
-  // → MISO between FORGE and KITSUNE, MISO → scripts between BOLT and BULLSEYE.
-  const hex = [["miso", 730, 340], ["tusk", 730, 190], ["bolt", 860, 265], ["bullseye", 860, 415],
-    ["nyx", 730, 490], ["kitsune", 600, 415], ["forge", 600, 265]];
-  $(".stage__musicians").innerHTML = hex.map(([k, x, y]) => {
+  // 03 · the skills: seven small avatars on a tight arc (centre 500,340, radius
+  // 160, 20° apart), convex towards the scripts. MISO sits at its apex, on the
+  // soul's wire line, because the walk-through follows her Sunday job; when the
+  // soul picks her she steps forward out of the arc (CSS). Names and skills show
+  // on hover, so the arc stays quiet (stage units: 1200 × 700).
+  const arc = ["tusk", "bolt", "bullseye", "miso", "nyx", "kitsune", "forge"].map((k, i) => {
+    const a = (i - 3) * 20 * Math.PI / 180;
+    return [k, Math.round(500 + 160 * Math.cos(a)), Math.round(340 + 160 * Math.sin(a))];
+  });
+  $(".stage__musicians").innerHTML = arc.map(([k, x, y]) => {
     const t = D.team.find((m) => m.key === k);
-    // the upper pair beside the wire line carry their names on top, clear of it
-    const above = y === 265 ? ` data-label="above"` : "";
-    return `<div class="node node--m" data-key="${k}"${above} style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span class="node__label">${t.name}</span></div>`;
+    return `<div class="node node--m" data-key="${k}" style="--x:${x};--y:${y};--c:${t.color}">${av(k)}<span class="node__label">${t.name}<small>${t.skill}</small></span></div>`;
   }).join("");
   $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
-    `<span class="toolsbar__chip">${icon(t.icon)}<span>${t.name}</span></span>`).join(""));
+    `<span class="toolsbar__chip${t.flow ? " toolsbar__chip--flow" : ""}">${icon(t.icon)}<span>${t.name}${t.flow ? ` → ${t.flow}` : ""}</span></span>`).join(""));
 
   // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
