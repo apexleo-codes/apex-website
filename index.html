@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/sections-2.css">
+  <link rel="stylesheet" href="css/gtamex.css">
 </head>
 <body class="is-loading">
 
@@ -275,7 +276,88 @@
     </div>
   </section>
 
-  <!-- 06 · THANK YOU (slide 10) -->
+  <!-- 06 · GTAMEX · a side quest: a game I built, with APEX in co-op. No copy on
+       purpose: 3 s muted clips (played only while on screen, js/motion.js) and
+       stills cut from the gameplay reel, laid out as a mission select. The HUD
+       (wanted stars, cash) fills as the section scrolls past. -->
+  <section class="section gta" id="gtamex" data-chapter="GTAmex">
+    <div class="gta__floor" aria-hidden="true"></div>
+    <header class="shead"><span class="shead__num">06</span><p class="eyebrow">Side quest · a game I built</p></header>
+    <div class="gta__top">
+      <h2 class="gta__logo" aria-label="GTAmex: grand theft amex">
+        <span class="gta__A" aria-hidden="true">A</span>
+        <span class="gta__words" aria-hidden="true"><span>grand</span><span>theft</span><span>amex</span></span>
+      </h2>
+      <div class="gta__hud" aria-hidden="true">
+        <div class="gta__stars"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="gta__cash">$<span>00000000</span></p>
+        <p class="gta__party"><span><b>P1</b>Gaurav</span><span><img src="img/agent-apex.webp" alt="">Co-op · APEX</span></p>
+      </div>
+    </div>
+    <div class="gta__grid">
+      <figure class="tile tile--snap tile--title">
+        <img src="media/gtamex/title.webp" alt="The GTAmex title screen: grand theft amex">
+        <span class="tile__tag"><i></i>Title screen</span>
+        <p class="tile__start">Press start</p>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/takeoff.webp"><source src="media/gtamex/takeoff.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-01 · 0:03</span>
+        <figcaption class="tile__name">Take-off</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/gun.webp"><source src="media/gtamex/gun.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-02 · 0:03</span>
+        <figcaption class="tile__name">Locked &amp; loaded</figcaption>
+      </figure>
+      <figure class="tile tile--tall" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/police.webp"><source src="media/gtamex/police.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-03 · 0:03</span>
+        <figcaption class="tile__name">Hot pursuit</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/hangry.webp" alt="The Hangry food court inside the office" loading="lazy">
+        <span class="tile__tag"><i></i>M-04 · snap</span>
+        <figcaption class="tile__name">Why so hangry?</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/drive.webp"><source src="media/gtamex/drive.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-05 · 0:03</span>
+        <figcaption class="tile__name">Joyride</figcaption>
+      </figure>
+      <figure class="tile tile--snap tile--wide">
+        <img src="media/gtamex/bikes.webp" alt="Four superbikes lined up outside the office tower" loading="lazy">
+        <span class="tile__tag"><i></i>M-06 · snap</span>
+        <figcaption class="tile__name">The garage</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/cafe.webp" alt="The office cafeteria" loading="lazy">
+        <span class="tile__tag"><i></i>M-07 · snap</span>
+        <figcaption class="tile__name">Lunch break</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/bike.webp"><source src="media/gtamex/bike.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-08 · 0:03</span>
+        <figcaption class="tile__name">Full throttle</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/hall.webp" alt="Walking the office corridor past the meeting rooms" loading="lazy">
+        <span class="tile__tag"><i></i>M-09 · snap</span>
+        <figcaption class="tile__name">Floor walk</figcaption>
+      </figure>
+      <figure class="tile tile--finale" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/wasted.webp"><source src="media/gtamex/wasted.mp4" type="video/mp4"></video>
+        <span class="tile__tag"><i></i>M-10 · 0:03</span>
+        <figcaption class="tile__name">Wasted</figcaption>
+      </figure>
+    </div>
+    <div class="gta__passed">
+      <p class="gta__passed-big">Mission passed!</p>
+      <p class="gta__passed-sub">Respect <b>+</b></p>
+    </div>
+  </section>
+
+  <!-- 07 · THANK YOU (slide 10) -->
   <section class="section outro" id="outro" data-chapter="Thank you">
     <div class="thanks">
       <p class="thanks__word"><span>Thank</span> <em>you.</em></p>
