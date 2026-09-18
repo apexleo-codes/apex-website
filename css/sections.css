@@ -101,12 +101,15 @@
 .setup__lede { max-width: 56ch; color: var(--cream-2); font-size: clamp(1rem, 1.2vw, 1.15rem); margin: -.5em 0 clamp(48px, 7vh, 88px); }
 .setup__bar { display: none; }
 
-/* the assembly rig: APEX gains a part as each step passes — body, brain, face,
-   a soul, then skilled limbs. Each layer is a complete stage, so exactly one is
-   visible at a time and they cross-fade; they're pre-normalised onto one shared
-   900x1125 canvas (feet on a common baseline, centred) so nothing jumps between
-   stages. Transparent art — never re-introduce an opaque backing, a flat field
-   that close to the page ink shows up as a rectangle the moment it drifts.
+/* the assembly rig: APEX builds himself as each step passes — body, brain, face,
+   a soul, then the ascent. Each layer is a complete stage of the figure, so
+   exactly one stage is ever lit; tools/build-rig.py cut them out and put them on
+   one shared 900x1125 canvas, feet on a common floor line, and they superimpose
+   to the pixel below the neck. That is what the convergence below is built on:
+   the stages don't cross-fade like slides, they collapse INTO each other, and
+   only the part that actually changed — the head, the armour — reads as moving.
+   Transparent art — never re-introduce an opaque backing, a flat field that close
+   to the page ink shows up as a rectangle the moment it drifts.
    Sticky, so he stays in view through the steps. */
 .setup__grid { display: grid; gap: clamp(28px, 4.5vw, 76px); align-items: start; }
 /* the second column exists only once a layer has actually loaded — until the art
@@ -114,44 +117,173 @@
 .setup__grid.has-rig { grid-template-columns: minmax(0, 1fr) clamp(240px, 27vw, 400px); }
 .rig { display: none; }
 /* 4:5, matching the exported art — the figures are tall (mane plus full body),
-   so a square box would letterbox them and waste the column's width */
-.setup__grid.has-rig .rig { display: block; position: sticky; top: 108px; aspect-ratio: 4 / 5; }
-.rig__part {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-  opacity: 0; transform: translateY(16px) scale(.97);
-  transition: opacity .8s var(--ease), transform .8s var(--ease);
+   so a square box would letterbox them and waste the column's width.
+   The negative top margin only ever shows on step 01. Everywhere below that the
+   rig is stuck at `top`, so the margin just pulls its UNSTUCK position up, and
+   step 01 is the one step where that is where it sits — it was starting level with
+   the step number, and the art carries 17% headroom above the mane, so the lion
+   read as hanging low beside his own heading. */
+.setup__grid.has-rig .rig {
+  display: block; position: sticky; top: 108px; aspect-ratio: 4 / 5;
+  margin-top: clamp(-52px, -3.2vw, -30px);
 }
-.rig__part.is-on { opacity: 1; transform: none; }
 
-/* the soul: no new art. The armoured stage holds while a gold copy of him, blurred
-   into a halo, breathes behind him and motes drift up in front. The filter chain
-   turns every opaque pixel gold (black, then white, then sepia pushed to gold) and
-   the blur spreads it past his outline. Motion only runs while the step is on. */
-.rig__soul { z-index: 0; }
+/* Every layer is the same box: a stage, or an effect drawn in percentages of it.
+   Three depths, and the stage sits in the middle of them — an effect that has to
+   wrap round the figure (the soul, the flames) is two layers, not one, because a
+   single layer can't be both behind him and in front. */
+.rig__part { position: absolute; inset: 0; z-index: 1; opacity: 0; }
+.rig__part > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.rig__fx--back { z-index: 0; }
+.rig__fx--front { z-index: 2; }
+/* the fallback, and the whole of it when motion is reduced: a plain cross-fade on
+   the step's own latch. When the rig converges, motion.js takes opacity over. */
+.rig__part { transform: translateY(16px) scale(.97); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.rig__part.is-on { opacity: 1; transform: none; }
+/* …and then it owns opacity, transform and filter outright, frame by frame, so
+   the transition has to go: it would smear each frame into the next and the
+   figure would arrive a beat after the step it belongs to. */
+.rig.is-converging .rig__part { transition: none; will-change: opacity, transform, filter; }
+
+/* 02 · the brain lights up. Every number here is the brain's own box on the
+   shared canvas — centre 46.9% across, 29.1% down, about 18% wide — so the glow
+   sits in the skull's opening and not somewhere near it. Screened rather than
+   drawn over: it lights the gold art underneath instead of laying a grey disc on
+   top of it. */
+.rig__brain { mix-blend-mode: screen; }
+.rig__brain i { position: absolute; left: 46.9%; top: 29.1%; transform: translate(-50%, -50%); border-radius: 50%; }
+.rig__core { width: 23%; height: 11%; background: radial-gradient(closest-side, rgba(255, 244, 208, .95), rgba(246, 196, 92, .55) 55%, transparent); }
+.rig__bloom { width: 52%; height: 32%; background: radial-gradient(closest-side, rgba(233, 173, 79, .45), rgba(233, 173, 79, .12) 55%, transparent); }
+/* the shine: a specular band travelling across the core, clipped to the core's own
+   ellipse so it never runs out onto the skull. It's the pulse's partner — this
+   step's transition has no zoom, so the brain has to be the thing that moves. */
+.rig__shine { width: 26%; height: 12.5%; overflow: hidden; }
+.rig__shine::before {
+  content: ""; position: absolute; inset: -70% -150%;
+  background: linear-gradient(104deg, transparent 33%, rgba(255, 255, 255, .95) 50%, transparent 67%);
+}
+
+/* 04 · the soul. Still no new art: the armoured stage holds while gold copies of
+   HIM light up behind — one blurred wide into a bloom, one tight enough to stay a
+   rim on his outline — under turning rays, rings travelling outwards and motes
+   drifting up in front. The filter chain turns every opaque pixel gold (black,
+   then white, then sepia pushed round to gold) and the blur spreads it past his
+   edge. Motion only runs while the step is on. */
 .rig__soul::before {
-  content: ""; position: absolute; left: 50%; top: 46%; width: 88%; aspect-ratio: 1; border-radius: 50%;
-  transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(233, 173, 79, .3), rgba(233, 173, 79, .1) 60%, transparent);
+  content: ""; position: absolute; left: 50%; top: 46%; width: 104%; aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(233, 173, 79, .5), rgba(233, 173, 79, .17) 54%, transparent 80%);
 }
-.rig__soul img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(-8deg) blur(14px); opacity: .7;
+.rig__bloomed, .rig__rim { filter: brightness(0) invert(1) sepia(1) saturate(6) hue-rotate(-12deg); }
+.rig__bloomed { filter: brightness(0) invert(1) sepia(1) saturate(6) hue-rotate(-12deg) blur(26px); opacity: .95; }
+.rig__rim { filter: brightness(0) invert(1) sepia(1) saturate(6) hue-rotate(-12deg) blur(5px); opacity: .8; }
+/* a thin repeating fan, masked to a ring so it never reaches his face or the
+   frame's corners — at full width it would read as a striped background */
+.rig__rays {
+  position: absolute; left: 50%; top: 44%; width: 124%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 130, .32) 0deg 2.4deg, transparent 2.4deg 12deg);
+  -webkit-mask-image: radial-gradient(closest-side, transparent 26%, #000 45%, transparent 76%);
+          mask-image: radial-gradient(closest-side, transparent 26%, #000 45%, transparent 76%);
 }
-img.rig__part { z-index: 1; }
-.rig__motes { z-index: 2; }
+.rig__ring {
+  position: absolute; left: 50%; top: 46%; width: 44%; aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid rgba(255, 206, 122, .6); transform: translate(-50%, -50%) scale(.35); opacity: 0;
+}
+.rig__ring:nth-of-type(2) { animation-delay: 1.9s; }
 .rig__motes i {
-  position: absolute; left: var(--x); bottom: var(--y); width: 6px; height: 6px; border-radius: 50%;
-  background: #ffe2a6; box-shadow: 0 0 10px 3px rgba(255, 196, 102, .8); opacity: .6;
+  position: absolute; left: var(--x); bottom: var(--y); width: 7px; height: 7px; border-radius: 50%;
+  background: #fff2cf; box-shadow: 0 0 14px 5px rgba(255, 196, 102, .85); opacity: .75;
 }
+
+/* 05 · the ascent. He has evolved, so the stage itself shakes — on the IMAGE, not
+   the layer, because motion.js owns the layer's transform while it converges.
+   What makes it read as a power-up rather than a bonfire is the blaze: the same
+   trick as the soul's rim, but burnt hot and flickering, so the fire takes HIS
+   OUTLINE instead of standing off him in columns. The plume climbs behind that,
+   the tongues sit round his feet, and the sparks come off the top in front. */
+.rig__blaze {
+  filter: brightness(0) invert(1) sepia(1) saturate(9) hue-rotate(-22deg) blur(15px);
+  opacity: .92; transform: scale(1.04);
+}
+/* two gradients, one element: the body's own heat at 62% down, and a crest above
+   the mane (the figure's head tops out at 14.7%) so the power reads as going UP
+   and not as a lamp behind him. Both are frame percentages, like every other
+   position in the rig. */
+.rig__plume {
+  position: absolute; inset: 0;
+  background: radial-gradient(26% 15% at 46% 8%, rgba(255, 240, 190, .45), transparent 72%),
+              radial-gradient(40% 33% at 46% 62%, rgba(255, 206, 110, .5), rgba(240, 150, 40, .18) 58%, transparent 82%);
+  filter: blur(20px);
+}
+/* the floor line is 90.7% down the canvas, so the tongues start just under the
+   feet; x runs across the figure's own width, never wider */
+.rig__flames b {
+  position: absolute; left: var(--x); bottom: calc(6% + var(--y)); transform: translate(-50%, 0);
+  width: calc(var(--s) * 10%); height: calc(var(--s) * 27%); transform-origin: 50% 100%;
+  border-radius: 50% 50% 46% 46% / 74% 74% 26% 26%; filter: blur(3px); opacity: .72;
+  background: linear-gradient(to top, rgba(255, 120, 30, 0), rgba(255, 140, 40, .85) 16%,
+              rgba(255, 196, 86, .9) 50%, rgba(255, 244, 210, .9) 78%, rgba(255, 255, 255, 0));
+}
+.rig__sparks i {
+  position: absolute; left: var(--x); bottom: var(--y); width: 5px; height: 5px; border-radius: 50%;
+  background: #fff6de; box-shadow: 0 0 12px 4px rgba(255, 186, 74, .9); opacity: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .rig__soul.is-on img, .rig__soul.is-on::before { animation: soul-breathe 3.6s ease-in-out infinite; }
+  .rig__brain.is-on .rig__core { animation: brain-fire 1.5s ease-in-out infinite; }
+  .rig__brain.is-on .rig__bloom { animation: brain-fire 3.1s ease-in-out infinite .4s; }
+  .rig__brain.is-on .rig__shine::before { animation: brain-shine 3.2s ease-in-out infinite; }
+  .rig__soul.is-on .rig__bloomed, .rig__soul.is-on .rig__rim, .rig__soul.is-on::before { animation: soul-breathe 3.6s ease-in-out infinite; }
+  .rig__soul.is-on .rig__rays { animation: soul-turn 26s linear infinite; }
+  .rig__soul.is-on .rig__ring { animation: soul-wave 3.8s ease-out infinite; }
   .rig__motes i { opacity: 0; }
   .rig__motes.is-on i { animation: soul-rise var(--d) linear var(--w) infinite; }
+  .rig__ascend.is-on > img { animation: rig-shake .16s linear infinite; }
+  .rig__fire.is-on .rig__blaze { animation: blaze-flicker .5s ease-in-out infinite alternate; }
+  .rig__fire.is-on .rig__plume { animation: aura-flare 1.7s ease-in-out infinite; }
+  .rig__fire.is-on .rig__flames b { animation: flame-lick 1s ease-in-out infinite var(--w); }
+  .rig__sparks.is-on i { animation: spark-fly var(--d) linear var(--w) infinite; }
 }
-@keyframes soul-breathe { 50% { opacity: .35; } }
+@keyframes soul-breathe { 50% { opacity: .4; } }
+@keyframes soul-turn { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes soul-wave {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
+  18% { opacity: .8; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55); }
+}
 @keyframes soul-rise {
   0% { opacity: 0; transform: translateY(0) scale(.5); }
   20% { opacity: 1; }
   100% { opacity: 0; transform: translateY(var(--rise, -110px)) scale(1.1); }
+}
+@keyframes brain-fire { 50% { opacity: .42; transform: translate(-50%, -50%) scale(1.14); } }
+/* across, hold, and back again — the return pass is what makes it read, since one
+   sweep every few seconds is easy to scroll straight past. It still rests at each
+   end rather than oscillating without pause, which would read as a scanner. */
+@keyframes brain-shine {
+  0%, 6% { transform: translateX(-150%); }
+  40%, 56% { transform: translateX(150%); }
+  90%, 100% { transform: translateX(-150%); }
+}
+/* small, fast and never square-on: a power hum, not a wobble */
+@keyframes rig-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-1.6px, 1px) rotate(-.25deg); }
+  40% { transform: translate(1.4px, -1.2px) rotate(.2deg); }
+  60% { transform: translate(-1.1px, -.8px) rotate(.18deg); }
+  80% { transform: translate(1.5px, .9px) rotate(-.15deg); }
+}
+@keyframes aura-flare { 50% { opacity: .66; transform: scale(1.06, 1.1); } }
+@keyframes blaze-flicker { to { opacity: .68; transform: scale(1.075, 1.045); } }
+@keyframes flame-lick {
+  0%, 100% { transform: translate(-50%, 0) scale(1, 1); opacity: .8; }
+  35% { transform: translate(-50%, -5%) scale(.86, 1.3); opacity: 1; }
+  70% { transform: translate(-50%, -2%) scale(1.14, .88); opacity: .66; }
+}
+@keyframes spark-fly {
+  0% { opacity: 0; transform: translateY(0) scale(.4); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--fly, -190px)) scale(1.15); }
 }
 
 .steps { position: relative; display: grid; gap: clamp(62px, 10vh, 124px); }
@@ -264,7 +396,10 @@ img.rig__part { z-index: 1; }
   .store { grid-template-columns: repeat(2, minmax(0, max-content)); }
   .store__label { grid-column: 1 / -1; }
   .store__logo { width: 30px; height: 30px; }
+  /* the rig is a 30vh band up here, so anything that travels has to travel less
+     or it leaves the box before it fades */
   .rig__motes i { --rise: -60px; }
+  .rig__sparks i { --fly: -95px; }
   /* no room for a column beside the steps: APEX rides along at the top instead,
      sticky under the segment rail, and still gains a part per step. He needs an
      opaque backing or the step text scrolls through him. */

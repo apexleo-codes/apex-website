@@ -164,16 +164,26 @@
   // and nothing else - .step's dimming is a CSS opacity transition, so no tween
   // may ever touch its opacity.
   const setupSteps = $$(".setup .step"), setupSegs = $$(".setup__bar i"), rigParts = $$(".rig__part");
+  const rig = $(".rig");
+  // Whether the rig scrubs (see below). When it does, paint() owns `is-on` as well
+  // as the layers' opacity, because those two have to agree: the brain's pulse, the
+  // soul's rays, the shake and the flames all hang off that class, and the rig's
+  // change now lands well AFTER the step latches. Left on the latch, the brain
+  // would light up over a skull that hasn't grown one yet.
+  const rigScrubbed = !reduce && !!rig && rigParts.length > 0;
   const setStep = (i) => {
     setupSteps.forEach((x, k) => { x.classList.toggle("is-on", k === i); x.classList.toggle("is-past", k < i); });
     setupSegs.forEach((x, k) => x.classList.toggle("is-on", k <= i));
     // Exclusive, NOT cumulative. Each file is already a complete stage of the
-    // build (skeleton -> +head -> armoured -> +skills) and the art is transparent,
+    // build (skeleton -> +brain -> armoured -> awake) and the art is transparent,
     // so stacking them would show the skeleton's splayed arms poking out from
-    // behind the finished lion. One stage at a time, cross-faded. A layer may name
-    // several steps: the armoured stage holds through the soul, whose glow and
-    // motes are the only layers that join it.
-    rigParts.forEach((p) => p.classList.toggle("is-on", p.dataset.at.split(" ").includes(String(i))));
+    // behind the finished lion. One stage at a time. A layer may name several
+    // steps: the armoured stage holds through the soul, whose aura and motes are
+    // the only layers that join it.
+    // `is-on` is the layer's own state, and the only thing the effects listen to,
+    // so none of them burn a frame while their stage is off screen. Under reduced
+    // motion the latch is all there is, so it sets them here.
+    if (!rigScrubbed) rigParts.forEach((p) => p.classList.toggle("is-on", p.dataset.at.split(" ").includes(String(i))));
   };
   // onEnter/onEnterBack, never an isActive window: a step shorter than the gap
   // between its top and the trigger line never straddles that line with both
@@ -189,19 +199,113 @@
   }));
   setStep(0);
 
+  // …and the rig converges between those latches. The four stages are the same
+  // figure, cut and placed on one canvas by tools/build-rig.py, so they sit on
+  // top of each other to the pixel below the neck — which means a plain fade
+  // between them looks like nothing happening. So they implode instead: the stage
+  // you're scrolling towards starts oversized and out of focus and collapses onto
+  // the one in place, which shrinks into it as it goes. The lion never travels;
+  // the change arrives on him.
+  //
+  // Each change is anchored to the INCOMING step's own heading, and nothing else.
+  // Measuring between step TOPS was the mistake: the gap between two tops is the
+  // PREVIOUS step's height, so a tall step stretched its change and a short one
+  // rushed it, and every one of them ran early — the picture swapped while its
+  // words were still arriving at the middle of the screen. Now a step's picture
+  // changes over the travel of that step's own heading, from a quarter of the way
+  // down the screen (by then the heading has climbed three quarters of it and the
+  // body fills what's under it) to the very top. Same travel on every step, no
+  // matter how much copy it carries, and between two windows there is a plateau
+  // where nothing moves at all.
+  if (rigScrubbed) {
+    const IN = 0.3, OUT = 0.14, BLUR = 12;   // how far out it starts, how far in it collapses, px
+    const START = 0.25, END = 0.03;          // the incoming heading's travel, as a fraction of the screen
+    const at = rigParts.map((p) => p.dataset.at.split(" ").map(Number));
+    // …except across a boundary listed here, which stays a flat cross-fade. 01→02
+    // is the only one: the brain lighting up is the event there, and an implosion
+    // on top of it fought the pulse for the same attention. The index is the step
+    // it leaves FROM, so 0 is 01→02.
+    const FLAT = new Set([0]);
+    // Smoothstep across the window and nothing outside it. The plateau is what
+    // keeps each stage sharp now, so this only has to make the swap itself gentle;
+    // it is still symmetric — ease(u) + ease(1 - u) is 1 — so a pair of stages
+    // cross-fades to exactly 1 and neither dips in the middle.
+    const ease = (u) => u * u * (3 - 2 * u);
+    let tops = [];
+    const measure = () => { tops = setupSteps.map((st) => st.getBoundingClientRect().top + scrollY); };
+    const position = () => {
+      if (!tops.length) return 0;
+      const vh = innerHeight;
+      let prevEnd = -Infinity;
+      for (let j = 1; j < tops.length; j++) {
+        // never open a window before the last one closed: on a step shorter than
+        // the window the two would overlap and the stage between them, which is
+        // the one you are reading about, would never be reached
+        const start = Math.max(tops[j] - START * vh, prevEnd);
+        const end = Math.max(tops[j] - END * vh, start + 1);
+        if (scrollY < start) return j - 1;
+        if (scrollY < end) return j - 1 + (scrollY - start) / (end - start);
+        prevEnd = end;
+      }
+      return tops.length - 1;
+    };
+    const paint = () => {
+      const p = position();
+      const flat = FLAT.has(Math.floor(p));
+      rigParts.forEach((el, i) => {
+        const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
+        // signed distance in steps: negative while the layer is still ahead of you,
+        // positive once it's behind, and exactly 0 anywhere inside its own span
+        const d = p < lo ? p - lo : p > hi ? p - hi : 0;
+        const k = Math.min(1, Math.abs(d));
+        if (k >= 1) { el.style.visibility = "hidden"; el.style.opacity = "0"; el.classList.remove("is-on"); return; }
+        const m = ease(k);                        // 0 while it's at home, 1 a full step away
+        el.style.visibility = "visible";
+        el.style.opacity = 1 - m;
+        el.classList.toggle("is-on", m < 0.5);    // the effects follow the picture, not the latch
+        // "none", never "": an empty inline transform hands the layer back to the
+        // stylesheet's parked translateY(16px), and the figure drops 16px mid-fade
+        el.style.transform = flat ? "none" : `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
+        el.style.filter = flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
+      });
+    };
+    rig.classList.add("is-converging");
+    ScrollTrigger.create({
+      trigger: ".setup", start: "top bottom", end: "bottom top",
+      onUpdate: paint, onRefresh: () => { measure(); paint(); }
+    });
+    measure(); paint();
+  }
+
   // rhythm stop display  // rhythm stop display (the dial on desktop, the list on small screens)
   const R = D.rhythm, rhythmSec = $(".rhythm"), timeEl = $(".dial__time"), agentEl = $(".dial__agent"), labelEl = $(".dial__label");
+  // The face is a 12-hour clock but `h` counts straight through the day (01:00 is
+  // 25), so the rotation is h/12 and NOT (h % 12)/12: it just keeps climbing, past
+  // 360° and round again, which is what a real hand does between breakfast and the
+  // small hours. Taking the modulo here would send the hand spinning backwards
+  // across the face every time the day crossed noon or midnight.
+  const handAngle = (h) => (h / 12) * 360;
   const rItems = $$(".rhythm__list li"), dots = $$(".stopdot");
   let curStop = -1;
   const setStop = (k, animate = true) => {
     if (k === curStop) return;
     curStop = k;
     const st = R[k];
-    timeEl.textContent = st.t; agentEl.src = `img/agent-${st.key}.webp`; labelEl.textContent = st.label;
+    const c = D.clock12(st.t);
+    timeEl.innerHTML = `${c.t}<small>${c.ap}</small>`;
+    agentEl.src = `img/agent-${st.key}.webp`; labelEl.textContent = st.label;
     rItems.forEach((x, i) => x.classList.toggle("is-on", i === k));
     dots.forEach((d, i) => d.classList.toggle("is-on", i <= k));
     rhythmSec.classList.toggle("is-night", st.night);
-    if (animate && !reduce) gsap.fromTo([timeEl, agentEl, labelEl], { y: 16, autoAlpha: 0.2 }, { y: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out", stagger: 0.04, overwrite: true });
+    // the hand swings here, not in the pinned desktop story, because a phone never
+    // reaches that story - it sat at midnight all the way down the page while the
+    // readout beside it said 10:45 PM
+    if (animate && !reduce) {
+      gsap.to(".dial__hand", { rotation: handAngle(st.h), duration: 0.9, ease: "expo.out", overwrite: true });
+      gsap.fromTo([timeEl, agentEl, labelEl], { y: 16, autoAlpha: 0.2 }, { y: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out", stagger: 0.04, overwrite: true });
+    } else {
+      gsap.set(".dial__hand", { rotation: handAngle(st.h) });
+    }
   };
   setStop(0, false);
 
@@ -286,16 +390,11 @@
     orch.to({}, { duration: 0.3 });
     stage.dataset.step = 0;
 
-    // daily rhythm: equal scroll per stop; the hand swings to each stop's hour
-    gsap.set(".dial__hand", { rotation: (R[0].h / 24) * 360 });
+    // daily rhythm: equal scroll per stop. setStop swings the hand, so this only
+    // has to say which stop we are on.
     ScrollTrigger.create({
       trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true, anticipatePin: 1,
-      onUpdate: (s) => {
-        const k = Math.min(R.length - 1, Math.floor(s.progress * R.length));
-        if (k === curStop) return;
-        setStop(k);
-        gsap.to(".dial__hand", { rotation: (R[k].h / 24) * 360, duration: 0.9, ease: "expo.out", overwrite: true });
-      }
+      onUpdate: (s) => setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length)))
     });
 
     // build loop: the ring fills, a runner laps it, nodes light up · parked

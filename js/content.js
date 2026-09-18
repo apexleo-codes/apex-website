@@ -170,24 +170,35 @@ window.APEX = {
   ],
 
   // the rig: APEX assembling on the right as the steps go by. Each file is a
-  // COMPLETE stage of the build, not a single part - skeleton, then +head, then
-  // armoured, then awake - so exactly one shows at a time and they cross-fade
-  // (motion.js). They were generated separately and share no framing, so they're
-  // normalised here onto one 900x1125 canvas: feet on a common baseline, centred,
-  // hand-tuned scale per image. Backgrounds are transparent - filling them with
-  // the page ink and saving lossy WebP drifted the flat field off #0b1312 and drew
-  // a visible rectangle. `at` is the step (or steps) that show it.
-  // The soul is not new art: the armoured stage stays on through steps 3 and 4,
-  // and `fx: "soul"` adds a golden glow behind him and motes rising in front, so
-  // the lion doesn't blink out and back in between the two.
-  // A layer whose file is missing removes itself, and the column then collapses.
+  // COMPLETE stage of the build, not a single part - skeleton, then +brain, then
+  // armoured, then awake - so exactly one stage shows at a time. The four were
+  // drawn on the same figure and cut, aligned and framed by tools/build-rig.py:
+  // one 900x1125 canvas, feet on a common floor line, transparent. That is what
+  // lets motion.js converge them into each other rather than swap them - the
+  // stages superimpose to the pixel below the neck, so the lion never jumps.
+  // Backgrounds must stay transparent: filling them with the page ink and saving
+  // lossy WebP drifted the flat field off #0b1312 and drew a visible rectangle.
+  //
+  // `at` is the step (or steps) that show a layer. `fx` is decoration, and a
+  // layer may be nothing but decoration:
+  //   brain   the exposed brain lights up where it sits inside the skull
+  //   soul    a golden aura, rays and rising motes around the armoured stage,
+  //           which holds through steps 3 and 4 so he doesn't blink out between
+  //   ascend  the stage itself shakes, as the power lands on it
+  //   fire    flames up the body and sparks off the top
+  // Every position inside an fx layer is a percentage of that shared canvas,
+  // measured off the art (build-rig.py --check prints the frame): the brain sits
+  // at 46.9% x 29.1%, the floor line at 90.7%.
+  // A layer whose art is missing removes itself, and the column then collapses.
   setupRig: [
     { at: 0, img: "apex-rig-1-body" },
     { at: 1, img: "apex-rig-2-brain" },
+    { at: 1, fx: "brain" },
     { at: [2, 3], img: "apex-rig-3-face" },
     { at: 3, img: "apex-rig-3-face", fx: "soul" },
     // not 4-limbs: its "skill.md" lettering over the arms and legs read as noise
-    { at: 4, img: "apex-rig-5-alive" }
+    { at: 4, img: "apex-rig-5-alive", fx: "ascend" },
+    { at: 4, img: "apex-rig-5-alive", fx: "fire" }
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)
@@ -250,7 +261,17 @@ window.APEX = {
     { head: "You get the result", body: "A summary and a cart screenshot on Telegram.", visual: "tg-t09" }
   ],
 
-  // slide 9 · a day with APEX
+  // slide 9 · a day with APEX.
+  // `h` is hours since midnight and it KEEPS COUNTING past 24 — 01:00 is 25 —
+  // which is the whole reason the hand sweeps forward all day instead of winding
+  // backwards for the night stops. The face is a 12-hour clock, so the dial takes
+  // h modulo 12 for position and the raw h for rotation: two forward sweeps.
+  // `t` is the 24h source time and the only place a time is written down; the page
+  // shows 12h, formatted from it here so the two can never drift apart.
+  clock12: (t) => {
+    const [h, m] = t.split(":").map(Number);
+    return { t: `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}`, ap: h < 12 ? "AM" : "PM" };
+  },
   rhythm: [
     { t: "07:30", h: 7.5, key: "apex", label: "Morning brief", night: false },
     { t: "08:15", h: 8.25, key: "bullseye", label: "Pre-market brief", night: false },

@@ -112,22 +112,69 @@
       </article>`).join("");
 
   // the rig: stacked transparent layers that assemble APEX as the steps go by.
-  // onerror removes a layer whose art isn't in img/ yet, so the column degrades
-  // to whatever exists instead of showing broken-image icons.
-  // `at` can list several steps ("2 3"): a stage that stays on across them never
-  // cross-fades out and back in. The soul is two extra layers round the stage it
-  // lifts: a blurred gold copy of him behind, and motes rising in front.
+  // Every layer is the same box, so a layer is either a stage (one image) or an
+  // effect painted in percentages of that box - see content.js for what each
+  // effect is and where the figure's landmarks are. onerror removes a layer whose
+  // art isn't in img/ yet, so the column degrades to whatever exists instead of
+  // showing broken-image icons. `at` can list several steps ("2 3"): a stage that
+  // stays on across them never fades out and back in.
+  // The image always sits INSIDE the layer, never being the layer: motion.js owns
+  // the layer's transform while it converges, and the shake owns the image's.
   const rig = $(".rig");
   if (rig) {
-    const motes = [[30, 36, 5.2, 0], [66, 28, 6, 1.4], [46, 60, 4.6, 2.6], [76, 50, 5.6, .7], [22, 58, 6.4, 3.2],
-      [56, 18, 5, 2], [36, 16, 5.8, 4], [70, 68, 4.8, 3.6], [52, 42, 6.2, .3], [28, 76, 5.4, 1.9], [62, 80, 4.4, 4.4], [80, 34, 6.6, 2.2]]
-      .map(([x, y, d, w]) => `<i style="--x:${x}%;--y:${y}%;--d:${d}s;--w:${w}s"></i>`).join("");
-    rig.innerHTML = D.setupRig.map((p) => {
+    const dots = (list) => list.map(([x, y, d, w]) => `<i style="--x:${x}%;--y:${y}%;--d:${d}s;--w:${w}s"></i>`).join("");
+    // the soul's motes: drifting up around the whole figure
+    const motes = dots([[30, 36, 5.2, 0], [66, 28, 6, 1.4], [46, 60, 4.6, 2.6], [76, 50, 5.6, .7], [22, 58, 6.4, 3.2],
+      [56, 18, 5, 2], [36, 16, 5.8, 4], [70, 68, 4.8, 3.6], [52, 42, 6.2, .3], [28, 76, 5.4, 1.9],
+      [62, 80, 4.4, 4.4], [80, 34, 6.6, 2.2], [40, 70, 5, 1.1], [72, 14, 5.6, 2.9], [18, 44, 6.2, 3.9],
+      [50, 86, 4.2, .9], [34, 52, 5.8, 2.4], [68, 44, 6.8, 1.6]]);
+    // the ascent's sparks: fewer, faster, and thrown further up
+    const sparks = dots([[28, 30, 1.5, 0], [44, 18, 1.8, .35], [58, 26, 1.4, .7], [70, 16, 1.7, .2],
+      [22, 48, 1.6, .9], [78, 40, 1.9, .5], [36, 8, 1.5, 1.2], [64, 6, 1.7, .8],
+      [50, 34, 1.3, 1.05], [16, 20, 1.8, .6], [84, 24, 1.6, 1.3], [40, 44, 1.4, .15]]);
+    // flame tongues, x across the figure's own width (it spans 20%-81% of the
+    // canvas) so the fire hugs him instead of standing off him in columns
+    const flames = [[30, 2, 1.05, 0], [38, -2, 1.3, .28], [46, -4, 1.45, .12], [54, -3, 1.35, .5],
+      [62, -1, 1.25, .34], [70, 3, 1, .2], [26, 7, .85, .55], [74, 8, .9, .36],
+      [34, 1, 1.15, .64], [58, 4, 1.1, .8], [50, 9, .8, .44], [42, 6, .95, .72]]
+      .map(([x, y, s, w]) => `<b style="--x:${x}%;--y:${y}%;--s:${s};--w:${w}s"></b>`).join("");
+
+    // An effect returns its layers as [modifier, contents] pairs, because most of
+    // them need one BEHIND the figure and one in FRONT of it, and a layer can't
+    // straddle him. The names carry the depth (`--back` / `--front`) and the CSS
+    // gives them their z-index; the stage images sit between the two.
+    const fx = {
+      // the brain: a lit core the size of the brain itself, inside a wider bloom
+      // that spills onto the skull around it, with a highlight sweeping across the
+      // core so it reads as wet and shining rather than just bright. In front and
+      // screened, so it lights the gold art rather than sitting on top of it as a
+      // grey disc. This step's transition carries no zoom (see FLAT in motion.js),
+      // so the pulse is the whole event and has to hold the eye on its own.
+      brain: () => [["brain rig__fx--front",
+        `<i class="rig__core"></i><i class="rig__bloom"></i><i class="rig__shine"></i>`]],
+      // the soul: no new art. The armoured stage holds while gold copies of him -
+      // one bloomed wide, one tight enough to stay a rim - breathe behind him,
+      // rays turn and rings travel outwards, and motes drift up in front.
+      soul: (p) => [
+        ["soul rig__fx--back", `<span class="rig__rays"></span><span class="rig__ring"></span><span class="rig__ring"></span>
+           <img class="rig__bloomed" src="img/${p.img}.webp" alt="" onerror="this.closest('.rig__part').remove()">
+           <img class="rig__rim" src="img/${p.img}.webp" alt="">`],
+        ["motes rig__fx--front", motes]],
+      // the ascent: a gold copy of him burns as an aura on his own outline, a
+      // plume climbs behind it, flames lick round his feet, sparks come off the
+      // top in front. The shake is on the stage layer itself, not here.
+      fire: (p) => [
+        ["fire rig__fx--back", `<span class="rig__plume"></span>
+           <img class="rig__blaze" src="img/${p.img}.webp" alt="" onerror="this.closest('.rig__part').remove()">
+           <span class="rig__flames">${flames}</span>`],
+        ["sparks rig__fx--front", sparks]]
+    };
+    rig.innerHTML = D.setupRig.flatMap((p) => {
       const at = [].concat(p.at).join(" ");
-      return p.fx === "soul"
-        ? `<div class="rig__part rig__soul" data-at="${at}"><img src="img/${p.img}.webp" alt="" onerror="this.parentNode.remove()"></div>
-           <div class="rig__part rig__motes" data-at="${at}">${motes}</div>`
-        : `<img class="rig__part" data-at="${at}" src="img/${p.img}.webp" alt="" onerror="this.remove()">`;
+      const layers = fx[p.fx] ? fx[p.fx](p)
+        : [[p.fx || "", `<img src="img/${p.img}.webp" alt="" onerror="this.closest('.rig__part').remove()">`]];
+      return layers.map(([mod, inner]) =>
+        `<div class="rig__part${mod ? ` rig__${mod}` : ""}" data-at="${at}">${inner}</div>`);
     }).join("");
     // The art is generated separately. Until at least one layer really loads the
     // grid stays single-column - otherwise the steps give up 400px to an empty
@@ -185,21 +232,26 @@
       <div class="tstep__inline">${screen(s.visual)}</div>
     </li>`).join("");
 
-  // 07 · daily rhythm dial
+  // 07 · daily rhythm dial — a 12-hour face, so it reads like a clock on a wall
+  // rather than a 24-hour instrument. `h` counts past 24 (see content.js), so
+  // position takes it modulo 12: the two halves of the day share the face, and a
+  // 9 AM and a 9:30 PM stop sit a few degrees apart rather than opposite. There is
+  // no night band on the rim any more — it spanned 21:00–06:00, which is a single
+  // arc only on a 24-hour face; the sun/moon in the middle says it instead.
   const svg = $(".dial__svg");
-  const pt = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
+  const pt = (h, r) => { const a = ((h % 12) / 12) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
   let ticks = "";
-  for (let h = 0; h < 24; h++) {
-    const [x1, y1] = pt(h, h % 6 ? 262 : 250), [x2, y2] = pt(h, 276);
-    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${h % 6 ? "tick" : "tick tick--major"}"/>`;
-    if (h % 6 === 0) { const [hx, hy] = pt(h, 222); ticks += `<text x="${hx}" y="${hy}" class="hour">${pad(h)}</text>`; }
+  for (let h = 0; h < 12; h++) {
+    const [x1, y1] = pt(h, h % 3 ? 262 : 250), [x2, y2] = pt(h, 276);
+    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${h % 3 ? "tick" : "tick tick--major"}"/>`;
+    if (h % 3 === 0) { const [hx, hy] = pt(h, 222); ticks += `<text x="${hx}" y="${hy}" class="hour">${h || 12}</text>`; }
   }
-  const [nx1, ny1] = pt(21, 269), [nx2, ny2] = pt(30, 269);
-  ticks += `<path class="dial__night" d="M${nx1} ${ny1} A269 269 0 0 1 ${nx2} ${ny2}"/>`;
-  D.rhythm.forEach((st, i) => { const [x, y] = pt(st.h % 24, 269); ticks += `<circle class="stopdot" data-i="${i}" cx="${x}" cy="${y}" r="9"/>`; });
+  D.rhythm.forEach((st, i) => { const [x, y] = pt(st.h, 269); ticks += `<circle class="stopdot" data-i="${i}" cx="${x}" cy="${y}" r="9"/>`; });
   svg.innerHTML = `<circle class="dial__ring" cx="300" cy="300" r="269"/>${ticks}`;
-  $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => `
-    <li data-i="${i}" class="${i ? "" : "is-on"}"><b>${st.t}</b>${av(st.key)}<span>${st.label}</span></li>`).join("");
+  $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => {
+    const c = D.clock12(st.t);
+    return `<li data-i="${i}" class="${i ? "" : "is-on"}"><b>${c.t}<small>${c.ap}</small></b>${av(st.key)}<span>${st.label}</span></li>`;
+  }).join("");
 
   // the build loop's nodes around the ring · parked
   if ($(".cycle__nodes")) $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `
