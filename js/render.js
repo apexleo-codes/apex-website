@@ -145,9 +145,13 @@
     // gives them their z-index; the stage images sit between the two.
     const fx = {
       // the brain: a lit core the size of the brain itself, inside a wider bloom
-      // that spills onto the skull around it. In front and screened, so it lights
-      // the gold art rather than sitting on top of it as a grey disc.
-      brain: () => [["brain rig__fx--front", `<i class="rig__core"></i><i class="rig__bloom"></i>`]],
+      // that spills onto the skull around it, with a highlight sweeping across the
+      // core so it reads as wet and shining rather than just bright. In front and
+      // screened, so it lights the gold art rather than sitting on top of it as a
+      // grey disc. This step's transition carries no zoom (see FLAT in motion.js),
+      // so the pulse is the whole event and has to hold the eye on its own.
+      brain: () => [["brain rig__fx--front",
+        `<i class="rig__core"></i><i class="rig__bloom"></i><i class="rig__shine"></i>`]],
       // the soul: no new art. The armoured stage holds while gold copies of him -
       // one bloomed wide, one tight enough to stay a rim - breathe behind him,
       // rays turn and rings travel outwards, and motes drift up in front.
@@ -228,21 +232,26 @@
       <div class="tstep__inline">${screen(s.visual)}</div>
     </li>`).join("");
 
-  // 07 · daily rhythm dial
+  // 07 · daily rhythm dial — a 12-hour face, so it reads like a clock on a wall
+  // rather than a 24-hour instrument. `h` counts past 24 (see content.js), so
+  // position takes it modulo 12: the two halves of the day share the face, and a
+  // 9 AM and a 9:30 PM stop sit a few degrees apart rather than opposite. There is
+  // no night band on the rim any more — it spanned 21:00–06:00, which is a single
+  // arc only on a 24-hour face; the sun/moon in the middle says it instead.
   const svg = $(".dial__svg");
-  const pt = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
+  const pt = (h, r) => { const a = ((h % 12) / 12) * 2 * Math.PI - Math.PI / 2; return [300 + r * Math.cos(a), 300 + r * Math.sin(a)]; };
   let ticks = "";
-  for (let h = 0; h < 24; h++) {
-    const [x1, y1] = pt(h, h % 6 ? 262 : 250), [x2, y2] = pt(h, 276);
-    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${h % 6 ? "tick" : "tick tick--major"}"/>`;
-    if (h % 6 === 0) { const [hx, hy] = pt(h, 222); ticks += `<text x="${hx}" y="${hy}" class="hour">${pad(h)}</text>`; }
+  for (let h = 0; h < 12; h++) {
+    const [x1, y1] = pt(h, h % 3 ? 262 : 250), [x2, y2] = pt(h, 276);
+    ticks += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${h % 3 ? "tick" : "tick tick--major"}"/>`;
+    if (h % 3 === 0) { const [hx, hy] = pt(h, 222); ticks += `<text x="${hx}" y="${hy}" class="hour">${h || 12}</text>`; }
   }
-  const [nx1, ny1] = pt(21, 269), [nx2, ny2] = pt(30, 269);
-  ticks += `<path class="dial__night" d="M${nx1} ${ny1} A269 269 0 0 1 ${nx2} ${ny2}"/>`;
-  D.rhythm.forEach((st, i) => { const [x, y] = pt(st.h % 24, 269); ticks += `<circle class="stopdot" data-i="${i}" cx="${x}" cy="${y}" r="9"/>`; });
+  D.rhythm.forEach((st, i) => { const [x, y] = pt(st.h, 269); ticks += `<circle class="stopdot" data-i="${i}" cx="${x}" cy="${y}" r="9"/>`; });
   svg.innerHTML = `<circle class="dial__ring" cx="300" cy="300" r="269"/>${ticks}`;
-  $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => `
-    <li data-i="${i}" class="${i ? "" : "is-on"}"><b>${st.t}</b>${av(st.key)}<span>${st.label}</span></li>`).join("");
+  $(".rhythm__list").innerHTML = D.rhythm.map((st, i) => {
+    const c = D.clock12(st.t);
+    return `<li data-i="${i}" class="${i ? "" : "is-on"}"><b>${c.t}<small>${c.ap}</small></b>${av(st.key)}<span>${st.label}</span></li>`;
+  }).join("");
 
   // the build loop's nodes around the ring · parked
   if ($(".cycle__nodes")) $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `

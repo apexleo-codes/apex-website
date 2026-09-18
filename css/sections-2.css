@@ -223,20 +223,30 @@
 .tick { stroke: currentColor; stroke-opacity: .35; stroke-width: 1.5; }
 .tick--major { stroke-opacity: .85; stroke-width: 2.5; }
 .hour { fill: currentColor; fill-opacity: .55; font-family: var(--mono); font-size: 15px; text-anchor: middle; dominant-baseline: middle; }
-.dial__night { fill: none; stroke: #7d6ef0; stroke-width: 12; stroke-opacity: .35; stroke-linecap: round; }
 .stopdot { fill: var(--bg); stroke: currentColor; stroke-opacity: .5; stroke-width: 2; transition: fill .4s, stroke .4s; }
 .stopdot.is-on { fill: var(--gold); stroke: var(--gold); stroke-opacity: 1; }
 .dial__hand { position: absolute; inset: 0; }
 .dial__hand i { position: absolute; left: 50%; top: 11%; width: 3px; height: 39%; margin-left: -1.5px; border-radius: 3px; background: var(--gold); }
-.dial__center { position: absolute; inset: 27%; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; border-radius: 50%; background: color-mix(in oklab, var(--fg) 7%, var(--bg)); }
+.dial__center { position: absolute; inset: 26%; display: grid; place-content: center; justify-items: center; gap: 7px; text-align: center; border-radius: 50%; background: color-mix(in oklab, var(--fg) 7%, var(--bg)); }
+/* sun or moon, over the readout: on a 12-hour face 9 o'clock is two different
+   times of day, so something has to say which. Both icons sit in one box, stacked,
+   so the swap is a cross-fade in place and the centre's grid never reflows. */
+.dial__sky { position: relative; display: block; width: clamp(19px, 2.2vw, 28px); aspect-ratio: 1; color: var(--accent); }
+.dial__sky .ic { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.dial__moon { opacity: 0; transform: rotate(-35deg) scale(.6); }
+.rhythm.is-night .dial__sun { opacity: 0; transform: rotate(35deg) scale(.6); }
+.rhythm.is-night .dial__moon { opacity: 1; transform: none; }
 .dial__time { font-size: clamp(1.9rem, 3.6vw, 3.4rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; margin: 0; font-variant-numeric: tabular-nums; }
+.dial__time small { font-size: .4em; font-weight: 600; letter-spacing: 0; margin-left: .22em; opacity: .55; }
 .dial__agent { width: clamp(46px, 5vw, 76px); border-radius: 50%; }
 .dial__label { font-family: var(--serif); font-style: italic; font-size: clamp(1rem, 1.5vw, 1.4rem); margin: 0; line-height: 1.15; }
 .rhythm__side .big { margin-top: 0; }
 .rhythm__list { list-style: none; padding: 0; margin: 0 0 26px; }
-.rhythm__list li { display: grid; grid-template-columns: 64px 30px 1fr; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px solid color-mix(in oklab, var(--fg) 14%, transparent); opacity: .42; transition: opacity .4s; }
+/* 78px, not 64: "10:45 PM" is three characters longer than "22:45" was */
+.rhythm__list li { display: grid; grid-template-columns: 78px 30px 1fr; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px solid color-mix(in oklab, var(--fg) 14%, transparent); opacity: .42; transition: opacity .4s; }
 .rhythm__list li.is-on { opacity: 1; }
 .rhythm__list b { font-family: var(--mono); font-weight: 600; font-size: .85rem; }
+.rhythm__list b small { font-size: .82em; opacity: .6; margin-left: .3em; }
 .rhythm__list li.is-on b { color: var(--accent); }
 .rhythm__list img { width: 28px; height: 28px; border-radius: 50%; }
 .rhythm__list span { font-size: .95rem; }

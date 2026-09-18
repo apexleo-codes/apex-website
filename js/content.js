@@ -261,7 +261,17 @@ window.APEX = {
     { head: "You get the result", body: "A summary and a cart screenshot on Telegram.", visual: "tg-t09" }
   ],
 
-  // slide 9 · a day with APEX
+  // slide 9 · a day with APEX.
+  // `h` is hours since midnight and it KEEPS COUNTING past 24 — 01:00 is 25 —
+  // which is the whole reason the hand sweeps forward all day instead of winding
+  // backwards for the night stops. The face is a 12-hour clock, so the dial takes
+  // h modulo 12 for position and the raw h for rotation: two forward sweeps.
+  // `t` is the 24h source time and the only place a time is written down; the page
+  // shows 12h, formatted from it here so the two can never drift apart.
+  clock12: (t) => {
+    const [h, m] = t.split(":").map(Number);
+    return { t: `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}`, ap: h < 12 ? "AM" : "PM" };
+  },
   rhythm: [
     { t: "07:30", h: 7.5, key: "apex", label: "Morning brief", night: false },
     { t: "08:15", h: 8.25, key: "bullseye", label: "Pre-market brief", night: false },

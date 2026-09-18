@@ -210,6 +210,17 @@
   if (rig && rigParts.length && !reduce) {
     const IN = 0.3, OUT = 0.14, BLUR = 12;   // how far out it starts, how far in it collapses, px
     const at = rigParts.map((p) => p.dataset.at.split(" ").map(Number));
+    // The step LATCHES when the next step's top reaches the line, but the raw
+    // position is linear between step tops - so the figure used to be half changed
+    // at the halfway mark, a whole half-step before the words it belongs to. This
+    // eases the fraction so each stage holds until the next step is nearly up and
+    // then swaps: the picture finishes arriving exactly as the copy does.
+    const HOLD = 3;
+    // …except across a boundary listed here, which stays a flat cross-fade. 01→02
+    // is the only one: the brain lighting up is the event there, and an implosion
+    // on top of it fought the pulse for the same attention. The index is the step
+    // it leaves FROM, so 0 is 01→02.
+    const FLAT = new Set([0]);
     // A normalised cubic sigmoid, and the reason the lion isn't soft the whole way
     // down the section. sharp(k) + sharp(1 - k) === 1, so a pair of stages still
     // cross-fades to exactly 1 and neither dips; but with a plain 1 - k the two
@@ -224,12 +235,14 @@
       const line = scrollY + innerHeight * 0.55;
       if (!tops.length || line <= tops[0]) return 0;
       for (let i = 0; i < tops.length - 1; i++) {
-        if (line < tops[i + 1]) return i + (line - tops[i]) / (tops[i + 1] - tops[i]);
+        const t = (line - tops[i]) / (tops[i + 1] - tops[i]);
+        if (t < 1) return i + t ** HOLD;
       }
       return tops.length - 1;
     };
     const paint = () => {
       const p = position();
+      const flat = FLAT.has(Math.floor(p));
       rigParts.forEach((el, i) => {
         const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
         // signed distance in steps: negative while the layer is still ahead of you,
@@ -240,8 +253,10 @@
         const m = sharp(k);                       // 0 while it's at home, 1 a full step away
         el.style.visibility = "visible";
         el.style.opacity = 1 - m;
-        el.style.transform = `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
-        el.style.filter = m > 0.002 ? `blur(${(m * m * BLUR).toFixed(2)}px)` : "";
+        // "none", never "": an empty inline transform hands the layer back to the
+        // stylesheet's parked translateY(16px), and the figure drops 16px mid-fade
+        el.style.transform = flat ? "none" : `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
+        el.style.filter = flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
       });
     };
     rig.classList.add("is-converging");
@@ -254,13 +269,21 @@
 
   // rhythm stop display  // rhythm stop display (the dial on desktop, the list on small screens)
   const R = D.rhythm, rhythmSec = $(".rhythm"), timeEl = $(".dial__time"), agentEl = $(".dial__agent"), labelEl = $(".dial__label");
+  // The face is a 12-hour clock but `h` counts straight through the day (01:00 is
+  // 25), so the rotation is h/12 and NOT (h % 12)/12: it just keeps climbing, past
+  // 360° and round again, which is what a real hand does between breakfast and the
+  // small hours. Taking the modulo here would send the hand spinning backwards
+  // across the face every time the day crossed noon or midnight.
+  const handAngle = (h) => (h / 12) * 360;
   const rItems = $$(".rhythm__list li"), dots = $$(".stopdot");
   let curStop = -1;
   const setStop = (k, animate = true) => {
     if (k === curStop) return;
     curStop = k;
     const st = R[k];
-    timeEl.textContent = st.t; agentEl.src = `img/agent-${st.key}.webp`; labelEl.textContent = st.label;
+    const c = D.clock12(st.t);
+    timeEl.innerHTML = `${c.t}<small>${c.ap}</small>`;
+    agentEl.src = `img/agent-${st.key}.webp`; labelEl.textContent = st.label;
     rItems.forEach((x, i) => x.classList.toggle("is-on", i === k));
     dots.forEach((d, i) => d.classList.toggle("is-on", i <= k));
     rhythmSec.classList.toggle("is-night", st.night);
@@ -350,14 +373,14 @@
     stage.dataset.step = 0;
 
     // daily rhythm: equal scroll per stop; the hand swings to each stop's hour
-    gsap.set(".dial__hand", { rotation: (R[0].h / 24) * 360 });
+    gsap.set(".dial__hand", { rotation: handAngle(R[0].h) });
     ScrollTrigger.create({
       trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true, anticipatePin: 1,
       onUpdate: (s) => {
         const k = Math.min(R.length - 1, Math.floor(s.progress * R.length));
         if (k === curStop) return;
         setStop(k);
-        gsap.to(".dial__hand", { rotation: (R[k].h / 24) * 360, duration: 0.9, ease: "expo.out", overwrite: true });
+        gsap.to(".dial__hand", { rotation: handAngle(R[k].h), duration: 0.9, ease: "expo.out", overwrite: true });
       }
     });
 

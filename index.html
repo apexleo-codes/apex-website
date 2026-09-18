@@ -29,6 +29,8 @@
     <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h10.6L20.5 8H7"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></symbol>
     <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.3"/><path d="M12 2.4v2.5M12 19.1v2.5M2.4 12h2.5M19.1 12h2.5M5.2 5.2l1.8 1.8M17 17l1.8 1.8M18.8 5.2L17 7M7 17l-1.8 1.8"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.5A8.9 8.9 0 0 1 9.5 3.6a8.9 8.9 0 1 0 10.9 10.9z"/></symbol>
     <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
@@ -249,7 +251,8 @@
           <svg class="dial__svg" viewBox="0 0 600 600" aria-hidden="true"></svg>
           <div class="dial__hand"><i></i></div>
           <div class="dial__center">
-            <p class="dial__time">07:30</p>
+            <span class="dial__sky" aria-hidden="true"><svg class="ic dial__sun"><use href="#i-sun"/></svg><svg class="ic dial__moon"><use href="#i-moon"/></svg></span>
+            <p class="dial__time">7:30<small>AM</small></p>
             <img class="dial__agent" src="img/agent-apex.webp" alt="">
             <p class="dial__label">Morning brief</p>
           </div>
@@ -257,7 +260,7 @@
         <div class="rhythm__side">
           <h2 class="big">A day with <em>APEX</em></h2>
           <ul class="rhythm__list"></ul>
-          <p class="rhythm__note">Night work rolls into the 07:30 brief: one message, not five. Sundays at 09:30, MISO plans the recipe and fills the cart. BOLT is on call any time you say “emergency”.</p>
+          <p class="rhythm__note">Night work rolls into the 7:30 AM brief: one message, not five. Sundays at 9:30 AM, MISO plans the recipe and fills the cart. BOLT is on call any time you say “emergency”.</p>
         </div>
       </div>
     </div>

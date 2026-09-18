@@ -117,8 +117,16 @@
 .setup__grid.has-rig { grid-template-columns: minmax(0, 1fr) clamp(240px, 27vw, 400px); }
 .rig { display: none; }
 /* 4:5, matching the exported art — the figures are tall (mane plus full body),
-   so a square box would letterbox them and waste the column's width */
-.setup__grid.has-rig .rig { display: block; position: sticky; top: 108px; aspect-ratio: 4 / 5; }
+   so a square box would letterbox them and waste the column's width.
+   The negative top margin only ever shows on step 01. Everywhere below that the
+   rig is stuck at `top`, so the margin just pulls its UNSTUCK position up, and
+   step 01 is the one step where that is where it sits — it was starting level with
+   the step number, and the art carries 17% headroom above the mane, so the lion
+   read as hanging low beside his own heading. */
+.setup__grid.has-rig .rig {
+  display: block; position: sticky; top: 108px; aspect-ratio: 4 / 5;
+  margin-top: clamp(-52px, -3.2vw, -30px);
+}
 
 /* Every layer is the same box: a stage, or an effect drawn in percentages of it.
    Three depths, and the stage sits in the middle of them — an effect that has to
@@ -146,6 +154,14 @@
 .rig__brain i { position: absolute; left: 46.9%; top: 29.1%; transform: translate(-50%, -50%); border-radius: 50%; }
 .rig__core { width: 23%; height: 11%; background: radial-gradient(closest-side, rgba(255, 244, 208, .95), rgba(246, 196, 92, .55) 55%, transparent); }
 .rig__bloom { width: 52%; height: 32%; background: radial-gradient(closest-side, rgba(233, 173, 79, .45), rgba(233, 173, 79, .12) 55%, transparent); }
+/* the shine: a specular band travelling across the core, clipped to the core's own
+   ellipse so it never runs out onto the skull. It's the pulse's partner — this
+   step's transition has no zoom, so the brain has to be the thing that moves. */
+.rig__shine { width: 25%; height: 12%; overflow: hidden; }
+.rig__shine::before {
+  content: ""; position: absolute; inset: -60% -120%;
+  background: linear-gradient(104deg, transparent 40%, rgba(255, 255, 255, .8) 50%, transparent 60%);
+}
 
 /* 04 · the soul. Still no new art: the armoured stage holds while gold copies of
    HIM light up behind — one blurred wide into a bloom, one tight enough to stay a
@@ -216,6 +232,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .rig__brain.is-on .rig__core { animation: brain-fire 1.5s ease-in-out infinite; }
   .rig__brain.is-on .rig__bloom { animation: brain-fire 3.1s ease-in-out infinite .4s; }
+  .rig__brain.is-on .rig__shine::before { animation: brain-shine 2.6s ease-in-out infinite; }
   .rig__soul.is-on .rig__bloomed, .rig__soul.is-on .rig__rim, .rig__soul.is-on::before { animation: soul-breathe 3.6s ease-in-out infinite; }
   .rig__soul.is-on .rig__rays { animation: soul-turn 26s linear infinite; }
   .rig__soul.is-on .rig__ring { animation: soul-wave 3.8s ease-out infinite; }
@@ -240,6 +257,12 @@
   100% { opacity: 0; transform: translateY(var(--rise, -110px)) scale(1.1); }
 }
 @keyframes brain-fire { 50% { opacity: .42; transform: translate(-50%, -50%) scale(1.14); } }
+/* it rests off screen for most of the loop: a band sweeping back and forth
+   nonstop reads as a scanner, one that passes now and then reads as a shine */
+@keyframes brain-shine {
+  0%, 12% { transform: translateX(-115%); }
+  46%, 100% { transform: translateX(115%); }
+}
 /* small, fast and never square-on: a power hum, not a wobble */
 @keyframes rig-shake {
   0%, 100% { transform: translate(0, 0); }
