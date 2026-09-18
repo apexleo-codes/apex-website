@@ -157,10 +157,10 @@
 /* the shine: a specular band travelling across the core, clipped to the core's own
    ellipse so it never runs out onto the skull. It's the pulse's partner — this
    step's transition has no zoom, so the brain has to be the thing that moves. */
-.rig__shine { width: 25%; height: 12%; overflow: hidden; }
+.rig__shine { width: 26%; height: 12.5%; overflow: hidden; }
 .rig__shine::before {
-  content: ""; position: absolute; inset: -60% -120%;
-  background: linear-gradient(104deg, transparent 40%, rgba(255, 255, 255, .8) 50%, transparent 60%);
+  content: ""; position: absolute; inset: -70% -150%;
+  background: linear-gradient(104deg, transparent 33%, rgba(255, 255, 255, .95) 50%, transparent 67%);
 }
 
 /* 04 · the soul. Still no new art: the armoured stage holds while gold copies of
@@ -232,7 +232,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .rig__brain.is-on .rig__core { animation: brain-fire 1.5s ease-in-out infinite; }
   .rig__brain.is-on .rig__bloom { animation: brain-fire 3.1s ease-in-out infinite .4s; }
-  .rig__brain.is-on .rig__shine::before { animation: brain-shine 2.6s ease-in-out infinite; }
+  .rig__brain.is-on .rig__shine::before { animation: brain-shine 3.2s ease-in-out infinite; }
   .rig__soul.is-on .rig__bloomed, .rig__soul.is-on .rig__rim, .rig__soul.is-on::before { animation: soul-breathe 3.6s ease-in-out infinite; }
   .rig__soul.is-on .rig__rays { animation: soul-turn 26s linear infinite; }
   .rig__soul.is-on .rig__ring { animation: soul-wave 3.8s ease-out infinite; }
@@ -257,11 +257,13 @@
   100% { opacity: 0; transform: translateY(var(--rise, -110px)) scale(1.1); }
 }
 @keyframes brain-fire { 50% { opacity: .42; transform: translate(-50%, -50%) scale(1.14); } }
-/* it rests off screen for most of the loop: a band sweeping back and forth
-   nonstop reads as a scanner, one that passes now and then reads as a shine */
+/* across, hold, and back again — the return pass is what makes it read, since one
+   sweep every few seconds is easy to scroll straight past. It still rests at each
+   end rather than oscillating without pause, which would read as a scanner. */
 @keyframes brain-shine {
-  0%, 12% { transform: translateX(-115%); }
-  46%, 100% { transform: translateX(115%); }
+  0%, 6% { transform: translateX(-150%); }
+  40%, 56% { transform: translateX(150%); }
+  90%, 100% { transform: translateX(-150%); }
 }
 /* small, fast and never square-on: a power hum, not a wobble */
 @keyframes rig-shake {

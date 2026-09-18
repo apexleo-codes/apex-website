@@ -213,7 +213,45 @@
 /* the same breathing room as .orch: the pin arrives and leaves in ordinary scrolling */
 .rhythm { --bg: #efe7d6; --fg: #0b1312; --accent: #9c6512; background: var(--bg); color: var(--fg); padding: clamp(30px, 5vh, 70px) 0; transition: background 1s, color 1s; }
 .rhythm.is-night { --bg: #0a0f1e; --fg: var(--cream); --accent: var(--gold); }
-.rhythm__pin { min-height: 100vh; display: flex; flex-direction: column; padding: 118px var(--pad) 52px; }
+.rhythm__pin { position: relative; isolation: isolate; min-height: 100vh; display: flex; flex-direction: column; padding: 118px var(--pad) 52px; }
+
+/* the sky: a big sun or moon over the top-left corner and the light it throws
+   from there across the whole section. The palette already swings day↔night on
+   its own; this gives the swing a source, so the light looks like it comes FROM
+   somewhere instead of the page simply changing colour.
+   It lives INSIDE .rhythm__pin, not in the section: the pin is what stays on
+   screen while the day plays through, and anything outside it scrolls away after
+   the first stop. `isolation` on the pin keeps the z-index: -1 inside the pin,
+   above the section's background and below the dial and the list. */
+.rhythm__sky { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.rhythm__wash { position: absolute; inset: 0; transition: opacity 1.1s var(--ease); }
+.rhythm__wash--day { background: radial-gradient(86% 78% at 7% 9%, rgba(255, 201, 92, .55), rgba(255, 190, 80, .17) 32%, transparent 68%); }
+/* at night it is moonlight, not an absence of light: the darkness is the section's
+   own background, and a dark gradient over a dark field shows nothing at all */
+.rhythm__wash--night { opacity: 0; background: radial-gradient(86% 78% at 7% 9%, rgba(150, 178, 255, .3), rgba(96, 120, 220, .1) 32%, transparent 68%); }
+.rhythm.is-night .rhythm__wash--day { opacity: 0; }
+.rhythm.is-night .rhythm__wash--night { opacity: 1; }
+/* it sits at the gradient's own origin, half off both edges, so it reads as a body
+   in the sky rather than an icon someone placed in the margin */
+/* offsets are a fraction of the orb ITSELF, never a percentage of the sky: the pin
+   is a screen tall on desktop and half as tall again on a phone, so a percentage
+   would push the sun most of the way off the top down there */
+.rhythm__orb {
+  --orb: clamp(150px, 19vw, 280px);
+  position: absolute; left: calc(var(--orb) * -.17); top: calc(var(--orb) * -.2);
+  width: var(--orb); aspect-ratio: 1; color: var(--accent);
+}
+.rhythm__orb .ic { position: absolute; inset: 0; width: 100%; height: 100%; stroke-width: .7; transition: opacity 1.1s var(--ease), transform 1.1s var(--ease); }
+.rhythm__sun { opacity: .34; }
+.rhythm__moon { opacity: 0; transform: rotate(-40deg) scale(.55); }
+.rhythm.is-night .rhythm__sun { opacity: 0; transform: rotate(40deg) scale(.55); }
+.rhythm.is-night .rhythm__moon { opacity: .4; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  /* :not(.is-night), so the animation stops at night and hands `transform` back to
+     the rule that turns the sun out — an animation outranks it while it runs */
+  .rhythm:not(.is-night) .rhythm__sun { animation: orb-turn 80s linear infinite; }
+}
+@keyframes orb-turn { to { transform: rotate(360deg); } }
 .rhythm .shead__num { color: inherit; border-color: currentColor; opacity: .55; }
 .rhythm .eyebrow, .rhythm em { color: var(--accent); }
 .rhythm__body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(34px, 5vw, 92px); align-items: center; }
