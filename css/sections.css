@@ -374,7 +374,10 @@
    scales with the image instead of the page. */
 .shot2 { margin: 0; }
 .shot2__box { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); container-type: inline-size; background: #031c1d; }
-.shot2__box img { width: 100%; }
+/* height: auto, or the height ATTRIBUTE wins and the shot is 469px tall at every
+   width; with it, the attributes only supply the ratio, reserved before the file
+   arrives (see the note on `w`/`h` in content.js) */
+.shot2__box img { width: 100%; height: auto; }
 .shot2__head {
   display: flex; align-items: center; gap: 1.3cqw; margin: 0; padding: 2.6cqw 1.5cqw 2.4cqw;
   border-bottom: 1px solid #152e2c; color: #fafbe6;

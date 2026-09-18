@@ -92,7 +92,7 @@
   };
   const shotFrame = (f) => `
     <figure class="shot2">
-      <div class="shot2__box">${f.head ? `<p class="shot2__head">${icon("box")}${f.head}</p>` : ""}<img src="img/${f.img}.webp" alt="${f.alt}" loading="lazy"></div>
+      <div class="shot2__box">${f.head ? `<p class="shot2__head">${icon("box")}${f.head}</p>` : ""}<img src="img/${f.img}.webp" alt="${f.alt}" width="${f.w}" height="${f.h}" loading="lazy"></div>
     </figure>`;
   const frames = { tg: tgFrame, store: storeFrame, soul: soulFrame, shot: shotFrame };
   const frame = (f) => (frames[f.kind] || termFrame)(f);

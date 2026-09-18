@@ -361,10 +361,17 @@
 
   // ---------- pinned scroll stories (desktop) ----------
   mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
-    // how they work together: MISO's Sunday job, leg by leg. anticipatePin pins a
-    // touch early, which is what stops the section snapping to full screen under
-    // Lenis, and .orch's padding gives it room to arrive and leave in ordinary
-    // scrolling. Keep the pin short enough that the page isn't held for screens
+    // how they work together: MISO's Sunday job, leg by leg. .orch's padding gives
+    // it room to arrive and leave in ordinary scrolling.
+    // No anticipatePin, on either pin. It was added to stop the section "snapping
+    // to full screen", but that snap was the pins' starts gone stale under a lazy
+    // image (see the shot's `w`/`h` in content.js), and anticipatePin can't reach
+    // that; what it does do is pin ON PURPOSE a frame or two early, so every entry
+    // into a pinned range — down into the top, or back up into the bottom — jumped
+    // the panel 60-100px. It exists for native scroll, where the compositor moves
+    // the page a frame before ScrollTrigger hears about it. Lenis scrolls from JS in
+    // the same tick that calls ScrollTrigger.update, so there is no frame to cover.
+    // Keep the pin short enough that the page isn't held for screens
     // on end: 300% over six legs is ~380px of scroll each. you → soul; the soul
     // picks MISO off the arc; her JSON shopping list goes to a script; the script
     // takes it to the browser tool (Zepto) and brings the cart back; the result
@@ -386,7 +393,7 @@
         stage.dataset.pick = t >= legs[1] + LEG ? "miso" : "";
         stage.dataset.tool = t >= legs[3] && t < legs[5] ? "on" : "";
       },
-      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5, anticipatePin: 1 }
+      scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5 }
     });
     packets.forEach((pk, i) => {
       const at = legs[i];
@@ -401,7 +408,7 @@
     // daily rhythm: equal scroll per stop. setStop swings the hand, so this only
     // has to say which stop we are on.
     ScrollTrigger.create({
-      trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true, anticipatePin: 1,
+      trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true,
       onUpdate: (s) => setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length)))
     });
 
@@ -437,4 +444,20 @@
 
   refreshAll();
   addEventListener("load", refreshAll);
+
+  // ScrollTrigger measures the page once and then trusts it. Anything that grows
+  // afterwards — a lazy image with no reserved size, a font that swaps in late —
+  // pushes the pinned sections down while their starts stay where they were, and
+  // the panel snaps on the way in because the pin engages against a layout that no
+  // longer exists. That is exactly what the setup's Skills shot did (0 → ~400px,
+  // just above section 03). The shot now reserves its box, and this catches the
+  // next one: when the page's height really changes, measure again. It compares
+  // against the height ScrollTrigger last settled on, so a refresh — which pulls
+  // the pin spacers out and puts them back — can't set off another.
+  let settled = 0, again = 0;
+  ScrollTrigger.addEventListener("refresh", () => (settled = document.documentElement.scrollHeight));
+  new ResizeObserver(() => {
+    if (!settled || Math.abs(document.documentElement.scrollHeight - settled) < 2) return;
+    clearTimeout(again); again = setTimeout(refreshAll, 150);
+  }).observe($("main"));
 })();
