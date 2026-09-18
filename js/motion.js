@@ -359,6 +359,11 @@
     // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
     // the tiles deal in like a mission select and "mission passed" lands last.
     // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
+    // the drone arrives as an inset card, opens out to full screen as its top meets
+    // the screen's, then drifts closer while it scrolls away
+    gsap.fromTo(".gta__intro", { clipPath: "inset(7% 6% 7% 6% round 28px)" },
+      { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: ".gta__intro", start: "top 95%", end: "top top", scrub: true } });
+    gsap.to(".gta__drone", { scale: 1.12, yPercent: 6, ease: "none", scrollTrigger: { trigger: ".gta__intro", start: "top top", end: "bottom top", scrub: true } });
     gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
       .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
       .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
@@ -455,18 +460,21 @@
   });
 
   // ---------- 06 · GTAmex ----------
-  // The clips are preload="none" and play only while on screen, so the ten tiles
-  // cost nothing until you reach them. Under reduced motion none plays by itself:
-  // hovering a tile plays it.
+  // The drone intro and the clips play only while on screen (the clips are
+  // preload="none", so they cost nothing until you reach them). Under reduced
+  // motion none plays by itself: hovering one plays it.
   const gtaVids = $$(".gta video");
   if (!reduce) {
     const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
     gtaVids.forEach((v) => io.observe(v));
   } else gtaVids.forEach((v) => {
-    const t = v.closest(".tile");
+    const t = v.closest(".tile, .gta__intro");
     t.addEventListener("pointerenter", () => v.play().catch(() => {}));
     t.addEventListener("pointerleave", () => v.pause());
   });
+  // the intro's HUD timecode follows the flight
+  const drone = $(".gta__drone"), tc = $(".gta__tc");
+  drone.addEventListener("timeupdate", () => { const t = Math.floor(drone.currentTime); tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`; });
   // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
   // and the stars go to sirens at five
   const stars = $$(".gta__stars i"), starRow = $(".gta__stars"), cash = $(".gta__cash span");

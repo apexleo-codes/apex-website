@@ -31,12 +31,12 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
 | `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
-| `css/gtamex.css` | GTAmex (section 06): the side-quest game, a mission-select grid of clips and stills with a HUD that fills on scroll |
+| `css/gtamex.css` | GTAmex (section 06): the side-quest game. A full-screen drone flight opens it, then a mission-select grid of clips and stills with a HUD that fills on scroll |
 | `tools/build-rig.py` | Generated stage PNGs → the rig's cut-out, aligned WebPs (see the assembly rig, below) |
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
-| `media/gtamex/` | 3 s muted clips (h264 mp4, 720px, each with a first-frame WebP poster) and stills cut from the GTAmex gameplay reel |
+| `media/gtamex/` | Muted clips (h264 mp4, each with a first-frame WebP poster) and stills cut from the GTAmex gameplay reel. `drone.mp4` is a separate, higher-frame-rate recording (1440px, its own variable frame timing kept; letterbox and skip hint cropped off). `dining`/`corridor` are sped up 2.5×/2× with the recorder's repeated frames dropped first. Motion interpolation (ffmpeg minterpolate) was tried to smooth the recordings and dropped: it garbles the game's fixed captions and smears thin poles |
 | `vendor/`, `fonts/` | GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Bricolage Grotesque / Instrument Serif / JetBrains Mono |
 
 ## How sections move
