@@ -79,7 +79,14 @@ strong { font-weight: 600; color: var(--cream); }
   position: fixed; inset: 0 0 auto; z-index: 100; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
   padding: 16px var(--pad); mix-blend-mode: difference;
 }
-.nav__brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; letter-spacing: .08em; justify-self: start; font-size: .95rem; }
+/* The brand goes with the hero. The nav blends with `difference`, so past the hero
+   the lion and the wordmark invert over whatever is behind them — a different
+   picture in every section — and they read as debris sitting on the view rather
+   than as branding. The chapter readout beside it already says where you are.
+   Faded, not removed: the nav is a `1fr auto 1fr` grid, so leaving the column in
+   place keeps the chapter centred on the page and the menu button where it was. */
+.nav__brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; letter-spacing: .08em; justify-self: start; font-size: .95rem; transition: opacity .55s var(--ease), visibility .55s var(--ease); }
+body.past-hero .nav__brand { opacity: 0; visibility: hidden; pointer-events: none; }
 .nav__brand img { width: 28px; height: 28px; border-radius: 50%; }
 .nav__chapter { font-family: var(--mono); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; display: flex; gap: 12px; }
 .nav__num { color: var(--gold); }
@@ -91,8 +98,6 @@ strong { font-weight: 600; color: var(--cream); }
 .nav__burger i { display: block; height: 1.5px; background: currentColor; transition: transform .45s var(--ease); }
 body.menu-open .nav__burger i:first-child { transform: translateY(3.25px) rotate(45deg); }
 body.menu-open .nav__burger i:last-child { transform: translateY(-3.25px) rotate(-45deg); }
-.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; }
-.progress span { display: block; height: 100%; background: var(--gold); transform-origin: left; transform: scaleX(0); }
 
 /* full-screen menu */
 .menu {

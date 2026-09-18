@@ -69,7 +69,7 @@
     document.addEventListener("pointerleave", () => cur.classList.remove("is-on"));
   }
 
-  // ---------- menu, anchors, chapter label, progress ----------
+  // ---------- menu, anchors, chapter label ----------
   const menuBtn = $(".nav__menu"), menu = $("#menu");
   const setMenu = (open) => {
     document.body.classList.toggle("menu-open", open);
@@ -83,7 +83,15 @@
   $$("[data-goto]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); setMenu(false); goto(a.dataset.goto); }));
   $$(".menu__list a").forEach((a) => a.addEventListener("pointerenter", () => ($(".menu__preview").src = `img/agent-${a.dataset.img}.webp`)));
 
-  gsap.to(".progress span", { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: 0.3 } });
+  // the brand is the hero's, and only the hero's (see base.css). Active from the
+  // moment the hero's bottom clears the top of the screen to the end of the page,
+  // so one class covers the whole way down and back up again. onRefresh as well as
+  // onToggle: a page opened deep - a #hash, or a browser putting back the scroll
+  // position from last time - never crosses the line, so the toggle never fires and
+  // the brand would sit there over a section it doesn't belong to.
+  const heroGate = (s) => document.body.classList.toggle("past-hero", s.isActive);
+  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: "max", onToggle: heroGate, onRefresh: heroGate });
+
   const numEl = $(".nav__num"), nameEl = $(".nav__name");
   $$("[data-chapter]").forEach((sec, i) => ScrollTrigger.create({
     trigger: sec, start: "top 50%", end: "bottom 50%", refreshPriority: -1, // after pins, so pinned sections have their full height
