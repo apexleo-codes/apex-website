@@ -162,8 +162,13 @@ window.APEX = {
       lede: "Plain-English briefs to master the execution of specific tasks.",
       frames: [
         // `head` is typeset over the capture in the dashboard's own panel style,
-        // since the crop starts below the tab's real header
-        { kind: "shot", img: "dash-skills-list", head: "Skills",
+        // since the crop starts below the tab's real header.
+        // `w`/`h` are the FILE's pixel size, and they are not decoration: the shot
+        // is lazy, so without them it is 0px tall when ScrollTrigger measures the
+        // page and ~400px once it loads — just before section 03 — which left both
+        // pins below it starting ~400px off the real layout, and the panels snapped
+        // to the top on the way in. Replace the image, update these.
+        { kind: "shot", img: "dash-skills-list", w: 852, h: 469, head: "Skills",
           alt: "The Hermes dashboard, Skills tab: the personal skills written for this assistant" }
       ]
     }
