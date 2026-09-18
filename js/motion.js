@@ -359,11 +359,10 @@
     // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
     // the tiles deal in like a mission select and "mission passed" lands last.
     // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
-    // the drone arrives as an inset card, opens out to full screen as its top meets
-    // the screen's, then drifts closer while it scrolls away
-    gsap.fromTo(".gta__intro", { clipPath: "inset(7% 6% 7% 6% round 28px)" },
-      { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: ".gta__intro", start: "top 95%", end: "top top", scrub: true } });
-    gsap.to(".gta__drone", { scale: 1.12, yPercent: 6, ease: "none", scrollTrigger: { trigger: ".gta__intro", start: "top top", end: "bottom top", scrub: true } });
+    // the flight's screen rises in softly once, and its glow warms up behind it
+    gsap.timeline({ scrollTrigger: { trigger: ".gta__flight", start: "top 85%" } })
+      .from(".gta__screen", { y: 50, scale: 0.97, autoAlpha: 0, duration: 1.3, ease: "expo.out" })
+      .fromTo(".gta__glow", { autoAlpha: 0 }, { autoAlpha: 0.6, duration: 1.6, ease: "power2.out" }, 0.2);
     gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
       .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
       .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
@@ -468,13 +467,22 @@
     const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
     gtaVids.forEach((v) => io.observe(v));
   } else gtaVids.forEach((v) => {
-    const t = v.closest(".tile, .gta__intro");
+    const t = v.closest(".tile, .gta__flight");
     t.addEventListener("pointerenter", () => v.play().catch(() => {}));
     t.addEventListener("pointerleave", () => v.pause());
   });
-  // the intro's HUD timecode follows the flight
-  const drone = $(".gta__drone"), tc = $(".gta__tc");
-  drone.addEventListener("timeupdate", () => { const t = Math.floor(drone.currentTime); tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`; });
+  // the flight's timecode and progress bar follow the video, and its glow is the
+  // video itself: each timeupdate (~4 a second) draws the frame onto a 32×16 canvas
+  // that CSS blurs into light behind the screen. The poster stands in until it plays.
+  const drone = $(".gta__drone"), tc = $(".gta__tc"), bar = $(".gta__bar"), glow = $(".gta__glow"), gx = glow.getContext("2d");
+  const paint = (src) => { try { gx.drawImage(src, 0, 0, glow.width, glow.height); } catch {} };
+  const poster = new Image(); poster.onload = () => paint(poster); poster.src = drone.poster;
+  drone.addEventListener("timeupdate", () => {
+    const t = Math.floor(drone.currentTime);
+    tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`;
+    bar.style.setProperty("--p", drone.duration ? drone.currentTime / drone.duration : 0);
+    if (drone.readyState >= 2) paint(drone);
+  });
   // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
   // and the stars go to sirens at five
   const stars = $$(".gta__stars i"), starRow = $(".gta__stars"), cash = $(".gta__cash span");

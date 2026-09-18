@@ -31,7 +31,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
 | `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
-| `css/gtamex.css` | GTAmex (section 06): the side-quest game. A full-screen drone flight opens it, then a mission-select grid of clips and stills with a HUD that fills on scroll |
+| `css/gtamex.css` | GTAmex (section 06): the side-quest game. The title and HUD, the drone flight on a framed screen with a glow sampled from the video, then a mission-select grid of clips and stills with a HUD that fills on scroll |
 | `tools/build-rig.py` | Generated stage PNGs → the rig's cut-out, aligned WebPs (see the assembly rig, below) |
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |

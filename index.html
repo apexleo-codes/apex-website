@@ -281,17 +281,6 @@
        stills cut from the gameplay reel, laid out as a mission select. The HUD
        (wanted stars, cash) fills as the section scrolls past. -->
   <section class="section gta" id="gtamex" data-chapter="GTAmex">
-    <!-- the approach: one drone flight from the main gate, down the covered walk and
-         into the dining hall. Recorded on its own at a higher frame rate; the loading
-         screens, the game's letterbox bars and its skip hint are cropped off. -->
-    <div class="gta__intro">
-      <video class="gta__drone" muted loop playsinline preload="metadata" poster="media/gtamex/drone.webp"
-             aria-label="Drone flight from the GTAmex main gate, along the covered walk, into the office dining hall"><source src="media/gtamex/drone.mp4" type="video/mp4"></video>
-      <div class="gta__intro-hud" aria-hidden="true">
-        <span class="tile__tag"><i></i>M-00 · The approach · <b class="gta__tc">00:00</b></span>
-        <span class="gta__skip">Scroll to skip</span>
-      </div>
-    </div>
     <header class="shead"><span class="shead__num">06</span><p class="eyebrow">Side quest · a game I built</p></header>
     <div class="gta__top">
       <div class="gta__floor" aria-hidden="true"></div>
@@ -303,6 +292,20 @@
         <div class="gta__stars"><i></i><i></i><i></i><i></i><i></i></div>
         <p class="gta__cash">$<span>00000000</span></p>
         <p class="gta__party"><span><b>P1</b>Gaurav</span><span><img src="img/agent-apex.webp" alt="">Co-op · APEX</span></p>
+      </div>
+    </div>
+    <!-- the approach: one drone flight from the main gate, down the covered walk and
+         into the dining hall. Recorded on its own at a higher frame rate; the loading
+         screens, the game's letterbox bars and its skip hint are cropped off. A framed
+         screen, not full-bleed, with none of the section's scanlines over it; the glow
+         behind it is the video itself, sampled onto a tiny canvas (js/motion.js). -->
+    <div class="gta__flight">
+      <canvas class="gta__glow" width="32" height="16" aria-hidden="true"></canvas>
+      <div class="gta__screen">
+        <video class="gta__drone" muted loop playsinline preload="metadata" poster="media/gtamex/drone.webp"
+               aria-label="Drone flight from the GTAmex main gate, along the covered walk, into the office dining hall"><source src="media/gtamex/drone.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i>M-00 · The approach · <b class="gta__tc">00:00</b></span>
+        <span class="gta__bar" aria-hidden="true"><i></i></span>
       </div>
     </div>
     <div class="gta__grid">

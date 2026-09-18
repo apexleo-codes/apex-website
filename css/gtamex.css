@@ -14,21 +14,24 @@
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px);
 }
 .gta .eyebrow { color: var(--pink); }
-.gta.section { padding-top: 0; } /* the intro runs edge to edge from the section's first pixel */
 
-/* the approach: the drone flight, full screen. It arrives as an inset card and opens
-   out to the edges as its top reaches the screen's (motion.js), then drifts closer
-   as it leaves. */
-.gta__intro { position: relative; height: 100svh; min-height: 520px; margin: 0 calc(-1 * var(--pad)) clamp(70px, 11vh, 140px); overflow: hidden; background: #000; }
-.gta__drone { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.gta__intro::after { /* nav legibility up top, and a fade into the section below */
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 19, 18, .55), transparent 16%, transparent 72%, var(--ink));
+/* the approach: the drone flight on a framed screen under the title. It sits above
+   the section's scanlines (z-index 4) and carries no overlay of its own; the only
+   effect is the glow behind it, which is the video's own colour. */
+.gta__flight { position: relative; z-index: 4; margin: 0 0 clamp(60px, 8vw, 110px); }
+.gta__glow {
+  position: absolute; left: -4%; top: -6%; width: 108%; height: 112%; pointer-events: none;
+  filter: blur(64px) saturate(1.8) brightness(1.1); opacity: .6;
 }
-.gta__intro-hud { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(22px, 5vh, 48px); z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-.gta__intro-hud .tile__tag { position: static; font-size: .66rem; padding: 6px 10px; }
+.gta__screen {
+  position: relative; aspect-ratio: 1440 / 696; border-radius: 22px; overflow: hidden; background: var(--hud);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .1), 0 40px 90px rgba(0, 0, 0, .4);
+}
+.gta__drone { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gta__screen .tile__tag { top: 18px; left: 20px; }
 .gta__tc { font-weight: 400; color: var(--sunset); font-variant-numeric: tabular-nums; }
-.gta__skip { font-family: var(--mono); font-size: .62rem; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 255, 255, .78); text-shadow: 0 1px 6px rgba(0, 0, 0, .6); animation: gta-rec 1.6s steps(1) infinite; }
+.gta__bar { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+.gta__bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--pink), var(--sunset)); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); transition: transform .26s linear; }
 
 /* the synthwave floor behind the logo */
 .gta__floor {
@@ -153,14 +156,13 @@
   @keyframes gta-drive { to { background-position: 0 64px, 0 64px; } }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tile__tag i, .tile__start, .gta__skip, .gta__stars.is-max i { animation: none; }
+  .tile__tag i, .tile__start, .gta__stars.is-max i { animation: none; }
 }
 @media (max-width: 900px) {
   .gta__hud { justify-items: start; }
   .gta__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(110px, 30vw, 240px); }
   .tile { grid-column: span 1; }
-  .gta__intro { height: auto; min-height: 0; aspect-ratio: 16 / 10; }
-  .gta__skip { display: none; }
+  .gta__screen { aspect-ratio: 16 / 10; border-radius: 16px; }
   .tile--title, .tile--wide, .tile--big, .tile--finale { grid-column: 1 / -1; }
   .tile--tall, .tile--finale { grid-row: span 1; }
   .tile__name { font-size: 1rem; }
