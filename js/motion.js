@@ -356,6 +356,18 @@
     gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
     gsap.from(".thanks__lion", { rotate: -25, scale: 0.4, autoAlpha: 0, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".thanks", start: "top 70%" } });
 
+    // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
+    // the tiles deal in like a mission select and "mission passed" lands last.
+    // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
+    gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
+      .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
+      .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
+      .from(".gta__hud > *", { x: 30, autoAlpha: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, "-=.6");
+    gsap.set(".gta .tile", { autoAlpha: 0, y: 70, rotateX: -14, transformPerspective: 900, transformOrigin: "50% 100%" });
+    ScrollTrigger.batch(".gta .tile", { start: "top 92%", once: true,
+      onEnter: (b) => gsap.to(b, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: "expo.out", stagger: 0.09, overwrite: true }) });
+    gsap.from(".gta__passed > *", { scale: 2.4, autoAlpha: 0, duration: 0.9, ease: "back.out(1.8)", stagger: 0.18, scrollTrigger: { trigger: ".gta__passed", start: "top 88%" } });
+
     return () => ScrollTrigger.removeEventListener("scrollEnd", settle);
   });
 
@@ -441,6 +453,30 @@
     stopAuto();
     cases.forEach((c, i) => ScrollTrigger.create({ trigger: c, start: "top 65%", end: "bottom 65%", onToggle: (s) => s.isActive && setCase(i) }));
   });
+
+  // ---------- 06 · GTAmex ----------
+  // The clips are preload="none" and play only while on screen, so the ten tiles
+  // cost nothing until you reach them. Under reduced motion none plays by itself:
+  // hovering a tile plays it.
+  const gtaVids = $$(".gta video");
+  if (!reduce) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
+    gtaVids.forEach((v) => io.observe(v));
+  } else gtaVids.forEach((v) => {
+    const t = v.closest(".tile");
+    t.addEventListener("pointerenter", () => v.play().catch(() => {}));
+    t.addEventListener("pointerleave", () => v.pause());
+  });
+  // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
+  // and the stars go to sirens at five
+  const stars = $$(".gta__stars i"), starRow = $(".gta__stars"), cash = $(".gta__cash span");
+  const setHud = (s) => {
+    const n = Math.min(5, Math.floor(s.progress * 6));
+    stars.forEach((st, i) => st.classList.toggle("is-on", i < n));
+    starRow.classList.toggle("is-max", n === 5);
+    cash.textContent = String(Math.round(s.progress * 1e6)).padStart(8, "0");
+  };
+  ScrollTrigger.create({ trigger: ".gta__grid", start: "top 80%", end: "bottom 70%", onUpdate: setHud, onRefresh: setHud });
 
   refreshAll();
   addEventListener("load", refreshAll);
