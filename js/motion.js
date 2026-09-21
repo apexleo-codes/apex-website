@@ -359,6 +359,10 @@
     // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
     // the tiles deal in like a mission select and "mission passed" lands last.
     // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
+    // the flight's screen rises in softly once, and its glow warms up behind it
+    gsap.timeline({ scrollTrigger: { trigger: ".gta__flight", start: "top 85%" } })
+      .from(".gta__screen", { y: 50, scale: 0.97, autoAlpha: 0, duration: 1.3, ease: "expo.out" })
+      .fromTo(".gta__glow", { autoAlpha: 0 }, { autoAlpha: 0.6, duration: 1.6, ease: "power2.out" }, 0.2);
     gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
       .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
       .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
@@ -455,17 +459,29 @@
   });
 
   // ---------- 06 · GTAmex ----------
-  // The clips are preload="none" and play only while on screen, so the ten tiles
-  // cost nothing until you reach them. Under reduced motion none plays by itself:
-  // hovering a tile plays it.
+  // The drone intro and the clips play only while on screen (the clips are
+  // preload="none", so they cost nothing until you reach them). Under reduced
+  // motion none plays by itself: hovering one plays it.
   const gtaVids = $$(".gta video");
   if (!reduce) {
     const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
     gtaVids.forEach((v) => io.observe(v));
   } else gtaVids.forEach((v) => {
-    const t = v.closest(".tile");
+    const t = v.closest(".tile, .gta__flight");
     t.addEventListener("pointerenter", () => v.play().catch(() => {}));
     t.addEventListener("pointerleave", () => v.pause());
+  });
+  // the flight's timecode and progress bar follow the video, and its glow is the
+  // video itself: each timeupdate (~4 a second) draws the frame onto a 32×16 canvas
+  // that CSS blurs into light behind the screen. The poster stands in until it plays.
+  const drone = $(".gta__drone"), tc = $(".gta__tc"), bar = $(".gta__bar"), glow = $(".gta__glow"), gx = glow.getContext("2d");
+  const paint = (src) => { try { gx.drawImage(src, 0, 0, glow.width, glow.height); } catch {} };
+  const poster = new Image(); poster.onload = () => paint(poster); poster.src = drone.poster;
+  drone.addEventListener("timeupdate", () => {
+    const t = Math.floor(drone.currentTime);
+    tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`;
+    bar.style.setProperty("--p", drone.duration ? drone.currentTime / drone.duration : 0);
+    if (drone.readyState >= 2) paint(drone);
   });
   // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
   // and the stars go to sirens at five
