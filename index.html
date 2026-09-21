@@ -295,10 +295,12 @@
       </div>
     </div>
     <!-- the approach: one drone flight from the main gate, down the covered walk and
-         into the dining hall. Recorded on its own at a higher frame rate; the loading
-         screens, the game's letterbox bars and its skip hint are cropped off. A framed
-         screen, not full-bleed, with none of the section's scanlines over it; the glow
-         behind it is the video itself, sampled onto a tiny canvas (js/motion.js). -->
+         into the dining hall. Its own recording, at ~53 real frames a second where the
+         gameplay reel manages ~15, and used exactly as recorded: the game's letterbox
+         bars and its own boot screens are part of the take, so the screen is 16:9 and
+         nothing is cropped. No overlay over it - the section's scanlines stop here -
+         and the glow behind it is the video itself, sampled onto a tiny canvas
+         (js/motion.js). -->
     <div class="gta__flight">
       <canvas class="gta__glow" width="32" height="16" aria-hidden="true"></canvas>
       <div class="gta__screen">

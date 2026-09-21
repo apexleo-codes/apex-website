@@ -36,7 +36,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
-| `media/gtamex/` | Muted clips (h264 mp4, each with a first-frame WebP poster) and stills cut from the GTAmex gameplay reel. `drone.mp4` is a separate, higher-frame-rate recording (1440px, its own variable frame timing kept; letterbox and skip hint cropped off). `dining`/`corridor` are sped up 2.5×/2× with the recorder's repeated frames dropped first. Motion interpolation (ffmpeg minterpolate) was tried to smooth the recordings and dropped: it garbles the game's fixed captions and smears thin poles |
+| `media/gtamex/` | Muted clips (h264 mp4, each with a first-frame WebP poster) and stills cut from the GTAmex gameplay reel. `drone.mp4` is a separate 720p60 recording used exactly as recorded (~53 real frames a second, nothing cropped or trimmed, so the game's letterbox bars and boot screens are part of it; the screen that holds it is 16:9). `dining`/`corridor` are sped up 2.5×/2× with the recorder's repeated frames dropped first. Motion interpolation (ffmpeg minterpolate) was tried to smooth the recordings and dropped: it garbles the game's fixed captions and smears thin poles |
 | `vendor/`, `fonts/` | GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Bricolage Grotesque / Instrument Serif / JetBrains Mono |
 
 ## How sections move
