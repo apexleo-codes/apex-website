@@ -229,7 +229,7 @@
   precision mediump float;
   varying vec3 vCol; varying float vA;
   void main() {
-    float k = smoothstep(.5, .05, length(gl_PointCoord - .5));
+    float k = 1. - smoothstep(.05, .5, length(gl_PointCoord - .5));
     float a = vA * k;
     gl_FragColor = vec4(vCol * a, a);
   }`;

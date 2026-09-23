@@ -195,6 +195,15 @@
   background: #fff2cf; box-shadow: 0 0 14px 5px rgba(255, 196, 102, .85); opacity: .75;
 }
 
+/* The soul and the ascent in WebGL (js/rigfx.js): one canvas behind him, one in
+   front, both reaching well past the column so the rays and the fire have room.
+   When it runs, the CSS versions below step aside; they stay as what reduced
+   motion and a browser without WebGL get. The brain (step 02) is still CSS. */
+.rig__gl { position: absolute; inset: -16% -40% -8% -22%; width: 162%; height: 124%; pointer-events: none; transition: opacity .5s var(--ease); }
+.rig__gl--back { z-index: 0; }
+.rig__gl--front { z-index: 3; }
+.rig.has-gl .rig__soul, .rig.has-gl .rig__motes, .rig.has-gl .rig__fire, .rig.has-gl .rig__sparks { display: none; }
+
 /* 05 · the ascent. He has evolved, so the stage itself shakes — on the IMAGE, not
    the layer, because motion.js owns the layer's transform while it converges.
    What makes it read as a power-up rather than a bonfire is the blaze: the same
@@ -401,6 +410,7 @@
   .store__logo { width: 30px; height: 30px; }
   /* the rig is a 30vh band up here, so anything that travels has to travel less
      or it leaves the box before it fades */
+  .rig__gl { inset: 0; width: 100%; height: 100%; }
   .rig__motes i { --rise: -60px; }
   .rig__sparks i { --fly: -95px; }
   /* no room for a column beside the steps: APEX rides along at the top instead,

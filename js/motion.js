@@ -326,6 +326,7 @@
     };
     const paint = () => {
       const p = position();
+      if (window.apexRigFx) apexRigFx.set(p);          // the soul and the ascent, in WebGL (js/rigfx.js)
       const flat = FLAT.has(Math.floor(p));
       rigParts.forEach((el, i) => {
         const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
