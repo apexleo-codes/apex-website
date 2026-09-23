@@ -507,8 +507,20 @@
     // before the packet reached her.
     const stage = $(".stage"), caps = $$(".orch__captions li");
     $$(".stage .wire").forEach((w) => { const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L; });
-    const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0 } }));
-    const place = (pk) => { const L = pk.path.getTotalLength(), pt = pk.path.getPointAtLength(pk.p.t * L), r = stage.clientWidth / 1200; gsap.set(pk.el, { x: pt.x * r, y: pt.y * r }); };
+    // Each packet is a CARD, and what it says changes at every stop (APEX.journey):
+    // it comes out of the stop it leaves, rides the wire, and is taken in by the
+    // next, which sends out a ring. The last one - the message on your phone -
+    // comes to rest beside you (DOCK), and the whole route turns gold.
+    const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0, dock: 0 } }));
+    const pings = $$(".stage .ping"), DOCK = [165, 215];
+    gsap.set(packets.map((pk) => pk.el), { xPercent: -50, yPercent: -50 });
+    const place = (pk) => {
+      const L = pk.path.getTotalLength(), pt = pk.path.getPointAtLength(pk.p.t * L), W = stage.clientWidth, r = W / 1200;
+      let x = pt.x + (DOCK[0] - pt.x) * pk.p.dock, y = pt.y + (DOCK[1] - pt.y) * pk.p.dock;
+      // a card is wider than the route's outer edge is from the stage's: it hugs the edge instead
+      const hw = pk.el.offsetWidth / 2;
+      gsap.set(pk.el, { x: Math.min(W - hw, Math.max(hw, x * r)), y: y * r });
+    };
     const legs = [0, 1, 2, 3, 3.8, 4.6], LEG = 0.8;
     const orch = gsap.timeline({
       defaults: { ease: "none" },
@@ -518,17 +530,20 @@
         stage.dataset.step = k;
         stage.dataset.pick = t >= legs[1] + LEG ? "miso" : "";
         stage.dataset.tool = t >= legs[3] && t < legs[5] ? "on" : "";
+        stage.dataset.done = t >= legs[5] + LEG ? "1" : "";
       },
       scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5 }
     });
     packets.forEach((pk, i) => {
-      const at = legs[i];
+      const at = legs[i], last = i === packets.length - 1;
       orch.to(pk.path, { strokeDashoffset: 0, duration: LEG }, at)
-        .fromTo(pk.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, at)
+        .fromTo(pk.el, { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 1, scale: 1, duration: 0.16, ease: "back.out(1.8)" }, at)
         .to(pk.p, { t: 1, duration: LEG, onUpdate: () => place(pk) }, at)
-        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, at + LEG);
+        .fromTo(pings[i], { autoAlpha: 0.95, scale: 0.35 }, { autoAlpha: 0, scale: 2.3, duration: 0.3, ease: "power2.out", immediateRender: false }, at + LEG - 0.02);
+      if (!last) orch.to(pk.el, { autoAlpha: 0, scale: 0.25, duration: 0.12, ease: "power2.in" }, at + LEG - 0.1);
+      else orch.to(pk.p, { dock: 1, duration: 0.15, ease: "power2.out", onUpdate: () => place(pk) }, at + LEG);
     });
-    orch.to({}, { duration: 0.3 });
+    orch.to({}, { duration: 0.3 }, legs[5] + LEG);
     stage.dataset.step = 0;
 
     // daily rhythm: equal scroll per stop. setStop swings the hand, so this only

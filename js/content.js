@@ -253,6 +253,19 @@ window.APEX = {
   // reaches for them, and "brains and tools" already names every service.
   // `flow` marks the one the walk-through uses, and it goes LAST: the script's
   // wire rises to the band's right end, where that chip sits.
+  // 03 · the journey: what travels each wire, one card per leg (the packets in
+  // index.html, same order). It changes at every stop, so the stop's job shows:
+  // a request → a job for the right agent → a shopping list → an errand →
+  // a cart → a message on your phone. Words from MISO's real Sunday run (below).
+  journey: [
+    { icon: "clock", head: "Sunday, 9:30 AM", line: "A gut-healthy breakfast, please" },
+    { agent: "miso", head: "A job for MISO", line: "gut-health-chef" },
+    { head: "Ragi-pear porridge", list: ["Ragi flour", "Flax seeds", "Curd", "Pear"] },
+    { icon: "cart", head: "Fill the Zepto cart", line: "4 things to find" },
+    { icon: "cart", head: "3 items · ₹117", line: "Pear: not found", stamp: "Nothing ordered" },
+    { logo: "telegram", head: "Your cart is ready · ₹117", line: "Nothing ordered. You check out." }
+  ],
+
   layerTools: [
     { name: "Web search", icon: "search" },
     { name: "Maps", icon: "pin" },

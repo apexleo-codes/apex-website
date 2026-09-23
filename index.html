@@ -241,12 +241,20 @@
           <span class="ringlabel">Skills</span>
           <div class="stage__musicians"></div>
           <div class="node node--colony" style="--x:1000;--y:340"><img src="img/agent-colony.webp" alt=""><span class="node__label">Scripts<small>COLONY</small></span></div>
-          <i class="packet" data-path="p-you"></i>
-          <i class="packet" data-path="p-soul"></i>
-          <i class="packet" data-path="p-skill" data-tag="{ shopping list }"></i>
-          <i class="packet" data-path="p-tool" data-tag="fill the cart" data-side="left"></i>
-          <i class="packet" data-path="p-tool-back" data-tag="{ cart · nothing ordered }" data-side="left"></i>
-          <i class="packet packet--gold" data-path="p-back" data-tag="Telegram"></i>
+          <!-- where each leg lands: a ring goes out from the stop as the card arrives -->
+          <i class="ping" style="--x:380;--y:340"></i>
+          <i class="ping" style="--x:660;--y:340"></i>
+          <i class="ping" style="--x:1000;--y:340"></i>
+          <i class="ping" style="--x:1000;--y:54"></i>
+          <i class="ping" style="--x:1000;--y:340"></i>
+          <i class="ping ping--gold" style="--x:120;--y:340"></i>
+          <!-- what travels: one card per leg, filled from APEX.journey (js/render.js) -->
+          <div class="packet" data-path="p-you"></div>
+          <div class="packet" data-path="p-soul"></div>
+          <div class="packet" data-path="p-skill"></div>
+          <div class="packet" data-path="p-tool"></div>
+          <div class="packet" data-path="p-tool-back"></div>
+          <div class="packet packet--gold" data-path="p-back"></div>
         </div>
       </div>
     </div>

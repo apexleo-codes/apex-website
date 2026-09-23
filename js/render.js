@@ -230,6 +230,18 @@
   $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
     `<span class="toolsbar__chip${t.flow ? " toolsbar__chip--flow" : ""}">${icon(t.icon)}<span>${t.name}${t.flow ? ` → ${t.flow}` : ""}</span></span>`).join(""));
 
+  // 03 · what travels each leg: a card that changes at every stop
+  $$(".stage .packet").forEach((el, i) => {
+    const j = D.journey[i];
+    const mark = j.agent ? `<img class="parcel__av" src="img/agent-${j.agent}.webp" alt="" width="40" height="40">`
+      : j.logo ? `<svg class="parcel__logo" aria-hidden="true"><use href="#i-${j.logo}"/></svg>`
+      : j.icon ? icon(j.icon) : "";
+    el.innerHTML = `${mark}<div><b>${j.head}</b>${j.line ? `<span>${j.line}</span>` : ""}${
+      j.list ? `<ul>${j.list.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}${
+      j.stamp ? `<span class="parcel__stamp">${j.stamp}</span>` : ""}</div>`;
+    if (j.list) el.classList.add("packet--list");
+  });
+
   // 03 · the route, faintly, before anything travels it: a ghost under every wire, so
   // the leg a packet is about to take is already on the stage when you arrive. The
   // climb to the tool and the drop back are one line, so that pair gets one ghost.
