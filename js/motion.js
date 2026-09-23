@@ -153,11 +153,14 @@
   // onToggle: a page opened deep - a #hash, or a browser putting back the scroll
   // position from last time - never crosses the line, so the toggle never fires and
   // the brand would sit there over a section it doesn't belong to.
-  // The end sits past the bottom of the page, never ON it: a trigger reads as
-  // inactive at progress 1, so with `end: "max"` the brand came back on the very
-  // last pixel, over the thank-you.
-  const heroGate = (s) => document.body.classList.toggle("past-hero", s.isActive);
-  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: () => ScrollTrigger.maxScroll(window) + 100, onToggle: heroGate, onRefresh: heroGate });
+  // It reads the START alone - scrolled past the hero's bottom or not - never
+  // isActive. isActive also needs an end, and any end measured here is measured
+  // before the pins further down have added their scroll, so it landed around the
+  // daily rhythm and the brand came back over GTAmex and the thank-you (and at
+  // progress 1 a trigger reads inactive anyway). Updated on refresh, on toggle and
+  // on every update, so a jump past either edge lands right.
+  const heroGate = (s) => document.body.classList.toggle("past-hero", s.scroll() >= s.start);
+  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: "max", refreshPriority: -1, onUpdate: heroGate, onToggle: heroGate, onRefresh: heroGate });
 
   const numEl = $(".nav__num"), nameEl = $(".nav__name");
   $$("[data-chapter]").forEach((sec, i) => ScrollTrigger.create({
