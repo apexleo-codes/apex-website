@@ -230,17 +230,17 @@
   $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
     `<span class="toolsbar__chip${t.flow ? " toolsbar__chip--flow" : ""}">${icon(t.icon)}<span>${t.name}${t.flow ? ` → ${t.flow}` : ""}</span></span>`).join(""));
 
-  // 03 · what travels each leg: a card that changes at every stop
-  $$(".stage .packet").forEach((el, i) => {
-    const j = D.journey[i];
-    const mark = j.agent ? `<img class="parcel__av" src="img/agent-${j.agent}.webp" alt="" width="40" height="40">`
-      : j.logo ? `<svg class="parcel__logo" aria-hidden="true"><use href="#i-${j.logo}"/></svg>`
+  // 03 · the journey on a phone: a card per leg to swipe through, and a dot for each
+  $(".jstrip__cards").innerHTML = D.route.map((j, i) => {
+    const mark = j.agent ? `<img class="jcard__av" src="img/agent-${j.agent}.webp" alt="" width="40" height="40">`
+      : j.logo ? `<svg class="jcard__logo" aria-hidden="true"><use href="#i-${j.logo}"/></svg>`
       : j.icon ? icon(j.icon) : "";
-    el.innerHTML = `${mark}<div><b>${j.head}</b>${j.line ? `<span>${j.line}</span>` : ""}${
+    return `<li class="jcard${i === D.route.length - 1 ? " jcard--gold" : ""}"><span class="jcard__leg">${pad(i + 1)} · ${j.leg}</span>
+      <div class="jcard__body">${mark}<div><b>${j.head}</b>${j.line ? `<span>${j.line}</span>` : ""}${
       j.list ? `<ul>${j.list.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}${
-      j.stamp ? `<span class="parcel__stamp">${j.stamp}</span>` : ""}</div>`;
-    if (j.list) el.classList.add("packet--list");
-  });
+      j.stamp ? `<span class="jcard__stamp">${j.stamp}</span>` : ""}</div></div></li>`;
+  }).join("");
+  $(".jstrip__nav i").outerHTML = D.route.map((_, i) => `<i${i ? "" : ' class="is-on"'}></i>`).join("");
 
   // 03 · the route, faintly, before anything travels it: a ghost under every wire, so
   // the leg a packet is about to take is already on the stage when you arrive. The

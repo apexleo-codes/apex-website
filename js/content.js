@@ -248,24 +248,25 @@ window.APEX = {
     { need: "Code home", uses: "Hermes's own GitHub: apexleo-codes", alt: "Kept apart from my personal repos", icon: "code" }
   ],
 
+  // 03 · the journey on a phone: one card per leg, swiped through (the desktop pin
+  // tells it with a dot). What travels changes at every stop, so each stop's job
+  // shows: a request → a job for the right agent → a shopping list → an errand →
+  // a cart → a message on your phone. Words from MISO's real Sunday run.
+  // (Not `journey`: that name belongs to the parked journey flow section.)
+  route: [
+    { leg: "You → Soul", icon: "clock", head: "Sunday, 9:30 AM", line: "A gut-healthy breakfast, please" },
+    { leg: "Soul → MISO", agent: "miso", head: "A job for MISO", line: "gut-health-chef" },
+    { leg: "MISO → Scripts", head: "Ragi-pear porridge", list: ["Ragi flour", "Flax seeds", "Curd", "Pear"] },
+    { leg: "Scripts → Zepto", icon: "cart", head: "Fill the Zepto cart", line: "4 things to find" },
+    { leg: "Zepto → Scripts", icon: "cart", head: "3 items · ₹117", line: "Pear: not found", stamp: "Nothing ordered" },
+    { leg: "Scripts → you", logo: "telegram", head: "Your cart is ready · ₹117", line: "Nothing ordered. You check out." }
+  ],
+
   // slide 7 · how they work together: the chips on the tools layer. A sample of
   // the tools above, by what they do - the layer shows that tools exist and who
   // reaches for them, and "brains and tools" already names every service.
   // `flow` marks the one the walk-through uses, and it goes LAST: the script's
   // wire rises to the band's right end, where that chip sits.
-  // 03 · the journey: what travels each wire, one card per leg (the packets in
-  // index.html, same order). It changes at every stop, so the stop's job shows:
-  // a request → a job for the right agent → a shopping list → an errand →
-  // a cart → a message on your phone. Words from MISO's real Sunday run (below).
-  journey: [
-    { icon: "clock", head: "Sunday, 9:30 AM", line: "A gut-healthy breakfast, please" },
-    { agent: "miso", head: "A job for MISO", line: "gut-health-chef" },
-    { head: "Ragi-pear porridge", list: ["Ragi flour", "Flax seeds", "Curd", "Pear"] },
-    { icon: "cart", head: "Fill the Zepto cart", line: "4 things to find" },
-    { icon: "cart", head: "3 items · ₹117", line: "Pear: not found", stamp: "Nothing ordered" },
-    { logo: "telegram", head: "Your cart is ready · ₹117", line: "Nothing ordered. You check out." }
-  ],
-
   layerTools: [
     { name: "Web search", icon: "search" },
     { name: "Maps", icon: "pin" },

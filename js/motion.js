@@ -507,19 +507,27 @@
     // before the packet reached her.
     const stage = $(".stage"), caps = $$(".orch__captions li");
     $$(".stage .wire").forEach((w) => { const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L; });
-    // Each packet is a CARD, and what it says changes at every stop (APEX.journey):
-    // it comes out of the stop it leaves, rides the wire, and is taken in by the
-    // next, which sends out a ring. The last one - the message on your phone -
-    // comes to rest beside you (DOCK), and the whole route turns gold.
-    const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0, dock: 0 } }));
-    const pings = $$(".stage .ping"), DOCK = [165, 215];
-    gsap.set(packets.map((pk) => pk.el), { xPercent: -50, yPercent: -50 });
+    // Each packet is a dot with a COMET behind it: the wire lights up along its
+    // last stretch, and the light drains into the stop it reaches (d, after it has
+    // arrived), which sends out a ring. Two strokes per leg, a wide soft tail and a
+    // short hot core, both dashes of a copy of the wire (one bright dash, slid
+    // along it). Once the last one is home the whole route turns gold.
+    const svg = $(".stage__svg"), pings = $$(".stage .ping");
+    const packets = $$(".packet").map((el) => {
+      const path = document.getElementById(el.dataset.path), L = path.getTotalLength();
+      const comets = [[Math.min(190, L * 0.6), "comet"], [Math.min(80, L * 0.32), "comet comet--core"]].map(([T, cls]) => {
+        const c = path.cloneNode(); c.removeAttribute("id");
+        c.setAttribute("class", cls + (path.classList.contains("wire--gold") ? " comet--gold" : ""));
+        c.style.strokeDasharray = `${T} ${L + T}`; c.style.strokeDashoffset = T;
+        svg.appendChild(c);
+        return { c, T };
+      });
+      return { el, path, L, comets, p: { t: 0, d: 0 } };
+    });
     const place = (pk) => {
-      const L = pk.path.getTotalLength(), pt = pk.path.getPointAtLength(pk.p.t * L), W = stage.clientWidth, r = W / 1200;
-      let x = pt.x + (DOCK[0] - pt.x) * pk.p.dock, y = pt.y + (DOCK[1] - pt.y) * pk.p.dock;
-      // a card is wider than the route's outer edge is from the stage's: it hugs the edge instead
-      const hw = pk.el.offsetWidth / 2;
-      gsap.set(pk.el, { x: Math.min(W - hw, Math.max(hw, x * r)), y: y * r });
+      const pt = pk.path.getPointAtLength(pk.p.t * pk.L), r = stage.clientWidth / 1200;
+      gsap.set(pk.el, { x: pt.x * r, y: pt.y * r });
+      pk.comets.forEach(({ c, T }) => (c.style.strokeDashoffset = T - (pk.p.t * pk.L + pk.p.d * T)));
     };
     const legs = [0, 1, 2, 3, 3.8, 4.6], LEG = 0.8;
     const orch = gsap.timeline({
@@ -535,13 +543,13 @@
       scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5 }
     });
     packets.forEach((pk, i) => {
-      const at = legs[i], last = i === packets.length - 1;
+      const at = legs[i];
       orch.to(pk.path, { strokeDashoffset: 0, duration: LEG }, at)
-        .fromTo(pk.el, { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 1, scale: 1, duration: 0.16, ease: "back.out(1.8)" }, at)
+        .fromTo(pk.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, at)
         .to(pk.p, { t: 1, duration: LEG, onUpdate: () => place(pk) }, at)
+        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, at + LEG)
+        .to(pk.p, { d: 1, duration: 0.2, ease: "power1.in", onUpdate: () => place(pk) }, at + LEG)
         .fromTo(pings[i], { autoAlpha: 0.95, scale: 0.35 }, { autoAlpha: 0, scale: 2.3, duration: 0.3, ease: "power2.out", immediateRender: false }, at + LEG - 0.02);
-      if (!last) orch.to(pk.el, { autoAlpha: 0, scale: 0.25, duration: 0.12, ease: "power2.in" }, at + LEG - 0.1);
-      else orch.to(pk.p, { dock: 1, duration: 0.15, ease: "power2.out", onUpdate: () => place(pk) }, at + LEG);
     });
     orch.to({}, { duration: 0.3 }, legs[5] + LEG);
     stage.dataset.step = 0;
@@ -577,10 +585,21 @@
     $$(".orch__captions li").forEach((c) => c.classList.add("is-on"));
     $(".stage").dataset.step = "all";
     $(".stage").dataset.pick = "miso";
+    // the journey strip: the card in view lights its leg on the stage above
+    const strip = $(".jstrip__cards"), jdots = $$(".jstrip__nav i");
+    const onStrip = () => {
+      const cards = [...strip.children], x = strip.scrollLeft, o = (c) => Math.abs(c.offsetLeft - cards[0].offsetLeft - x);
+      const k = cards.reduce((b, c, i) => (o(c) < o(cards[b]) ? i : b), 0);
+      $(".stage").dataset.leg = k;
+      jdots.forEach((d, i) => d.classList.toggle("is-on", i === k));
+    };
+    strip.addEventListener("scroll", onStrip, { passive: true });
+    onStrip();
     rItems.forEach((li, i) => ScrollTrigger.create({ trigger: li, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setStop(i) }));
     // no autoplay on touch or under reduced motion: each job drives the phone as it scrolls past
     stopAuto();
     cases.forEach((c, i) => ScrollTrigger.create({ trigger: c, start: "top 65%", end: "bottom 65%", onToggle: (s) => s.isActive && setCase(i) }));
+    return () => { strip.removeEventListener("scroll", onStrip); delete $(".stage").dataset.leg; };
   });
 
   // ---------- 06 · GTAmex ----------
