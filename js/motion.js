@@ -556,10 +556,15 @@
 
     // daily rhythm: equal scroll per stop. setStop swings the hand, so this only
     // has to say which stop we are on.
+    // The sky (js/skyfx.js) reads the same progress for its hour, and the arrival
+    // before the pin for the sunrise.
     ScrollTrigger.create({
       trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true,
-      onUpdate: (s) => setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length)))
+      onUpdate: (s) => { setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length))); apexSky.set(s.progress); },
+      onRefresh: (s) => apexSky.set(s.progress)
     });
+    ScrollTrigger.create({ trigger: ".rhythm__pin", start: "top bottom", end: "top top", refreshPriority: -1,
+      onUpdate: (s) => apexSky.enter(s.progress), onRefresh: (s) => apexSky.enter(s.progress) });
 
     // build loop: the ring fills, a runner laps it, nodes light up · parked
     const fill = $(".cycle__fill"), cnodes = $$(".cnode");

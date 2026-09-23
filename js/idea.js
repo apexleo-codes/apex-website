@@ -97,7 +97,7 @@
   }
   const fill = (list, n, make) => { while (list.length < n) list.push(make()); return list.slice(0, n); };
 
-  // 0 · "Most AI waits for a question": a chat bubble with a question mark in it
+  // 0 · "Most AI assistants wait to be asked": a chat bubble with a question mark in it
   function bubble() {
     const rim = sample(Math.round(N * 0.6), (x, W, H) => {
       const w = W * 0.74, h = H * 0.56, l = (W - w) / 2, t = H * 0.16, r = H * 0.11;

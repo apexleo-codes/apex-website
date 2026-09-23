@@ -255,10 +255,14 @@
 .rhythm__sky { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
 .rhythm__wash { position: absolute; inset: 0; transition: opacity 1.1s var(--ease); }
 /* the origin follows the orb's centre, so the light still reads as coming off it */
-.rhythm__wash--day { background: radial-gradient(88% 80% at 9% 17%, rgba(255, 201, 92, .55), rgba(255, 190, 80, .17) 32%, transparent 68%); }
+.rhythm__wash--day { background: radial-gradient(88% 80% at 91% 17%, rgba(255, 201, 92, .55), rgba(255, 190, 80, .17) 32%, transparent 68%); }
 /* at night it is moonlight, not an absence of light: the darkness is the section's
    own background, and a dark gradient over a dark field shows nothing at all */
-.rhythm__wash--night { opacity: 0; background: radial-gradient(88% 80% at 9% 17%, rgba(150, 178, 255, .3), rgba(96, 120, 220, .1) 32%, transparent 68%); }
+.rhythm__wash--night { opacity: 0; background: radial-gradient(88% 80% at 91% 17%, rgba(150, 178, 255, .3), rgba(96, 120, 220, .1) 32%, transparent 68%); }
+/* the WebGL sky, desktop only (where the section is pinned) */
+.rhythm__gl { position: absolute; inset: 0; width: 100%; height: 100%; }
+.rhythm.has-sky .rhythm__wash, .rhythm.has-sky .rhythm__orb { display: none; }
+@media (max-width: 900px) { .rhythm__gl { display: none; } }
 .rhythm.is-night .rhythm__wash--day { opacity: 0; }
 .rhythm.is-night .rhythm__wash--night { opacity: 1; }
 /* Clear of both edges, and smaller than it was. Hung over the corner it lost a
@@ -267,22 +271,29 @@
    Inset in px and vh, never a percentage of the sky: the pin is a screen tall on
    desktop and half as tall again on a phone, and a percentage pushed the sun most
    of the way off the top down there. */
+/* In the top-RIGHT corner: over the top-left it sat on "05 The daily rhythm".
+   This is the phone and reduced-motion sky; on desktop js/skyfx.js draws a real
+   one (.rhythm__gl) and this steps aside (.has-sky). */
 .rhythm__orb {
-  --orb: clamp(104px, 12vw, 180px);
-  position: absolute; left: clamp(18px, 3vw, 54px); top: clamp(62px, 8vh, 96px);
+  --orb: clamp(72px, 7.5vw, 116px);
+  position: absolute; right: clamp(18px, 3vw, 54px); top: clamp(62px, 8vh, 96px);
   width: var(--orb); aspect-ratio: 1; color: var(--accent);
 }
-.rhythm__orb .ic { position: absolute; inset: 0; width: 100%; height: 100%; stroke-width: .7; transition: opacity 1.1s var(--ease), transform 1.1s var(--ease); }
-.rhythm__sun { opacity: .34; }
-.rhythm__moon { opacity: 0; transform: rotate(-40deg) scale(.55); }
-.rhythm.is-night .rhythm__sun { opacity: 0; transform: rotate(40deg) scale(.55); }
-.rhythm.is-night .rhythm__moon { opacity: .4; transform: none; }
-@media (prefers-reduced-motion: no-preference) {
-  /* :not(.is-night), so the animation stops at night and hands `transform` back to
-     the rule that turns the sun out — an animation outranks it while it runs */
-  .rhythm:not(.is-night) .rhythm__sun { animation: orb-turn 80s linear infinite; }
+/* bodies, not outline icons: a glowing sun that sinks and fades at night, and a
+   shaded moon that rises into its place */
+.rhythm__orb i { position: absolute; inset: 18%; border-radius: 50%; transition: opacity 1.1s var(--ease), transform 1.1s var(--ease); }
+.rhythm__sun {
+  background: radial-gradient(circle, #fff7e2 0 34%, #ffd47e 62%, #f4a93c 100%);
+  box-shadow: 0 0 34px 8px rgba(255, 186, 84, .55), 0 0 110px 36px rgba(255, 176, 74, .22);
 }
-@keyframes orb-turn { to { transform: rotate(360deg); } }
+.rhythm__moon {
+  opacity: 0; transform: translateY(40%) scale(.8);
+  background: radial-gradient(circle at 36% 34%, #f6f7fc, #d3d8e8 55%, #a6aec8);
+  box-shadow: inset -.9em -.35em 0 -.1em rgba(12, 18, 36, .5), 0 0 40px 6px rgba(150, 175, 255, .28);
+  font-size: calc(var(--orb) / 6);
+}
+.rhythm.is-night .rhythm__sun { opacity: 0; transform: translateY(40%) scale(.8); }
+.rhythm.is-night .rhythm__moon { opacity: 1; transform: none; }
 .rhythm .shead__num { color: inherit; border-color: currentColor; opacity: .55; }
 .rhythm .eyebrow, .rhythm em { color: var(--accent); }
 .rhythm__body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(34px, 5vw, 92px); align-items: center; }
