@@ -30,14 +30,20 @@
     });
   }
   function intro() {
-    gsap.timeline()
+    // with the stage lit (js/herofx.js) he is there from the start, in the dark,
+    // and the light striking on him is his entrance; the bubble waits for it
+    const fx = window.apexHeroFx, lit = !!(fx && fx.claim());
+    const tl = gsap.timeline()
       .from(".hero__title .line > span", { yPercent: 115, duration: 1.2, ease: "expo.out", stagger: 0.12 })
-      .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8")
-      .from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
+      .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8");
+    if (lit) tl.add(() => fx.reveal(), 0.15)
+      .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, 2.1)
+      .add(() => apexHero.start(), 2.45);
+    else tl.from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
       .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, "-=.7")
-      .add(() => apexHero.start(), "-=.45")   // he waves as the first message lands
-      .from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, "-=.9")
-      .add(countUp, "-=1");
+      .add(() => apexHero.start(), "-=.45");  // he waves as the first message lands
+    tl.from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, 1)
+      .add(countUp, 0.9);
   }
   const finishLoad = () => { document.body.classList.remove("is-loading"); lenis && lenis.start(); refreshAll(); };
   const loader = $(".loader");

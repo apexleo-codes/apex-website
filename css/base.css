@@ -134,8 +134,9 @@ kbd { display: inline-block; min-width: 1.9em; padding: 1px 6px; border: 1px sol
   padding: 130px var(--pad) 100px; overflow: hidden;
 }
 /* No gold pool behind the lion: it sat at 74% 54%, right under him, and read as
-   an odd elliptical light rather than atmosphere. His background is now the flat
-   page ink. Only the faint mint wash on the copy side is left. */
+   an odd elliptical light rather than atmosphere. The light on him now comes from
+   the stage (js/herofx.js), where the floor's pool sits under a beam you can see.
+   Only the faint mint wash on the copy side is left here. */
 .hero__glow {
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(30% 36% at 12% 88%, rgba(114, 209, 174, .07), transparent 70%);
