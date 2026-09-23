@@ -76,7 +76,6 @@ window.apexRigFx = (() => {
     float flash = exp(-pow((uSoulIn - .47) * 10., 2.)) * step(uSoulIn, .999);
     if (uSoul > .001) {
       if (uFront < .5) {
-        // god rays: two fans turning opposite ways, frayed along their length
         // god rays: two fans turning opposite ways, each ray its own length, frayed
         // along it, so it reads as light through dust and not as a drawn sunburst
         float r1 = .5 + .5 * sin(th * 11. + t * .3 + 2.2 * sin(th * 3. - t * .21));
@@ -118,7 +117,6 @@ window.apexRigFx = (() => {
       vec2 fq = (a - vec2(C.x, ${FLOOR} - .005)) * vec2(1., 4.2);
       float fd = length(fq);
       if (uFront < .5) {
-        // the fire: his tail-less outline, dragged upwards through noise that climbs
         // Tongues: noise stretched tall and climbing, which both sways the outline
         // sideways and eats into it, over a smooth reach up from his (tail-less)
         // silhouette - the wide mask, never the sharp one, so nothing steps.
