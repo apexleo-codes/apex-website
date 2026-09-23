@@ -207,17 +207,19 @@ window.APEX = {
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)
-  // `skill` is the skill each specialist runs, as named in SOUL.md and the Skills tab
+  // `skill` is the skill each specialist runs, as named in SOUL.md and the Skills tab.
+  // `role` is the same job in plain words, for the team in the big idea and the
+  // curtain call: two or three words a CXO reads at a glance, never the skill's slug.
   team: [
-    { key: "apex", name: "APEX", color: "#e8a84a" },
-    { key: "tusk", name: "TUSK", color: "#35b3a1", skill: "vaccine-tracker" },
-    { key: "bolt", name: "BOLT", color: "#e25c50", skill: "emergency-care" },
-    { key: "bullseye", name: "BULLSEYE", color: "#4fae68", skill: "market-brief" },
-    { key: "miso", name: "MISO", color: "#f08a3c", skill: "gut-health-chef" },
-    { key: "nyx", name: "NYX", color: "#7d6ef0", skill: "idea-incubator" },
-    { key: "kitsune", name: "KITSUNE", color: "#4583ea", skill: "trend-scout" },
-    { key: "forge", name: "FORGE", color: "#8c9db2", skill: "project-steward" },
-    { key: "colony", name: "COLONY", color: "#d6b33c" }
+    { key: "apex", name: "APEX", color: "#e8a84a", role: "Chief of staff" },
+    { key: "tusk", name: "TUSK", color: "#35b3a1", skill: "vaccine-tracker", role: "Baby's health" },
+    { key: "bolt", name: "BOLT", color: "#e25c50", skill: "emergency-care", role: "Emergencies" },
+    { key: "bullseye", name: "BULLSEYE", color: "#4fae68", skill: "market-brief", role: "Markets" },
+    { key: "miso", name: "MISO", color: "#f08a3c", skill: "gut-health-chef", role: "Meals & groceries" },
+    { key: "nyx", name: "NYX", color: "#7d6ef0", skill: "idea-incubator", role: "Bedtime ideas" },
+    { key: "kitsune", name: "KITSUNE", color: "#4583ea", skill: "trend-scout", role: "Tech trends" },
+    { key: "forge", name: "FORGE", color: "#8c9db2", skill: "project-steward", role: "Code projects" },
+    { key: "colony", name: "COLONY", color: "#d6b33c", role: "Scripts" }
   ],
 
   // slide 4 · the journey flow

@@ -18,6 +18,15 @@
   const names = D.team.map((t) => `<span>${t.name}</span>${icon("star")}`).join("");
   $(".marquee__track").innerHTML = `<div>${names}</div><div>${names}</div>`;
 
+  // the big idea's team: faces and names that ride on the WebGL team formation, which
+  // places them (js/idea.js). APEX leads from the centre; COLONY is scripts, not an
+  // agent, so it sits this one out.
+  const ideaTeam = $(".idea__team");
+  if (ideaTeam) ideaTeam.innerHTML = D.team.filter((t) => t.key !== "colony").map((t) => `
+    <div class="idea__agent${t.key === "apex" ? " idea__agent--lead" : ""}" data-key="${t.key}" style="--c:${t.color}">
+      <img src="img/agent-${t.key}.webp" alt="" loading="lazy"><span><b>${t.name}</b><small>${t.role}</small></span>
+    </div>`).join("");
+
   // No agents in the hero. They were tried twice: a flat ring (they read as
   // smudges on the lion) and electron orbits round him as a nucleus (the rings
   // vanished and the agents shrank to illegible specks). The stats already say
@@ -221,6 +230,17 @@
   $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
     `<span class="toolsbar__chip${t.flow ? " toolsbar__chip--flow" : ""}">${icon(t.icon)}<span>${t.name}${t.flow ? ` → ${t.flow}` : ""}</span></span>`).join(""));
 
+  // 03 · the route, faintly, before anything travels it: a ghost under every wire, so
+  // the leg a packet is about to take is already on the stage when you arrive. The
+  // climb to the tool and the drop back are one line, so that pair gets one ghost.
+  const wires = $(".stage__svg");
+  $$(".wire", wires).filter((w) => w.id !== "p-tool-back").forEach((w) => {
+    const g = w.cloneNode();
+    g.removeAttribute("id");
+    g.setAttribute("class", `wire-ghost${w.classList.contains("wire--gold") ? " wire-ghost--gold" : ""}`);
+    wires.insertBefore(g, $(".wire", wires));
+  });
+
   // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
   // scoped to .task: the frontend section has a phone too, and it comes first in the DOM
@@ -252,6 +272,16 @@
     const c = D.clock12(st.t);
     return `<li data-i="${i}" class="${i ? "" : "is-on"}"><b>${c.t}<small>${c.ap}</small></b>${av(st.key)}<span>${st.label}</span></li>`;
   }).join("");
+
+  // 07 · the curtain call: everyone who worked the day, APEX in the middle
+  const bow = $(".bow");
+  if (bow) {
+    const order = ["tusk", "bolt", "bullseye", "miso", "apex", "nyx", "kitsune", "forge", "colony"];
+    bow.innerHTML = order.map((k) => {
+      const t = D.team.find((m) => m.key === k);
+      return `<figure class="bow__m${k === "apex" ? " bow__m--lead" : ""}" style="--c:${t.color}"><img src="img/agent-${k}.webp" alt="" loading="lazy"><figcaption>${t.name}</figcaption></figure>`;
+    }).join("");
+  }
 
   // the build loop's nodes around the ring · parked
   if ($(".cycle__nodes")) $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `

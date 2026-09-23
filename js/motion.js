@@ -83,14 +83,81 @@
   $$("[data-goto]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); setMenu(false); goto(a.dataset.goto); }));
   $$(".menu__list a").forEach((a) => a.addEventListener("pointerenter", () => ($(".menu__preview").src = `img/agent-${a.dataset.img}.webp`)));
 
+  // ---------- presenter mode ----------
+  // For showing the page to a room: → or PageDown (what a presentation clicker
+  // sends) glides to the next beat of the story, ← or PageUp to the one before. A
+  // beat is a place where something has just FINISHED happening - a formation in
+  // the big idea, a setup step once its stage has landed on the rig, the end of a
+  // leg in the journey, an hour on the clock - so every press stops on a settled
+  // frame, never halfway through a morph. The list is built at the moment of the
+  // press, from the live layout and the live pins, so it can't go stale the way a
+  // list built at load would (see "How sections move" in the README).
+  const beats = () => {
+    const vh = innerHeight, top = (el) => el.getBoundingClientRect().top + scrollY;
+    const pinOf = (sel) => ScrollTrigger.getAll().find((t) => t.pin && t.trigger && t.trigger.matches(sel));
+    const out = [0];
+    const head = (el) => el && out.push(top(el) - 90);                              // a heading, just under the nav
+    const mid = (el) => el && out.push(top(el) + el.offsetHeight / 2 - vh / 2);    // a block, centred
+    const idea = $(".idea");
+    if (idea && window.apexIdea) apexIdea.holds.forEach((h) => out.push(top(idea) + h * (idea.offsetHeight - vh)));
+    head($(".front .shead"));
+    // the setup's heading shows step 01 whole; each later step stops once its stage
+    // has converged on the rig, which changes over the heading's travel from 25% of
+    // the screen to 3% (the rig's START and END, further down), so just past that
+    head($(".setup .shead"));
+    setupSteps.forEach((st, i) => i && out.push(top(st) - 0.03 * vh + 2));
+    // the journey: the moment each packet arrives (legs, in timeline seconds, over
+    // a 5.7 s timeline; a little late, because the scrub trails the scroll)
+    const orchPin = pinOf(".orch__pin");
+    if (orchPin) [0, 0.155, 0.33, 0.505, 0.68, 0.82, 0.975].forEach((f) => out.push(orchPin.start + f * (orchPin.end - orchPin.start)));
+    else head($(".orch .shead"));
+    head($(".task .shead")); tsteps.forEach(mid);
+    const rhythmPin = pinOf(".rhythm__pin");
+    if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
+    else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
+    head($(".gta .shead")); mid($(".gta__screen")); head($(".gta__grid")); mid($(".gta__passed"));
+    mid($(".recap")); mid($(".thanks"));
+    const max = document.documentElement.scrollHeight - vh;
+    return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
+      .filter((y, i, a) => !i || y - a[i - 1] > 24);
+  };
+  const toast = document.createElement("div");
+  toast.className = "present"; toast.setAttribute("aria-hidden", "true");
+  document.body.appendChild(toast);
+  let aim = null, aimAt = 0, toastT = 0;
+  const present = (dir) => {
+    const list = beats();
+    // a second press while the first glide is still going counts from where that one
+    // is headed, so three quick clicks go three beats and not one
+    const from = aim != null && performance.now() - aimAt < 1400 ? aim : scrollY;
+    const i = dir > 0 ? list.findIndex((y) => y > from + 8) : list.findLastIndex((y) => y < from - 8);
+    if (i < 0) return;
+    aim = list[i]; aimAt = performance.now();
+    if (lenis) lenis.scrollTo(aim, { duration: Math.min(2.2, 0.95 + Math.abs(aim - scrollY) / 2600), easing: (t) => 1 - Math.pow(1 - t, 3.4) });
+    else window.scrollTo(0, aim);
+    toast.innerHTML = `<b>${pad(i + 1)}</b> / ${pad(list.length)}`;
+    toast.classList.add("is-on"); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove("is-on"), 1500);
+  };
+  addEventListener("keydown", (e) => {
+    const dir = { ArrowRight: 1, PageDown: 1, ArrowLeft: -1, PageUp: -1 }[e.key];
+    if (!dir || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    if (document.body.classList.contains("menu-open") || document.body.classList.contains("is-loading")) return;
+    if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+    e.preventDefault();
+    present(dir);
+  });
+
   // the brand is the hero's, and only the hero's (see base.css). Active from the
   // moment the hero's bottom clears the top of the screen to the end of the page,
   // so one class covers the whole way down and back up again. onRefresh as well as
   // onToggle: a page opened deep - a #hash, or a browser putting back the scroll
   // position from last time - never crosses the line, so the toggle never fires and
   // the brand would sit there over a section it doesn't belong to.
+  // The end sits past the bottom of the page, never ON it: a trigger reads as
+  // inactive at progress 1, so with `end: "max"` the brand came back on the very
+  // last pixel, over the thank-you.
   const heroGate = (s) => document.body.classList.toggle("past-hero", s.isActive);
-  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: "max", onToggle: heroGate, onRefresh: heroGate });
+  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: () => ScrollTrigger.maxScroll(window) + 100, onToggle: heroGate, onRefresh: heroGate });
 
   const numEl = $(".nav__num"), nameEl = $(".nav__name");
   $$("[data-chapter]").forEach((sec, i) => ScrollTrigger.create({
@@ -317,6 +384,35 @@
   };
   setStop(0, false);
 
+  // Right now, in India: the same schedule read against today's clock, so the
+  // room sees it isn't a mock-up - the next job really is on its way. Times in
+  // content.js are IST; BULLSEYE only works Mon-Fri, and MISO's Sunday job, which
+  // the dial leaves to the note under the list, is counted here too. Information,
+  // not decoration, so it runs under reduced motion as well (only the dot's pulse
+  // stops). One line, fixed height, inside the pin: it can't move anything below.
+  const nowEl = $(".rhythm__now");
+  if (nowEl) {
+    const jobs = [...R, { t: "09:30", key: "miso", label: "Sunday recipe → cart", days: [0] }]
+      .map((st) => ({ ...st, days: st.days || (st.key === "bullseye" ? [1, 2, 3, 4, 5] : null) }));
+    const who = Object.fromEntries(D.team.map((t) => [t.key, t.name]));
+    const tick = () => {
+      const d = new Date(Date.now() + (330 + new Date().getTimezoneOffset()) * 60000);   // IST's wall clock
+      const now = d.getHours() * 60 + d.getMinutes(), dow = d.getDay();
+      let next = null;
+      for (const day of [0, 1]) for (const st of jobs) {
+        const [h, m] = st.t.split(":").map(Number), at = day * 1440 + h * 60 + m;
+        if (at <= now || (st.days && !st.days.includes((dow + day) % 7))) continue;
+        if (!next || at < next.at) next = { ...st, at };
+      }
+      if (!next) return;
+      const c = D.clock12(`${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`), wait = next.at - now;
+      const inTime = wait < 60 ? `${wait} min` : `${Math.floor(wait / 60)} h ${String(wait % 60).padStart(2, "0")} min`;
+      nowEl.lastElementChild.innerHTML = `<b>Right now</b> ${c.t} ${c.ap} in India · next up: <img src="img/agent-${next.key}.webp" alt="">${who[next.key]}, ${next.label.toLowerCase()}, in ${inTime}`;
+      nowEl.hidden = false;
+    };
+    tick(); setInterval(tick, 20000);
+  }
+
   const mm = gsap.matchMedia();
 
   // ---------- decorative motion ----------
@@ -336,7 +432,7 @@
     ScrollTrigger.addEventListener("scrollEnd", settle);
 
     // headings and blocks rise in
-    const risers = $$(".section .big, .roles .role, .case, .skillx, .model, .tool, .backups, .task__notes > *");
+    const risers = $$(".section .big, .roles .role, .case, .skillx, .model, .tool, .backups, .task__notes > *, .recap li");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
 
@@ -352,9 +448,13 @@
     }
 
 
-    // thank you
+    // thank you: the words rise, then the team comes out from the middle and takes a
+    // bow, APEX first. The bow is on the image and the entrance on the figure, and a
+    // hover lifts the figure on `translate`, so no two of them share a property.
     gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
-    gsap.from(".thanks__lion", { rotate: -25, scale: 0.4, autoAlpha: 0, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".thanks", start: "top 70%" } });
+    gsap.timeline({ scrollTrigger: { trigger: ".bow", start: "top 85%" } })
+      .from(".bow__m", { y: 70, autoAlpha: 0, duration: 1.1, ease: "back.out(1.6)", stagger: { each: 0.08, from: "center" } })
+      .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
 
     // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
     // the tiles deal in like a mission select and "mission passed" lands last.

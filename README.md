@@ -2,7 +2,9 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and section 02 is *the setup*, which the deck never covered. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · thank you.
+Page order: hero · the big idea · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · thank you.
+
+**Presenting it to a room?** → or PageDown (what a clicker sends) steps to the next beat of the story, ← or PageUp goes back. See Presenter mode, below.
 
 **Parked sections** live in `depricated_for_now.html`, out of the page on the user's note because section 03 and recipe → cart already cover the same ground: *the journey flow*, *brains and tools*, and *the build loop*. Their words, markup, motion and styles all stay in the repo, so putting one back means moving its `<section>` into `index.html` and renumbering — the render and motion blocks ask for their container first and skip while it's parked. That file is a holding pen, not a working page: it loads the CSS but not the scripts, so the lists inside it stay empty.
 
@@ -26,13 +28,16 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `js/content.js` | Repeated content (agents, the frontend chat, rhythm, models, tools, setup steps); edit words here |
 | `js/render.js` | Turns `content.js` into markup |
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
-| `js/motion.js` | Smooth scroll, loader, cursor, menu, and each section's scroll animation |
+| `js/idea.js` | The big idea: the WebGL scene of points that re-form for each of its four lines, and the agents' faces that ride on it |
+| `js/motion.js` | Smooth scroll, loader, cursor, menu, presenter mode, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero layout, marquee |
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
+| `css/idea.css` | The big idea: the sticky stage, its four lines, the team's faces and names |
 | `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `css/gtamex.css` | GTAmex (section 06): the side-quest game. The title and HUD, the drone flight on a framed screen with a glow sampled from the video, then a mission-select grid of clips and stills with a HUD that fills on scroll |
 | `tools/build-rig.py` | Generated stage PNGs → the rig's cut-out, aligned WebPs (see the assembly rig, below) |
+| `tools/og.html` | The link-preview card, `img/og.jpg` (1200×630, the site's own fonts and art); how to regenerate it is at the top of the file. The `og:` tags name the live site's URL, absolute, since most apps won't resolve a relative one |
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
@@ -42,7 +47,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 ## How sections move
 
 - **Pinned** (desktop only, above 900px): how they work together (a request travels the wires), daily rhythm (a clock dial, day turns to night). The build-loop ring pinned the same way, and still would if it came back.
-- **Sticky**: recipe → cart — the phone stays put while the steps scroll past and its screen changes. This needs `overflow-x: clip` (not `hidden`) on `body`; `hidden` makes body a scroll container and sticky silently breaks.
+- **Sticky**: recipe → cart — the phone stays put while the steps scroll past and its screen changes. This needs `overflow-x: clip` (not `hidden`) on `body`; `hidden` makes body a scroll container and sticky silently breaks. The big idea is sticky too, on every screen size (see its section).
 - **Phones and reduced motion**: the same content with no pinning. Screenshots sit inline and every step is shown.
 
 ## The nav
@@ -50,6 +55,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 - **The brand belongs to the hero, and goes with it** (`body.past-hero`). The nav blends with `mix-blend-mode: difference`, so past the hero the lion and the wordmark invert over whatever is behind them — a different picture in every section — and they read as debris sitting on the view. The chapter readout beside it already says where you are.
 - **Faded, not removed.** The nav is a `1fr auto 1fr` grid; leaving the column in place keeps the chapter centred on the page and the menu button where it was.
 - **Its trigger sets the class on `onRefresh` as well as `onToggle`.** A page opened deep — a `#hash`, or a browser restoring last time's scroll position — never crosses the line, so the toggle never fires and the brand sits there over a section it doesn't belong to.
+- **The brand stays gone to the very last pixel.** The gate's end is past the bottom of the page, never on it: a trigger reads as inactive at progress 1, so with `end: "max"` the brand came back over the thank-you the moment you reached the end.
 - **There is no scroll-progress bar under the nav.** There was; it read as a second, competing progress indicator next to the chapter readout and the setup section's own spine, and it was the one nobody needed. Don't re-add it without deciding what it says that those don't.
 
 Gotcha: **nothing above a pin may change height after ScrollTrigger has measured the page.** It measures once and trusts it, so anything that grows later pushes the pinned sections down while their starts stay put — and the panel snaps on the way in, because the pin engages against a layout that no longer exists. This is what made sections 03 and 05 "jump to full screen": the setup's Skills screenshot was `loading="lazy"` with no reserved size, 0px tall when ScrollTrigger measured and ~400px once it loaded, which happens just before 03. Every pin below it started ~400px off. So:
@@ -63,6 +69,34 @@ Gotcha: ScrollTriggers are created in code order, not page order. `refreshAll()`
 Gotcha: never point GSAP `autoAlpha` at an element that also has a CSS `transition: opacity`. The hero bubble has one, and a `from({ autoAlpha: 0 })` on it left it stranded at `opacity: 0; visibility: hidden` — the transform half of the very same tween finished normally, the opacity half never reverted, and nothing threw, so the bubble simply never appeared while every other animation looked fine. (The lion uses `autoAlpha` happily; it carries no opacity transition.) So each property has one owner: CSS fades the bubble — `opacity: 0` until `js/hero.js` adds `is-live`, then `is-out` between messages — and the intro tween animates transform only. `.bubble-wrap` splits the GSAP owners too: `motion.js` parallaxes the wrapper, the intro tween moves the bubble.
 
 Same rule for initial hidden states: keep them in CSS, not JS. The reduced-motion path takes an early return out of `hero.js`, so anything hidden only on the normal path shows up wrongly for reduced-motion visitors. (An earlier SVG lion left his mouth hanging open exactly this way.)
+
+## The big idea (between the hero and 01)
+
+The one thing the rest of the page shows but never says: **what makes this an agent and not a chatbot.** Four lines, one at a time, each over a formation of a few thousand points of light: a question waiting in a chat bubble ("Most AI waits for a question") → APEX himself ("APEX doesn't wait") → the team, APEX in the middle and the seven specialists round him with the work streaming out along the spokes ("One lead, seven specialists") → the shield with its tick ("The big calls stay mine"). The thank-you's three things to remember are the same three claims, turned into advice. It is part of the intro, so it has no number and no chapter: the nav keeps saying 00 Intro, and nothing below it was renumbered.
+
+- **Every point carries its place in all four formations**, and the vertex shader moves it between them, so a frame costs the CPU a handful of uniforms however many points there are (7,000; 4,200 on a phone). Measured at a flat 60 fps. Raw WebGL, no library: nothing to vendor, and the scene is one file.
+- **Sticky, not pinned.** The stage is `position: sticky` inside a 380svh section, and a plain ScrollTrigger reads its progress. Sticky adds no pin-spacer and never changes the page's height after ScrollTrigger has measured it, so the two pins below can't be knocked off by it — `tools/check-pins.mjs` stays GREEN at 1440×900 and 1024×768. Because it isn't a pin, it runs the same on a phone. `svh`, so a phone's address bar showing and hiding doesn't resize the section under the reader.
+- **Scroll picks the formation; `KEYS` in `js/idea.js` lays it out** — a hold long enough to read each line, and the morphs between the holds. `holds` (the middle of each hold) is exported for presenter mode; move one and move the other.
+- **The points are shuffled between formations.** Without it the points that drew the bubble's rim would all become the lion's feet, and a morph would read as one shape sliding into another instead of pouring apart and back. Mid-morph each point swirls out and towards you on its own delay, which is what makes it look poured.
+- **The shapes are sampled, not modelled**: each is drawn on a scratch canvas and points are taken off its painted pixels. The lion is `img/apex-rig-5-alive.webp`, the setup rig's last stage, in his own colours — the same figure the setup builds a few screens later. If that image can't be read (a `file://` page taints the canvas) the formation falls back to the APEX wordmark.
+- **`img.decode()` never settles while the page is hidden.** Waiting on it meant a link opened in a background tab sat unbuilt until someone looked at it; the scene waits on the image's load event instead.
+- **The build waits for the page to load and then for an idle moment.** Sampling is main-thread work, and it must never cost the loader or the hero intro a frame. The lines are markup and are there from the start regardless.
+- **The faces are DOM, the points are GL.** `render.js` builds one face and name per agent (not COLONY: scripts, not an agent), and `idea.js` places them every frame with the same projection as the shader, so they sit in the middle of their own halo as the scene sways. One owner per property, as everywhere else: JS owns their `transform` and the `--team` fade; CSS owns the lines' swap, and nothing animates those from JS.
+- **The names hang below the halo, not inside it**: additive light behind small text washes it out.
+- **It survives the GPU changing under it.** On a MacBook with two GPUs, plugging in a projector can switch GPUs, which loses every WebGL context. The context asks for `low-power` (a few thousand points need nothing more, and asking for the big GPU is what triggers the switch), and on `webglcontextrestored` the program and the buffer are rebuilt from the points kept on the CPU side. Tested with `WEBGL_lose_context`.
+- **Reduced motion**: no morph and no drift; the formation changes with the line, one still frame each time. **No WebGL**: `.idea--flat` hides the canvas, the lines still swap, and the team shows as a plain row on its beat.
+- Words: the four lines are in `index.html`; the agents' plain-word jobs are `role` on each `team` entry in `content.js`, shared with the curtain call.
+
+## Presenter mode
+
+For showing the page to a room from a laptop: **→ or PageDown** glides to the next beat, **← or PageUp** to the one before. PageDown/PageUp are what a presentation clicker sends, so a clicker just works. The menu says so, in one line, where only someone looking for it will read it; a small counter (`12 / 35`) shows for a moment after each press.
+
+- **A beat is a place where something has just finished happening**: each formation of the big idea, each setup step once its stage has landed on the rig, the moment each packet arrives in the journey, each hour on the clock, each recipe step, the GTAmex flight and grid, the takeaways, the thank-you. Every press stops on a settled frame, never halfway through a morph.
+- **Built at the moment of the press, from the live layout and the live pins** — never a list made at load, which would go stale the way the pins' starts once did.
+- **Setup steps stop just past the rig's window** (the incoming heading's travel from `START` 25% to `END` 3% of the screen), so the picture has converged when you land. Step 01 needs no stop of its own: the section's heading beat shows it whole.
+- **The journey stops where each packet arrives**, as fractions of the pin: `legs` are timeline seconds on a 5.7 s timeline, nudged a little late because the scrub trails the scroll. Change `legs` and change these.
+- **Quick presses count from where the glide is headed**, not from where the page is, so three clicks go three beats.
+- Ignored while the menu is open, while the loader runs, and in form fields; ← and → are free to take because the page never scrolls sideways.
 
 ## The frontend (section 01)
 
@@ -202,6 +236,7 @@ Why this route and not "the skill calls the tool and hands its answer back to AP
 - **What a packet carries rides with it**: `data-tag` on the `.packet` becomes a label (`::after`), above it on flat wires and beside it (`data-side="left"`) on the climb to the tool.
 - **You and the schedule share one circle.** The phone is you; the ticks round its rim are the clock, and its hand only runs on the scripts step.
 - **The tools layer is optional**, but the walk-through's tool is not: switched off, the band and its sample chips go, and **Browser → Zepto** stays as a pill on its own, so the script still has somewhere to send the list. `flow` marks that chip in `layerTools`, and it goes **last**, because the script's wire rises to the band's right end.
+- **The route is on the stage before anything travels it**: `render.js` lays a faint dotted ghost under every wire (one for the climb to the tool and the drop back, which share a line), so you see the whole circuit on arrival and each drawn wire reads as "it went this way". The ghosts carry no id and no `wire` class, so the pin's dash-drawing never touches them.
 - **Skill names and skills show on hover** (`skill` on each `team` entry, as named in SOUL.md); only the picked skill keeps its label on. On phones and under reduced motion the stage is static, with MISO already picked.
 - **The stage is a query container** (`container: orch / inline-size`), so avatars size in `cqw` and the diagram scales as one picture. Chips drop their icons below a 760px stage and their names below 520px.
 - **A node's box is its art alone**, centred on (x, y), and `.node__label` hangs below it; a label in the flow lifts the art off the wires. Labels carry the page ink as a background, so where the return wire passes one on a narrow stage it goes behind.
@@ -221,3 +256,15 @@ A **12-hour clock face**, so it reads like a clock on a wall rather than an inst
 - **The hand swings in `setStop`, not in the pinned desktop story.** A phone never reaches that story, so the hand sat at midnight all the way down the page while the readout beside it said 10:45 PM.
 - The stops' 12h positions (7:30, 8:15, 9:00, 9:30, 10:45, 1:00, 2:30) are all distinct, so no two dots land on top of each other. A new stop 12 hours from an existing one would collide — the fix is to move the stop, not the dial.
 - **The list's time column is 78px, not 64.** "10:45 PM" is three characters longer than the "22:45" it replaced, and at 64px it wrapped.
+- **"Right now" reads the same schedule against the real clock in India** (`.rhythm__now`, `js/motion.js`): the time, and which agent is up next and when — so the day on the dial is also today, and the room sees it isn't a mock-up. BULLSEYE counts only Mon–Fri, and MISO's Sunday job, which the dial leaves to the note, is counted too. It's information, not decoration, so it keeps updating under reduced motion; one line of fixed height inside the pin, so it can't move anything below.
+
+## Thank you (section 07)
+
+Three things to remember, then the curtain call, then questions.
+
+- **The three takeaways are the big idea's three claims, turned into advice** a leader can act on: agents act, not just answer · give each agent one job · keep a human on the big calls. Same order as the big idea, so the page ends where it began.
+- **The curtain call is the whole team in a line, APEX in the middle** (built in `render.js` from `team`). They come out from the middle and take a bow: GSAP owns the figure for the entrance and the image for the bow, and a hover lifts the figure on `translate`, so no two of them share a property. It replaced the lone lion that stood here. Below 560px the names go and the faces shrink so all nine still fit one line on a 375px phone.
+
+## Working on it
+
+Python's `http.server` sends no cache headers, so a browser happily keeps serving yesterday's `js/render.js` next to today's `index.html` — which looks exactly like a bug in the new code. Hard-reload, or serve with `Cache-Control: no-store` while iterating.

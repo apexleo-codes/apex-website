@@ -115,6 +115,18 @@ body.menu-open .menu { clip-path: inset(0); visibility: visible; }
 .menu__side { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 24px; }
 .menu__preview { width: min(62%, 320px); aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
 .menu__side p { font-family: var(--mono); font-size: .72rem; color: var(--dim); text-align: center; line-height: 1.9; margin: 0; }
+.menu__side .menu__keys { font-size: .64rem; line-height: 1.7; max-width: 30ch; }
+kbd { display: inline-block; min-width: 1.9em; padding: 1px 6px; border: 1px solid var(--line-2); border-radius: 5px; font-family: var(--mono); font-size: .9em; color: var(--cream-2); }
+
+/* presenter mode's counter (js/motion.js): only shows for a moment after a key */
+.present {
+  position: fixed; right: var(--pad); bottom: 26px; z-index: 120; padding: 7px 13px; border: 1px solid var(--line-2); border-radius: 999px;
+  background: rgba(11, 19, 18, .72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; color: var(--dim);
+  opacity: 0; transform: translateY(8px); transition: opacity .35s var(--ease), transform .45s var(--ease); pointer-events: none;
+}
+.present.is-on { opacity: 1; transform: none; }
+.present b { color: var(--gold); font-weight: 600; }
 
 /* hero */
 .hero {
