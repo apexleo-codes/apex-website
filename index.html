@@ -27,7 +27,6 @@
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/sections-2.css">
   <link rel="stylesheet" href="css/gtamex.css">
-  <link rel="stylesheet" href="css/idea.css">
 </head>
 <body class="is-loading">
 
@@ -130,30 +129,10 @@
         </video>
       </div>
     </div>
-    <a class="hero__scroll" href="#idea" data-goto="#idea"><span>Scroll</span><i></i></a>
+    <a class="hero__scroll" href="#frontend" data-goto="#frontend"><span>Scroll</span><i></i></a>
   </section>
 
   <div class="marquee" aria-hidden="true"><div class="marquee__track"></div></div>
-
-  <!-- THE BIG IDEA · what makes APEX an agent and not a chatbot, in four beats. Part
-       of the intro, so it has no number and no chapter of its own. The points of
-       light are one WebGL canvas (js/idea.js), sticky inside a tall section rather
-       than pinned; the lines are plain markup, and so are the agents' faces that
-       ride on the team formation (built in js/render.js, placed by js/idea.js). -->
-  <section class="idea" id="idea" aria-label="The big idea">
-    <div class="idea__stage" data-beat="0">
-      <canvas class="idea__gl" aria-hidden="true"></canvas>
-      <div class="idea__team" aria-hidden="true"></div>
-      <p class="eyebrow idea__eyebrow">The big idea</p>
-      <ol class="idea__beats">
-        <li class="idea__beat is-on"><p class="idea__line">Most AI assistants <em>wait</em> to be asked.</p><p class="idea__sub">You ask, they answer, and the rest is still on you.</p></li>
-        <li class="idea__beat"><p class="idea__line">APEX <em>doesn't wait.</em></p><p class="idea__sub">It wakes up on its own and gets the job done.</p></li>
-        <li class="idea__beat"><p class="idea__line">One lead, <em>seven specialists.</em></p><p class="idea__sub">Each agent owns one job, like a real team.</p></li>
-        <li class="idea__beat"><p class="idea__line">The big calls stay <em>mine.</em></p><p class="idea__sub">It fills the cart, I pay. It drafts the message, I send it.</p></li>
-      </ol>
-      <div class="idea__ticks" aria-hidden="true"><i class="is-on"></i><i></i><i></i><i></i></div>
-    </div>
-  </section>
 
   <!-- 01 · THE FRONTEND (Telegram) -->
   <section class="section front" id="frontend" data-chapter="The frontend">
@@ -265,7 +244,8 @@
     </div>
   </section>
 
-  <!-- 04 · MISO RECIPE → CART (slide 8) -->
+  <!-- 04 · MISO RECIPE → CART (slide 8) · beside the steps, points of light pour
+       from a bowl into a cart, into Telegram, into a shield (js/recipefx.js) -->
   <section class="section task" id="task" data-chapter="Recipe → cart">
     <header class="shead"><span class="shead__num">04</span><p class="eyebrow"><img class="eyebrow__av" src="img/agent-miso.webp" alt="">Feature · MISO · recipe + cart</p></header>
     <h2 class="big">Sunday recipe → <em>grocery cart</em></h2>
@@ -277,6 +257,7 @@
         </div>
       </div>
       <div class="task__col">
+        <div class="task__morph" aria-hidden="true"><canvas class="task__gl"></canvas></div>
         <ol class="task__steps"></ol>
         <div class="task__notes">
           <div class="guardcard">
@@ -437,18 +418,11 @@
     </div>
   </section>
 
-  <!-- 07 · THANK YOU (slide 10) · the three things to remember - the big idea's
-       three claims, turned into advice a leader can take away - then the whole team
-       comes out for a curtain call (built in js/render.js), then questions -->
+  <!-- 07 · THANK YOU (slide 10) · the curtain call: points of light gather into
+       APEX and pour into his team, who step out and bow (js/finale.js; the row is
+       built in js/render.js), then questions -->
   <section class="section outro" id="outro" data-chapter="Thank you">
-    <div class="recap">
-      <p class="eyebrow">Three things to remember</p>
-      <ol class="recap__list">
-        <li><span class="recap__n">01</span><svg class="ic" aria-hidden="true"><use href="#i-spark"/></svg><p>Agents <em>act,</em> not just answer.</p></li>
-        <li><span class="recap__n">02</span><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg><p>Give each agent <em>one job.</em></p></li>
-        <li><span class="recap__n">03</span><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><p>Keep a human on <em>the big calls.</em></p></li>
-      </ol>
-    </div>
+    <canvas class="thanks__gl" aria-hidden="true"></canvas>
     <div class="thanks">
       <p class="thanks__word"><span>Thank</span> <em>you.</em></p>
       <div class="bow" role="img" aria-label="The whole team takes a bow: APEX in the middle, with TUSK, BOLT, BULLSEYE, MISO, NYX, KITSUNE, FORGE and COLONY"></div>
@@ -467,9 +441,11 @@
 <script src="js/render.js"></script>
 <script src="js/hero.js"></script>
 <script src="js/herofx.js"></script>
-<script src="js/idea.js"></script>
 <script src="js/rigfx.js"></script>
 <script src="js/skyfx.js"></script>
+<script src="js/morph.js"></script>
+<script src="js/finale.js"></script>
+<script src="js/recipefx.js"></script>
 <script src="js/motion.js"></script>
 </body>
 </html>

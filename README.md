@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and section 02 is *the setup*, which the deck never covered. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the big idea · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · thank you.
+Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · thank you.
 
 **Presenting it to a room?** → or PageDown (what a clicker sends) steps to the next beat of the story, ← or PageUp goes back. See Presenter mode, below.
 
@@ -30,11 +30,12 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `js/hero.js` | The hero cast: the bubble that types itself out, and the lion loop (restarted per message, paused off screen) |
 | `js/herofx.js` | The hero's stage light in WebGL: the lion drawn from the video under a spotlight that strikes on at the intro, dust in the beam, rims, a floor, and the spark that carries each message to the bubble |
 | `js/rigfx.js` | The setup rig's soul (step 04) and ascent (step 05) in WebGL: a canvas behind the lion and one in front, centred on his stomach, with the tail masked out |
-| `js/idea.js` | The big idea: the WebGL scene of points that re-form for each of its four lines, and the agents' faces that ride on it |
+| `js/morph.js` | Points of light that pour from one shape into the next (WebGL): the engine behind the curtain call and the recipe → cart emblem |
+| `js/finale.js` | The curtain call: dust gathers into APEX, who pours into his team; the whole thank-you sequence |
+| `js/recipefx.js` | Recipe → cart's emblem: a bowl → a cart → Telegram → a shield, beside the steps |
 | `js/motion.js` | Smooth scroll, loader, cursor, menu, presenter mode, and each section's scroll animation |
 | `css/base.css` | Colours, type, loader, cursor, nav, menu, hero layout, marquee |
 | `css/hero.css` | The hero cast: the lion video (square, floor line, no masks) and the Telegram bubble |
-| `css/idea.css` | The big idea: the sticky stage, its four lines, the team's faces and names |
 | `css/sections.css` | the frontend (the Telegram phone) · the setup · the journey flow |
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `css/gtamex.css` | GTAmex (section 06): the side-quest game. The title and HUD, the drone flight on a framed screen with a glow sampled from the video, then a mission-select grid of clips and stills with a HUD that fills on scroll |
@@ -49,7 +50,7 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 ## How sections move
 
 - **Pinned** (desktop only, above 900px): how they work together (a request travels the wires), daily rhythm (a clock dial, day turns to night). The build-loop ring pinned the same way, and still would if it came back.
-- **Sticky**: recipe → cart — the phone stays put while the steps scroll past and its screen changes. This needs `overflow-x: clip` (not `hidden`) on `body`; `hidden` makes body a scroll container and sticky silently breaks. The big idea is sticky too, on every screen size (see its section).
+- **Sticky**: recipe → cart — the phone stays put while the steps scroll past and its screen changes. This needs `overflow-x: clip` (not `hidden`) on `body`; `hidden` makes body a scroll container and sticky silently breaks. Its emblem is sticky beside the steps the same way.
 - **Phones and reduced motion**: the same content with no pinning. Screenshots sit inline and every step is shown.
 
 ## The nav
@@ -86,28 +87,25 @@ The hero used to be a lion standing in empty dark, and nothing happened when he 
 - **The lights go down as the hero scrolls away** (to ~45%), and the canvas only runs while the hero is on screen. 60 fps on the 2019 Intel MacBook at 1.5× on a 2× screen. A GPU switch (a projector) loses the context; it is rebuilt on restore — tested with `WEBGL_lose_context`.
 - **The canvas sits under the copy and the bubble** (JS sizes it round the stage, the hero's full height); `.hero__visual` carries `z-index: 1` so the bubble stays above it. It is absolutely placed and never changes the page's height, so the pins are untouched — `check-pins` GREEN at 1440×900 and 1024×768.
 
-## The big idea (between the hero and 01)
+## Points of light (js/morph.js)
 
-The one thing the rest of the page shows but never says: **what makes this an agent and not a chatbot.** Four lines, one at a time, each over a formation of a few thousand points of light: a question waiting in a chat bubble ("Most AI assistants wait to be asked" — it read "Most AI waits for a question" until the user flagged it as ungrammatical; the sub-line follows the plural: "they answer") → APEX himself ("APEX doesn't wait") → the team, APEX in the middle and the seven specialists round him with the work streaming out along the spokes ("One lead, seven specialists") → the shield with its tick ("The big calls stay mine"). The thank-you's three things to remember are the same three claims, turned into advice. It is part of the intro, so it has no number and no chapter: the nav keeps saying 00 Intro, and nothing below it was renumbered.
+A few thousand points that hold a shape and **pour** into the next one. It was built for *the big idea*, a four-line section between the hero and 01 (a chat bubble with a `?` → the lion → the team → a shield); **the section was cut on the user's note** and the morph, which they called the best thing in it, now works for the curtain call and for recipe → cart. `js/morph.js` is the engine; each place that uses it is a short file of formations.
 
-- **Every point carries its place in all four formations**, and the vertex shader moves it between them, so a frame costs the CPU a handful of uniforms however many points there are (7,000; 4,200 on a phone). Measured at a flat 60 fps. Raw WebGL, no library: nothing to vendor, and the scene is one file.
-- **Sticky, not pinned.** The stage is `position: sticky` inside a 380svh section, and a plain ScrollTrigger reads its progress. Sticky adds no pin-spacer and never changes the page's height after ScrollTrigger has measured it, so the two pins below can't be knocked off by it — `tools/check-pins.mjs` stays GREEN at 1440×900 and 1024×768. Because it isn't a pin, it runs the same on a phone. `svh`, so a phone's address bar showing and hiding doesn't resize the section under the reader.
-- **Scroll picks the formation; `KEYS` in `js/idea.js` lays it out** — a hold long enough to read each line, and the morphs between the holds. `holds` (the middle of each hold) is exported for presenter mode; move one and move the other.
-- **The points are shuffled between formations.** Without it the points that drew the bubble's rim would all become the lion's feet, and a morph would read as one shape sliding into another instead of pouring apart and back. Mid-morph each point swirls out and towards you on its own delay, which is what makes it look poured.
-- **The shapes are sampled, not modelled**: each is drawn on a scratch canvas and points are taken off its painted pixels. The lion is `img/apex-rig-5-alive.webp`, the setup rig's last stage, in his own colours — the same figure the setup builds a few screens later. If that image can't be read (a `file://` page taints the canvas) the formation falls back to the APEX wordmark.
-- **`img.decode()` never settles while the page is hidden.** Waiting on it meant a link opened in a background tab sat unbuilt until someone looked at it; the scene waits on the image's load event instead.
-- **The build waits for the page to load and then for an idle moment.** Sampling is main-thread work, and it must never cost the loader or the hero intro a frame. The lines are markup and are there from the start regardless.
-- **The faces are DOM, the points are GL.** `render.js` builds one face and name per agent (not COLONY: scripts, not an agent), and `idea.js` places them every frame with the same projection as the shader, so they sit in the middle of their own halo as the scene sways. One owner per property, as everywhere else: JS owns their `transform` and the `--team` fade; CSS owns the lines' swap, and nothing animates those from JS.
-- **The names hang below the halo, not inside it**: additive light behind small text washes it out.
-- **It survives the GPU changing under it.** On a MacBook with two GPUs, plugging in a projector can switch GPUs, which loses every WebGL context. The context asks for `low-power` (a few thousand points need nothing more, and asking for the big GPU is what triggers the switch), and on `webglcontextrestored` the program and the buffer are rebuilt from the points kept on the CPU side. Tested with `WEBGL_lose_context`.
-- **Reduced motion**: no morph and no drift; the formation changes with the line, one still frame each time. **No WebGL**: `.idea--flat` hides the canvas, the lines still swap, and the team shows as a plain row on its beat.
-- Words: the four lines are in `index.html`; the agents' plain-word jobs are `role` on each `team` entry in `content.js`, shared with the curtain call.
+- **Every formation is its own buffer, uploaded once.** A frame binds the two either side of where the scene is and the vertex shader moves each point between them, so a frame costs the CPU a handful of uniforms however many points or formations there are. Raw WebGL, no library.
+- **What a point does while its shape holds is on the point** (`m`): still, orbiting a centre (the halos), streaming from a source (steam), twinkling, a band of light climbing it, breathing, a ripple. That's what keeps a held shape alive when the reader stops.
+- **The points are shuffled between formations.** Without it the points that drew one shape's rim all become the next one's feet, and the morph reads as one shape sliding into another instead of pouring apart and back. Mid-morph each point swirls out and towards you on its own delay, which is what makes it look poured.
+- **The shapes are sampled, not modelled**: drawn on a scratch canvas (the page's own icons, fonts and art) and points taken off the painted pixels, in their colours. The lion is `img/apex-rig-5-alive.webp`, the setup rig's last stage. A `file://` page taints the canvas; the image formation is then empty and the scene shows the rest.
+- **The caller says where; the scene eases there on its own clock** (`to(p)`, `rate`). Scroll-driven scenes ease; a timeline-driven one passes `rate: Infinity` and lets GSAP own the position.
+- **`img.decode()` never settles while the page is hidden** — a link opened in a background tab sat unbuilt until looked at. The kit waits on the image's load event.
+- **The build waits for the page to load and then for an idle moment.** Sampling is main-thread work and must never cost the loader or the hero intro a frame.
+- **It survives the GPU changing under it**: `low-power` context (asking for the big GPU is what makes a MacBook switch when a projector goes in), and on `webglcontextrestored` the program and buffers are rebuilt from the points kept on the CPU side.
+- **Only runs while on screen**; reduced motion gets still frames, one per formation.
 
 ## Presenter mode
 
 For showing the page to a room from a laptop: **→ or PageDown** glides to the next beat, **← or PageUp** to the one before. PageDown/PageUp are what a presentation clicker sends, so a clicker just works. The menu says so, in one line, where only someone looking for it will read it; a small counter (`12 / 35`) shows for a moment after each press.
 
-- **A beat is a place where something has just finished happening**: each formation of the big idea, each setup step once its stage has landed on the rig, the moment each packet arrives in the journey, each hour on the clock, each recipe step, the GTAmex flight and grid, the takeaways, the thank-you. Every press stops on a settled frame, never halfway through a morph.
+- **A beat is a place where something has just finished happening**: each setup step once its stage has landed on the rig, the moment each packet arrives in the journey, each hour on the clock, each recipe step, the GTAmex flight and grid, the thank-you. Every press stops on a settled frame, never halfway through a morph.
 - **Built at the moment of the press, from the live layout and the live pins** — never a list made at load, which would go stale the way the pins' starts once did.
 - **Setup steps stop just past the rig's window** (the incoming heading's travel from `START` 25% to `END` 3% of the screen), so the picture has converged when you land. Step 01 needs no stop of its own: the section's heading beat shows it whole.
 - **The journey stops where each packet arrives**, as fractions of the pin: `legs` are timeline seconds on a 5.7 s timeline, nudged a little late because the scrub trails the scroll. Change `legs` and change these.
@@ -233,7 +231,7 @@ As the five steps scroll past, APEX builds himself in the right-hand column: bar
 - **Nothing reaches a canvas edge**: the last tenth of each canvas fades out. The back canvas renders at 0.75× (it is glow; nobody can tell) and the lightning's noise only runs while a bolt is up — this is the most shader work on the page, and it only runs while steps 03–05 are lit and the rig is on screen.
 - **smoothstep's edges are always in order** (`1. - smoothstep(lo, hi, x)`): reversed edges are undefined in GLSL, and fine in Chrome is not fine everywhere.
 - **The CSS soul and fire are still in the stylesheet**, and still what reduced motion and a browser without WebGL get; `.rig.has-gl` hides them when the WebGL runs. A shader that fails to compile falls back to them, with a console warning, so a typo looks like "the old effects" rather than a blank — check `has-gl` on `.rig` before judging a change.
-- A GPU switch (a projector plugged in) loses both contexts; they are rebuilt on restore, like the big idea's.
+- A GPU switch (a projector plugged in) loses both contexts; they are rebuilt on restore, like the points of light's.
 
 **Regenerating a stage so it drops straight in:** generate **from the existing art**, not from a text prompt alone — ask for the one change and nothing else, so the pose, the framing and the feet come back untouched. Feed the stage you are replacing (or `art/apex-rig-3-face.png`, the reference) as the input image. Then run `python3 tools/build-rig.py --check`: it prints the translation each stage needs, its feet span against the reference, and its body overlap, and warns on anything that drifted. A stage that wants real scaling is art that drifted — regenerate it rather than letting a resize paper over it.
 
@@ -280,6 +278,16 @@ Why this route and not "the skill calls the tool and hands its answer back to AP
 - **A node's box is its art alone**, centred on (x, y), and `.node__label` hangs below it; a label in the flow lifts the art off the wires. Labels carry the page ink as a background, so where the return wire passes one on a narrow stage it goes behind.
 - The soul's wire reaches MISO through the gap between BULLSEYE and NYX. Move a skill on the arc and you move the gap.
 
+## Recipe → cart (section 04)
+
+The phone stays put while three steps scroll past and its screen changes; then the guardrail and the gotcha.
+
+- **Beside the steps, the heading's arrow happens** (`js/recipefx.js`): points of light hold the shape of the step you're reading and pour into the next one as it arrives — a steaming bowl (MISO writes the recipe) → a cart with the groceries in it (a script shops) → Telegram's plane in its ring (you get the result) → the shield with its tick (AI never checks out). The page's own icons, drawn in points.
+- **Scroll picks the shape.** Each one pours in while the element that brings it climbs from 80% to 50% of the screen — across the 62% line where the step lights up and the phone changes screen — and holds in between. Page positions from `offsetTop`, not the box: the guard card rises in on a GSAP transform.
+- **It stands in the room to the right of the words, never on them.** The frame reads how far the steps' words and the notes reach and centres the emblem in what's left; with less than ~70px a unit it stays out. The notes keep to a 440px measure on wide screens for exactly this — at full width the shield sat on the guard card.
+- **Sticky, and takes no room**: `.task__morph` is sticky level with the phone with a negative margin as tall as itself, so the column's height is what it was and the pins below never move (`check-pins` GREEN).
+- **Desktop only (≥1180px).** On a phone the steps are the whole width and the screenshots sit inline; there is nowhere for it to stand.
+
 ## The daily rhythm (section 05)
 
 A **12-hour clock face**, so it reads like a clock on a wall rather than an instrument. Seven stops through one day, from the 7:30 AM brief to the 2:30 AM idea.
@@ -303,10 +311,13 @@ A **12-hour clock face**, so it reads like a clock on a wall rather than an inst
 
 ## Thank you (section 07)
 
-Three things to remember, then the curtain call, then questions.
+The curtain call, then questions. **"Three things to remember" was cut** on the user's note, with the big idea it echoed.
 
-- **The three takeaways are the big idea's three claims, turned into advice** a leader can act on: agents act, not just answer · give each agent one job · keep a human on the big calls. Same order as the big idea, so the page ends where it began.
-- **The curtain call is the whole team in a line, APEX in the middle** (built in `render.js` from `team`). They come out from the middle and take a bow: GSAP owns the figure for the entrance and the image for the bow, and a hover lifts the figure on `translate`, so no two of them share a property. It replaced the lone lion that stood here. Below 560px the names go and the faces shrink so all nine still fit one line on a 375px phone.
+- **The curtain call is an event now** (`js/finale.js`): dust hangs over the empty stage, gathers into APEX standing on the row's floor, holds while a band of light climbs him, then pours apart into nine halos, one round each face — and the team steps out of the light, APEX in the middle, and takes a bow. "Thank you." rises in the space he stood in. Played once, when the row comes up to 78% of the screen.
+- **The formations are laid out from the page**: the world is centred on APEX's face and one unit is its width, so each halo lands round its own face at any size; they're laid out again on resize. Positions come from `offsetLeft`/`offsetTop`, never the box: GSAP moves the figures and their images, and a halo belongs where the face will stand, not where it is mid-bow.
+- **One timeline owns the whole sequence** — the scene's position, the figures' entrance, the bow on their images, the words — and `motion.js` keeps the old entrance (words rise, the team comes out and bows) for when it can't run: no WebGL, reduced motion.
+- **The rig art's armour is near-black teal**, which as points of light vanishes into the page: every colour is lifted towards warm light, the darkest the most.
+- **The row itself is unchanged**: the whole team in a line, built in `render.js` from `team`. GSAP owns the figure for the entrance and the image for the bow, and a hover lifts the figure on `translate`, so no two share a property. Below 560px the names go and the faces shrink so all nine fit one line on a 375px phone.
 
 ## Working on it
 

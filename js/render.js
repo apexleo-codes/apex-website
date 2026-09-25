@@ -18,15 +18,6 @@
   const names = D.team.map((t) => `<span>${t.name}</span>${icon("star")}`).join("");
   $(".marquee__track").innerHTML = `<div>${names}</div><div>${names}</div>`;
 
-  // the big idea's team: faces and names that ride on the WebGL team formation, which
-  // places them (js/idea.js). APEX leads from the centre; COLONY is scripts, not an
-  // agent, so it sits this one out.
-  const ideaTeam = $(".idea__team");
-  if (ideaTeam) ideaTeam.innerHTML = D.team.filter((t) => t.key !== "colony").map((t) => `
-    <div class="idea__agent${t.key === "apex" ? " idea__agent--lead" : ""}" data-key="${t.key}" style="--c:${t.color}">
-      <img src="img/agent-${t.key}.webp" alt="" loading="lazy"><span><b>${t.name}</b><small>${t.role}</small></span>
-    </div>`).join("");
-
   // No agents in the hero. They were tried twice: a flat ring (they read as
   // smudges on the lion) and electron orbits round him as a nucleus (the rings
   // vanished and the agents shrank to illegible specks). The stats already say

@@ -92,10 +92,10 @@
   // ---------- presenter mode ----------
   // For showing the page to a room: → or PageDown (what a presentation clicker
   // sends) glides to the next beat of the story, ← or PageUp to the one before. A
-  // beat is a place where something has just FINISHED happening - a formation in
-  // the big idea, a setup step once its stage has landed on the rig, the end of a
-  // leg in the journey, an hour on the clock - so every press stops on a settled
-  // frame, never halfway through a morph. The list is built at the moment of the
+  // beat is a place where something has just FINISHED happening - a setup step
+  // once its stage has landed on the rig, the end of a leg in the journey, an hour
+  // on the clock - so every press stops on a settled frame, never halfway through a
+  // morph. The list is built at the moment of the
   // press, from the live layout and the live pins, so it can't go stale the way a
   // list built at load would (see "How sections move" in the README).
   const beats = () => {
@@ -104,8 +104,6 @@
     const out = [0];
     const head = (el) => el && out.push(top(el) - 90);                              // a heading, just under the nav
     const mid = (el) => el && out.push(top(el) + el.offsetHeight / 2 - vh / 2);    // a block, centred
-    const idea = $(".idea");
-    if (idea && window.apexIdea) apexIdea.holds.forEach((h) => out.push(top(idea) + h * (idea.offsetHeight - vh)));
     head($(".front .shead"));
     // the setup's heading shows step 01 whole; each later step stops once its stage
     // has converged on the rig, which changes over the heading's travel from 25% of
@@ -122,7 +120,7 @@
     if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
     else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
     head($(".gta .shead")); mid($(".gta__screen")); head($(".gta__grid")); mid($(".gta__passed"));
-    mid($(".recap")); mid($(".thanks"));
+    mid($(".thanks"));
     const max = document.documentElement.scrollHeight - vh;
     return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
       .filter((y, i, a) => !i || y - a[i - 1] > 24);
@@ -442,7 +440,7 @@
     ScrollTrigger.addEventListener("scrollEnd", settle);
 
     // headings and blocks rise in
-    const risers = $$(".section .big, .roles .role, .case, .skillx, .model, .tool, .backups, .task__notes > *, .recap li");
+    const risers = $$(".section .big, .roles .role, .case, .skillx, .model, .tool, .backups, .task__notes > *");
     gsap.set(risers, { y: 60, autoAlpha: 0 });
     ScrollTrigger.batch(risers, { start: "top 90%", once: true, onEnter: (b) => gsap.to(b, { y: 0, autoAlpha: 1, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }) });
 
@@ -461,10 +459,14 @@
     // thank you: the words rise, then the team comes out from the middle and takes a
     // bow, APEX first. The bow is on the image and the entrance on the figure, and a
     // hover lifts the figure on `translate`, so no two of them share a property.
-    gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
-    gsap.timeline({ scrollTrigger: { trigger: ".bow", start: "top 85%" } })
-      .from(".bow__m", { y: 70, autoAlpha: 0, duration: 1.1, ease: "back.out(1.6)", stagger: { each: 0.08, from: "center" } })
-      .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
+    // With WebGL the curtain call is js/finale.js, which plays all of this on its
+    // own timeline after the points have poured into the team; this is its fallback.
+    if (!window.apexFinale) {
+      gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
+      gsap.timeline({ scrollTrigger: { trigger: ".bow", start: "top 85%" } })
+        .from(".bow__m", { y: 70, autoAlpha: 0, duration: 1.1, ease: "back.out(1.6)", stagger: { each: 0.08, from: "center" } })
+        .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
+    }
 
     // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
     // the tiles deal in like a mission select and "mission passed" lands last.
