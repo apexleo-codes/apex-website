@@ -105,11 +105,12 @@
     const head = (el) => el && out.push(top(el) - 90);                              // a heading, just under the nav
     const mid = (el) => el && out.push(top(el) + el.offsetHeight / 2 - vh / 2);    // a block, centred
     head($(".front .shead"));
-    // the setup's heading shows step 01 whole; each later step stops once its stage
-    // has converged on the rig, which changes over the heading's travel from 25% of
-    // the screen to 3% (the rig's START and END, further down), so just past that
+    // the setup's heading shows step 01 whole (and his body assembled); each later
+    // step stops once its stage has landed on the rig, which changes over the step's
+    // travel from 60% of the screen to 38% (the rig's START and END, further down),
+    // so just past that
     head($(".setup .shead"));
-    setupSteps.forEach((st, i) => i && out.push(top(st) - 0.03 * vh + 2));
+    setupSteps.forEach((st, i) => i && out.push(top(st) - 0.38 * vh + 2));
     // the journey: the moment each packet arrives (legs, in timeline seconds, over
     // a 5.7 s timeline; a little late, because the scrub trails the scroll)
     const orchPin = pinOf(".orch__pin");
@@ -271,12 +272,14 @@
   // between its top and the trigger line never straddles that line with both
   // edges, so an isActive test leaves a dead zone - the last and shortest step
   // sat dim with its dot unlit while it filled the screen. Entering latches.
-  // 55%, not 70%: a step is only ~520px tall, so at "top 70%" the NEXT step
+  // 60%, not 70%: a step is only ~520px tall, so at "top 70%" the NEXT step
   // crossed the line while the current one still filled the screen - the rig
-  // showed the brain while you were still reading "Give it a body". Entering
-  // still latches, so the short last step keeps its dead-zone fix.
+  // showed the brain while you were still reading "Give it a body". 60% is where
+  // the rig's window opens (START, below), so the words light as the picture
+  // starts to change. Entering still latches, so the short last step keeps its
+  // dead-zone fix.
   setupSteps.forEach((st, i) => ScrollTrigger.create({
-    trigger: st, start: "top 55%", end: "bottom 30%",
+    trigger: st, start: "top 60%", end: "bottom 30%",
     onEnter: () => setStep(i), onEnterBack: () => setStep(i)
   }));
   setStep(0);
@@ -294,20 +297,25 @@
   // PREVIOUS step's height, so a tall step stretched its change and a short one
   // rushed it, and every one of them ran early — the picture swapped while its
   // words were still arriving at the middle of the screen. Now a step's picture
-  // changes over the travel of that step's own heading, from a quarter of the way
-  // down the screen (by then the heading has climbed three quarters of it and the
-  // body fills what's under it) to the very top. Same travel on every step, no
-  // matter how much copy it carries, and between two windows there is a plateau
-  // where nothing moves at all.
+  // changes over the travel of that step's own heading, from 60% of the way down
+  // the screen to 38% - landing as the step's words settle just above the middle,
+  // where they're being read (it ran from 25% to the very top, and read late). Same
+  // travel on every step, no matter how much copy it carries, and between two
+  // windows there is a plateau where nothing moves at all.
   if (rigScrubbed) {
     const IN = 0.3, OUT = 0.14, BLUR = 12;   // how far out it starts, how far in it collapses, px
-    const START = 0.25, END = 0.03;          // the incoming heading's travel, as a fraction of the screen
+    const START = 0.6, END = 0.38;           // the incoming step's travel, as a fraction of the screen
     const at = rigParts.map((p) => p.dataset.at.split(" ").map(Number));
     // …except across a boundary listed here, which stays a flat cross-fade. 01→02
     // is the only one: the brain lighting up is the event there, and an implosion
     // on top of it fought the pulse for the same attention. The index is the step
     // it leaves FROM, so 0 is 01→02.
     const FLAT = new Set([0]);
+    // 02→03 is assembled instead (js/rigmorph.js): points of light gather onto the
+    // parts that change, and the new stage lands under them from 50% of the window,
+    // flat and hot, cooling as it settles. Its window goes to the points as it is.
+    const ASSEMBLE = new Set([1]);
+    const LAND = [0.5, 0.8];
     // Smoothstep across the window and nothing outside it. The plateau is what
     // keeps each stage sharp now, so this only has to make the swap itself gentle;
     // it is still symmetric — ease(u) + ease(1 - u) is 1 — so a pair of stages
@@ -332,9 +340,12 @@
       return tops.length - 1;
     };
     const paint = () => {
-      const p = position();
-      if (window.apexRigFx) apexRigFx.set(p);          // the soul and the ascent, in WebGL (js/rigfx.js)
-      const flat = FLAT.has(Math.floor(p));
+      const raw = position(), seg = Math.floor(raw);
+      if (window.apexRigFx) apexRigFx.set(raw);        // the soul and the ascent, in WebGL (js/rigfx.js)
+      if (window.apexRigMorph) apexRigMorph.suit(raw < 1 ? 0 : raw >= 2 ? 1 : raw - 1);
+      const built = ASSEMBLE.has(seg);
+      const p = built ? seg + Math.min(1, Math.max(0, (raw - seg - LAND[0]) / (LAND[1] - LAND[0]))) : raw;
+      const flat = built || FLAT.has(seg);
       rigParts.forEach((el, i) => {
         const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
         // signed distance in steps: negative while the layer is still ahead of you,
@@ -349,7 +360,9 @@
         // "none", never "": an empty inline transform hands the layer back to the
         // stylesheet's parked translateY(16px), and the figure drops 16px mid-fade
         el.style.transform = flat ? "none" : `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
-        el.style.filter = flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
+        // an assembled stage arrives hot and cools; a converging one arrives out of focus
+        el.style.filter = built && d < 0 && m > 0.002 ? `brightness(${(1 + m * 1.4).toFixed(3)})`
+          : flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
       });
     };
     rig.classList.add("is-converging");

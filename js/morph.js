@@ -117,7 +117,7 @@
   // opts: canvas · n (points) · forms: [async (kit, n, scene) => points] · frame(W, H) => {s, cx, cy}
   //       burst (mid-morph swirl, 1) · size (point size, 1) · rate (easing per second,
   //       5; Infinity = go straight there) · sway (true) · pointer (true) · seed ·
-  //       onFrame(scene) after each draw
+  //       onFrame(scene) before each draw (it may set scene.alpha)
   function create(opts) {
     const { canvas, forms } = opts;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -127,7 +127,7 @@
     const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, powerPreference: "low-power" });
     const K = kit(opts.seed || 20260924);
     const shader = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
-    let prog, U, A, bufs = [], seedBuf, data = [], seeds = null, bound = -1, lost = false;
+    let prog, U, A, bufs = [], seedBuf, data = [], seeds = null, bound = -1, lost = false, blank = false;
     const n = opts.n;
 
     // Everything on the GPU is made in program() and upload(), and both run again if
@@ -148,7 +148,7 @@
       seedBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, seedBuf); gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
       gl.vertexAttribPointer(A.aSeed, 1, gl.FLOAT, false, 4, 0);
       gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);   // additive: dense places burn bright
-      bound = -1;
+      bound = -1; blank = false;
     };
     // point the A and B attributes at the formations either side of `seg`
     const bind = (seg) => {
@@ -190,12 +190,15 @@
       if (!scene.ready || lost) return;
       const last = data.length - 1, p = Math.min(Math.max(scene.p, 0), last);
       const seg = Math.min(Math.floor(p), last - 1);
+      opts.onFrame && opts.onFrame(scene);
+      // faded right out, a scene costs one clear and then nothing at all
+      if (scene.alpha <= 0.002) { if (!blank) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); blank = true; } return; }
+      blank = false;
       bind(seg);
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform1f(U.uF, p - seg); gl.uniform1f(U.uTime, scene.time); gl.uniform2f(U.uRot, scene.rot[0], scene.rot[1]);
       gl.uniform1f(U.uAlpha, scene.alpha);
       gl.drawArrays(gl.POINTS, 0, n);
-      opts.onFrame && opts.onFrame(scene);
     };
     scene.draw = draw;
 
