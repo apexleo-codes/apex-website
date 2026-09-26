@@ -27,7 +27,6 @@
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/sections-2.css">
   <link rel="stylesheet" href="css/gtamex.css">
-  <link rel="stylesheet" href="css/gtamex-cover.css">
 </head>
 <body class="is-loading">
 
@@ -307,13 +306,11 @@
     </div>
   </section>
 
-  <!-- 06 · GTAMEX · a side quest: a game I built, with APEX in co-op. Two looks,
-       one markup, switched by data-look (or ?gta=classic / ?gta=cover in the URL):
-       "cover" - the clips and stills assembled into GTA box art round the logo as
-       you scroll, then the drone flight - and "classic", the mission-select grid it
-       replaced, kept whole in case it's wanted back. js/gtamex.js runs both. -->
-  <section class="section gta" id="gtamex" data-chapter="GTAmex" data-look="cover">
-    <script>(function () { var q = new URLSearchParams(location.search).get("gta"); if (q === "classic" || q === "cover") document.currentScript.parentNode.dataset.look = q; })();</script>
+  <!-- 06 · GTAMEX · a side quest: a game I built, with APEX in co-op. No copy on
+       purpose: the drone flight, then 3 s muted clips and stills from the gameplay
+       reel laid out as a mission select. The HUD (wanted stars, cash) fills as the
+       grid scrolls past. Everything that moves is js/gtamex.js. -->
+  <section class="section gta" id="gtamex" data-chapter="GTAmex">
     <header class="shead"><span class="shead__num">06</span><p class="eyebrow">Side quest · a game I built</p></header>
     <div class="gta__top">
       <div class="gta__floor" aria-hidden="true"></div>
@@ -342,83 +339,77 @@
         <span class="gta__bar" aria-hidden="true"><i></i></span>
       </div>
     </div>
-    <div class="gta__run">
-      <div class="gta__stage">
-        <div class="gta__grid">
-          <figure class="tile tile--snap tile--title">
-            <img src="media/gtamex/title.webp" alt="The GTAmex title screen: grand theft amex" width="1334" height="750">
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <p class="tile__start">Press start</p>
-          </figure>
-          <figure class="tile tile--takeoff" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/takeoff.webp"><source src="media/gtamex/takeoff.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Take-off</figcaption>
-          </figure>
-          <figure class="tile tile--gun" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/gun.webp"><source src="media/gtamex/gun.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Locked &amp; loaded</figcaption>
-          </figure>
-          <figure class="tile tile--big tile--dining" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/dining.webp"><source src="media/gtamex/dining.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Food Court</figcaption>
-          </figure>
-          <figure class="tile tile--corridor" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/corridor.webp"><source src="media/gtamex/corridor.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Lift Lobby</figcaption>
-          </figure>
-          <figure class="tile tile--costa" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/costa.webp"><source src="media/gtamex/costa.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Coffee run</figcaption>
-          </figure>
-          <figure class="tile tile--tall tile--police" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/police.webp"><source src="media/gtamex/police.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Hot pursuit</figcaption>
-          </figure>
-          <figure class="tile tile--snap tile--hangry">
-            <img src="media/gtamex/hangry.webp" alt="The Hangry counter in the office food court" width="1334" height="750" loading="lazy">
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Why so hangry?</figcaption>
-          </figure>
-          <figure class="tile tile--drive" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/drive.webp"><source src="media/gtamex/drive.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Joyride</figcaption>
-          </figure>
-          <figure class="tile tile--snap tile--wide tile--bikes">
-            <img src="media/gtamex/bikes.webp" alt="Four superbikes lined up outside the office tower" width="1334" height="750" loading="lazy">
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">The garage</figcaption>
-          </figure>
-          <figure class="tile tile--snap tile--cafe">
-            <img src="media/gtamex/cafe.webp" alt="The office cafeteria" width="1334" height="750" loading="lazy">
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Lunch break</figcaption>
-          </figure>
-          <figure class="tile tile--bike" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/bike.webp"><source src="media/gtamex/bike.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Full throttle</figcaption>
-          </figure>
-          <figure class="tile tile--snap tile--hall">
-            <img src="media/gtamex/hall.webp" alt="Walking the lift lobby past the lifts" width="1334" height="750" loading="lazy">
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Floor walk</figcaption>
-          </figure>
-          <figure class="tile tile--finale tile--wasted" data-cursor="Replay">
-            <video muted loop playsinline preload="none" poster="media/gtamex/wasted.webp"><source src="media/gtamex/wasted.mp4" type="video/mp4"></video>
-            <span class="tile__tag" aria-hidden="true"><i></i></span>
-            <figcaption class="tile__name">Wasted</figcaption>
-          </figure>
-          <figure class="tile tile--logo" aria-hidden="true"></figure>
-          <i class="gta__gloss" aria-hidden="true"></i>
-        </div>
-      </div>
+    <div class="gta__grid">
+      <figure class="tile tile--snap tile--title">
+        <img src="media/gtamex/title.webp" alt="The GTAmex title screen: grand theft amex" width="1334" height="750">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <p class="tile__start">Press start</p>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/takeoff.webp"><source src="media/gtamex/takeoff.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Take-off</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/gun.webp"><source src="media/gtamex/gun.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Locked &amp; loaded</figcaption>
+      </figure>
+      <figure class="tile tile--big" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/dining.webp"><source src="media/gtamex/dining.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Food Court</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/corridor.webp"><source src="media/gtamex/corridor.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Lift Lobby</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/costa.webp"><source src="media/gtamex/costa.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Coffee run</figcaption>
+      </figure>
+      <figure class="tile tile--tall" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/police.webp"><source src="media/gtamex/police.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Hot pursuit</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/hangry.webp" alt="The Hangry counter in the office food court" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Why so hangry?</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/drive.webp"><source src="media/gtamex/drive.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Joyride</figcaption>
+      </figure>
+      <figure class="tile tile--snap tile--wide">
+        <img src="media/gtamex/bikes.webp" alt="Four superbikes in the bike parking outside the office tower" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Bike Parking</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/cafe.webp" alt="The office cafeteria" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Lunch break</figcaption>
+      </figure>
+      <figure class="tile" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/bike.webp"><source src="media/gtamex/bike.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Full throttle</figcaption>
+      </figure>
+      <figure class="tile tile--snap">
+        <img src="media/gtamex/hall.webp" alt="Walking the lift lobby past the lifts" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Lift Lobby</figcaption>
+      </figure>
+      <figure class="tile tile--finale" data-cursor="Replay">
+        <video muted loop playsinline preload="none" poster="media/gtamex/wasted.webp"><source src="media/gtamex/wasted.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Wasted</figcaption>
+      </figure>
     </div>
     <div class="gta__passed">
       <p class="gta__passed-big">Mission passed!</p>

@@ -120,7 +120,7 @@
     const rhythmPin = pinOf(".rhythm__pin");
     if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
     else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
-    if (window.apexGta) out.push(...apexGta.beats());                          // the heading, the box, the flight, mission passed
+    if (window.apexGta) out.push(...apexGta.beats());                          // the heading, the flight, the grid, mission passed
     mid($(".thanks"));
     const max = document.documentElement.scrollHeight - vh;
     return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
@@ -481,7 +481,7 @@
         .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
     }
 
-    // 06 · GTAmex: its entrances, and the cover's assembly, are js/gtamex.js
+    // 06 · GTAmex: its entrances are js/gtamex.js
 
     return () => ScrollTrigger.removeEventListener("scrollEnd", settle);
   });
