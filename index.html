@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>APEX · A personal AI assistant, run by a team of agents</title>
   <meta name="description" content="How Gaurav Yadav built APEX: a personal AI assistant on Telegram, run by a team of AI agents on Hermes Agent.">
+  <!-- the link preview (made from tools/og.html). Absolute URLs, because most apps
+       that unfurl a pasted link won't resolve a relative one; they name the live
+       site, so a copy hosted anywhere else previews with the live site's card. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="APEX">
+  <meta property="og:title" content="Meet APEX · a personal AI assistant, run by a team of AI agents">
+  <meta property="og:description" content="How one person built a 24×7 assistant on Telegram: eight AI agents, each with one job, and a human on the big calls.">
+  <meta property="og:url" content="https://apexleo-codes.github.io/apex-website/">
+  <meta property="og:image" content="https://apexleo-codes.github.io/apex-website/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Meet APEX: a low-poly lion in armour, and the faces of his team of AI agents">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0b1312">
   <link rel="icon" href="img/agent-apex.webp">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="vendor/lenis.css">
@@ -63,6 +77,7 @@
   <div class="menu__side">
     <img class="menu__preview" src="img/agent-apex.webp" alt="">
     <p>by <strong>Gaurav Yadav</strong><br>Runs on Hermes Agent · September 2026</p>
+    <p class="menu__keys"><kbd>←</kbd> <kbd>→</kbd> or a clicker steps through the story</p>
   </div>
 </div>
 
@@ -205,6 +220,13 @@
           <span class="ringlabel">Skills</span>
           <div class="stage__musicians"></div>
           <div class="node node--colony" style="--x:1000;--y:340"><img src="img/agent-colony.webp" alt=""><span class="node__label">Scripts<small>COLONY</small></span></div>
+          <!-- where each leg lands: a ring goes out from the stop as the card arrives -->
+          <i class="ping" style="--x:380;--y:340"></i>
+          <i class="ping" style="--x:660;--y:340"></i>
+          <i class="ping" style="--x:1000;--y:340"></i>
+          <i class="ping" style="--x:1000;--y:54"></i>
+          <i class="ping" style="--x:1000;--y:340"></i>
+          <i class="ping ping--gold" style="--x:120;--y:340"></i>
           <i class="packet" data-path="p-you"></i>
           <i class="packet" data-path="p-soul"></i>
           <i class="packet" data-path="p-skill" data-tag="{ shopping list }"></i>
@@ -212,11 +234,18 @@
           <i class="packet" data-path="p-tool-back" data-tag="{ cart · nothing ordered }" data-side="left"></i>
           <i class="packet packet--gold" data-path="p-back" data-tag="Telegram"></i>
         </div>
+        <!-- phones: the same journey, one card per leg, to swipe through (APEX.journey,
+             built in js/render.js); the leg in view lights up on the stage above -->
+        <div class="jstrip">
+          <ol class="jstrip__cards" aria-label="The journey, stop by stop"></ol>
+          <div class="jstrip__nav" aria-hidden="true"><span>Swipe</span><i></i></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 04 · MISO RECIPE → CART (slide 8) -->
+  <!-- 04 · MISO RECIPE → CART (slide 8) · beside the steps, points of light pour
+       from a bowl into a cart, into Telegram, into a shield (js/recipefx.js) -->
   <section class="section task" id="task" data-chapter="Recipe → cart">
     <header class="shead"><span class="shead__num">04</span><p class="eyebrow"><img class="eyebrow__av" src="img/agent-miso.webp" alt="">Feature · MISO · recipe + cart</p></header>
     <h2 class="big">Sunday recipe → <em>grocery cart</em></h2>
@@ -228,6 +257,7 @@
         </div>
       </div>
       <div class="task__col">
+        <div class="task__morph" aria-hidden="true"><canvas class="task__gl"></canvas></div>
         <ol class="task__steps"></ol>
         <div class="task__notes">
           <div class="guardcard">
@@ -248,10 +278,7 @@
       <div class="rhythm__sky" aria-hidden="true">
         <span class="rhythm__wash rhythm__wash--day"></span>
         <span class="rhythm__wash rhythm__wash--night"></span>
-        <span class="rhythm__orb">
-          <svg class="ic rhythm__sun"><use href="#i-sun"/></svg>
-          <svg class="ic rhythm__moon"><use href="#i-moon"/></svg>
-        </span>
+        <span class="rhythm__orb"><i class="rhythm__sun"></i><i class="rhythm__moon"></i></span>
       </div>
       <header class="shead shead--row">
         <div><span class="shead__num">05</span><p class="eyebrow">The daily rhythm</p></div>
@@ -269,6 +296,9 @@
         </div>
         <div class="rhythm__side">
           <h2 class="big">A day with <em>APEX</em></h2>
+          <!-- the schedule against the real clock in India, so the day on the dial is
+               also today: filled in and kept current by js/motion.js -->
+          <p class="rhythm__now" hidden><i aria-hidden="true"></i><span></span></p>
           <ul class="rhythm__list"></ul>
           <p class="rhythm__note">Night work rolls into the 7:30 AM brief: one message, not five. Sundays at 9:30 AM, MISO plans the recipe and fills the cart. BOLT is on call any time you say “emergency”.</p>
         </div>
@@ -277,9 +307,9 @@
   </section>
 
   <!-- 06 · GTAMEX · a side quest: a game I built, with APEX in co-op. No copy on
-       purpose: 3 s muted clips (played only while on screen, js/motion.js) and
-       stills cut from the gameplay reel, laid out as a mission select. The HUD
-       (wanted stars, cash) fills as the section scrolls past. -->
+       purpose: the drone flight, then 3 s muted clips and stills from the gameplay
+       reel laid out as a mission select. The HUD (wanted stars, cash) fills as the
+       grid scrolls past. Everything that moves is js/gtamex.js. -->
   <section class="section gta" id="gtamex" data-chapter="GTAmex">
     <header class="shead"><span class="shead__num">06</span><p class="eyebrow">Side quest · a game I built</p></header>
     <div class="gta__top">
@@ -295,90 +325,89 @@
       </div>
     </div>
     <!-- the approach: one drone flight from the main gate, down the covered walk and
-         into the dining hall. Its own recording, at ~53 real frames a second where the
-         gameplay reel manages ~15, and used exactly as recorded: the game's letterbox
-         bars and its own boot screens are part of the take, so the screen is 16:9 and
-         nothing is cropped. No overlay over it - the section's scanlines stop here -
-         and the glow behind it is the video itself, sampled onto a tiny canvas
-         (js/motion.js). -->
+         into the food court, ~53 real frames a second. The game's cinematic bars are
+         baked into the file full width (media/gtamex/drone.mp4, from the untouched
+         recording), so nothing of the scene shows above or below them; they retract
+         with the game's own as it cuts to gameplay. The glow behind it is the video
+         itself, sampled onto a tiny canvas (js/gtamex.js). -->
     <div class="gta__flight">
       <canvas class="gta__glow" width="32" height="16" aria-hidden="true"></canvas>
       <div class="gta__screen">
         <video class="gta__drone" muted loop playsinline preload="metadata" poster="media/gtamex/drone.webp"
-               aria-label="Drone flight from the GTAmex main gate, along the covered walk, into the office dining hall"><source src="media/gtamex/drone.mp4" type="video/mp4"></video>
-        <span class="tile__tag" aria-hidden="true"><i></i>M-00 · The approach · <b class="gta__tc">00:00</b></span>
+               aria-label="Drone flight from the GTAmex main gate, along the covered walk, into the office food court"><source src="media/gtamex/drone.mp4" type="video/mp4"></video>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <span class="gta__bar" aria-hidden="true"><i></i></span>
       </div>
     </div>
     <div class="gta__grid">
       <figure class="tile tile--snap tile--title">
-        <img src="media/gtamex/title.webp" alt="The GTAmex title screen: grand theft amex">
-        <span class="tile__tag"><i></i>Title screen</span>
+        <img src="media/gtamex/title.webp" alt="The GTAmex title screen: grand theft amex" width="1334" height="750">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <p class="tile__start">Press start</p>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/takeoff.webp"><source src="media/gtamex/takeoff.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-01 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Take-off</figcaption>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/gun.webp"><source src="media/gtamex/gun.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-02 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Locked &amp; loaded</figcaption>
       </figure>
       <figure class="tile tile--big" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/dining.webp"><source src="media/gtamex/dining.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-03 · 0:05 · 2.5×</span>
-        <figcaption class="tile__name">The dining hall</figcaption>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Food Court</figcaption>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/corridor.webp"><source src="media/gtamex/corridor.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-04 · 0:03 · 2×</span>
-        <figcaption class="tile__name">Meeting-room row</figcaption>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Lift Lobby</figcaption>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/costa.webp"><source src="media/gtamex/costa.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-05 · 0:06</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Coffee run</figcaption>
       </figure>
       <figure class="tile tile--tall" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/police.webp"><source src="media/gtamex/police.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-06 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Hot pursuit</figcaption>
       </figure>
       <figure class="tile tile--snap">
-        <img src="media/gtamex/hangry.webp" alt="The Hangry food court inside the office" loading="lazy">
-        <span class="tile__tag"><i></i>M-07 · snap</span>
+        <img src="media/gtamex/hangry.webp" alt="The Hangry counter in the office food court" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Why so hangry?</figcaption>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/drive.webp"><source src="media/gtamex/drive.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-08 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Joyride</figcaption>
       </figure>
       <figure class="tile tile--snap tile--wide">
-        <img src="media/gtamex/bikes.webp" alt="Four superbikes lined up outside the office tower" loading="lazy">
-        <span class="tile__tag"><i></i>M-09 · snap</span>
-        <figcaption class="tile__name">The garage</figcaption>
+        <img src="media/gtamex/bikes.webp" alt="Four superbikes in the bike parking outside the office tower" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Bike Parking</figcaption>
       </figure>
       <figure class="tile tile--snap">
-        <img src="media/gtamex/cafe.webp" alt="The office cafeteria" loading="lazy">
-        <span class="tile__tag"><i></i>M-10 · snap</span>
+        <img src="media/gtamex/cafe.webp" alt="The office cafeteria" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Lunch break</figcaption>
       </figure>
       <figure class="tile" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/bike.webp"><source src="media/gtamex/bike.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-11 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Full throttle</figcaption>
       </figure>
       <figure class="tile tile--snap">
-        <img src="media/gtamex/hall.webp" alt="Walking the office corridor past the meeting rooms" loading="lazy">
-        <span class="tile__tag"><i></i>M-12 · snap</span>
-        <figcaption class="tile__name">Floor walk</figcaption>
+        <img src="media/gtamex/hall.webp" alt="Walking the lift lobby past the lifts" width="1334" height="750" loading="lazy">
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
+        <figcaption class="tile__name">Lift Lobby</figcaption>
       </figure>
       <figure class="tile tile--finale" data-cursor="Replay">
         <video muted loop playsinline preload="none" poster="media/gtamex/wasted.webp"><source src="media/gtamex/wasted.mp4" type="video/mp4"></video>
-        <span class="tile__tag"><i></i>M-13 · 0:03</span>
+        <span class="tile__tag" aria-hidden="true"><i></i></span>
         <figcaption class="tile__name">Wasted</figcaption>
       </figure>
     </div>
@@ -388,11 +417,14 @@
     </div>
   </section>
 
-  <!-- 07 · THANK YOU (slide 10) -->
+  <!-- 07 · THANK YOU (slide 10) · the curtain call: points of light gather into
+       APEX and pour into his team, who step out and bow (js/finale.js; the row is
+       built in js/render.js), then questions -->
   <section class="section outro" id="outro" data-chapter="Thank you">
+    <canvas class="thanks__gl" aria-hidden="true"></canvas>
     <div class="thanks">
       <p class="thanks__word"><span>Thank</span> <em>you.</em></p>
-      <img class="thanks__lion" src="img/agent-apex.webp" alt="">
+      <div class="bow" role="img" aria-label="The whole team takes a bow: APEX in the middle, with TUSK, BOLT, BULLSEYE, MISO, NYX, KITSUNE, FORGE and COLONY"></div>
       <p class="thanks__q">Questions?</p>
       <p class="thanks__credit">by <strong>Gaurav Yadav</strong> · APEX · @Apexleo_bot · Runs on Hermes Agent (Nous Research) · September 2026</p>
       <a class="totop" href="#top" data-goto="#top" data-cursor="top"><svg class="ic"><use href="#i-up"/></svg><span>Back to the top</span></a>
@@ -407,6 +439,14 @@
 <script src="js/content.js"></script>
 <script src="js/render.js"></script>
 <script src="js/hero.js"></script>
+<script src="js/herofx.js"></script>
+<script src="js/rigfx.js"></script>
+<script src="js/skyfx.js"></script>
+<script src="js/morph.js"></script>
+<script src="js/rigmorph.js"></script>
+<script src="js/finale.js"></script>
+<script src="js/recipefx.js"></script>
 <script src="js/motion.js"></script>
+<script src="js/gtamex.js"></script>
 </body>
 </html>

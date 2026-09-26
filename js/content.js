@@ -207,7 +207,7 @@ window.APEX = {
   ],
 
   // used for avatars and colours across the page (musicians, model rows, the dial)
-  // `skill` is the skill each specialist runs, as named in SOUL.md and the Skills tab
+  // `skill` is the skill each specialist runs, as named in SOUL.md and the Skills tab.
   team: [
     { key: "apex", name: "APEX", color: "#e8a84a" },
     { key: "tusk", name: "TUSK", color: "#35b3a1", skill: "vaccine-tracker" },
@@ -244,6 +244,20 @@ window.APEX = {
     { need: "Hospitals", uses: "OpenStreetMap", alt: "Paid option: Google Places", icon: "pin" },
     { need: "Browser", uses: "agent-browser + local Chrome", alt: "Paid option: Browserbase", icon: "cart" },
     { need: "Code home", uses: "Hermes's own GitHub: apexleo-codes", alt: "Kept apart from my personal repos", icon: "code" }
+  ],
+
+  // 03 · the journey on a phone: one card per leg, swiped through (the desktop pin
+  // tells it with a dot). What travels changes at every stop, so each stop's job
+  // shows: a request → a job for the right agent → a shopping list → an errand →
+  // a cart → a message on your phone. Words from MISO's real Sunday run.
+  // (Not `journey`: that name belongs to the parked journey flow section.)
+  route: [
+    { leg: "You → Soul", icon: "clock", head: "Sunday, 9:30 AM", line: "A gut-healthy breakfast, please" },
+    { leg: "Soul → MISO", agent: "miso", head: "A job for MISO", line: "gut-health-chef" },
+    { leg: "MISO → Scripts", head: "Ragi-pear porridge", list: ["Ragi flour", "Flax seeds", "Curd", "Pear"] },
+    { leg: "Scripts → Zepto", icon: "cart", head: "Fill the Zepto cart", line: "4 things to find" },
+    { leg: "Zepto → Scripts", icon: "cart", head: "3 items · ₹117", line: "Pear: not found", stamp: "Nothing ordered" },
+    { leg: "Scripts → you", logo: "telegram", head: "Your cart is ready · ₹117", line: "Nothing ordered. You check out." }
   ],
 
   // slide 7 · how they work together: the chips on the tools layer. A sample of

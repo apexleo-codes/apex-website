@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- The link-preview card (img/og.jpg): what WhatsApp, Slack, Teams, LinkedIn or a mail
+     client shows when someone pastes the site's link. Set in the site's own fonts and
+     art, 1200×630, the size every one of them takes. Regenerate after changing it:
+
+       ./serve.sh   (or any static server on :8080), then
+       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+         --window-size=1200,630 --screenshot=/tmp/og.png http://localhost:8080/tools/og.html
+       sips -s format jpeg -s formatOptions 86 /tmp/og.png --out img/og.jpg
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>APEX · link preview card</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0b1312; }
+  .card {
+    position: relative; box-sizing: border-box; width: 1200px; height: 630px; padding: 0 0 0 84px;
+    display: grid; grid-template-columns: 1fr 470px; align-items: center; overflow: hidden;
+    font-family: "Bricolage Grotesque", sans-serif; color: #ece5d6;
+    background: radial-gradient(36% 58% at 80% 56%, rgba(233, 173, 79, .2), transparent 72%),
+                radial-gradient(30% 40% at 6% 96%, rgba(114, 209, 174, .08), transparent 70%), #0b1312;
+  }
+  .eyebrow { display: flex; align-items: center; gap: 14px; font-family: "JetBrains Mono", monospace; font-size: 19px; letter-spacing: .18em; text-transform: uppercase; color: #72d1ae; }
+  .eyebrow svg { width: 26px; height: 26px; }
+  h1 { margin: 22px 0 26px; font-size: 158px; line-height: .9; font-weight: 800; letter-spacing: -.055em; }
+  h1 span { color: #e9ad4f; }
+  p { margin: 0; max-width: 21ch; font-size: 34px; line-height: 1.28; color: #cfc8b8; letter-spacing: -.01em; }
+  p b { color: #e9ad4f; font-weight: 600; }
+  .team { display: flex; gap: 10px; margin-top: 42px; }
+  .team img { width: 50px; height: 50px; border-radius: 50%; }
+  .lion { align-self: end; justify-self: center; height: 640px; margin-bottom: -38px; filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .5)); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div>
+    <div class="eyebrow"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#2aabee"/><g transform="translate(12 12) scale(.74) translate(-12 -12)"><path fill="#fff" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></g></svg>Live on Telegram</div>
+    <h1>Meet <span>APEX.</span></h1>
+    <p>A 24×7 personal AI assistant, run by a <b>team of AI agents</b>.</p>
+    <div class="team">
+      <img src="../img/agent-apex.webp" alt=""><img src="../img/agent-tusk.webp" alt=""><img src="../img/agent-bolt.webp" alt="">
+      <img src="../img/agent-bullseye.webp" alt=""><img src="../img/agent-miso.webp" alt=""><img src="../img/agent-nyx.webp" alt="">
+      <img src="../img/agent-kitsune.webp" alt=""><img src="../img/agent-forge.webp" alt="">
+    </div>
+  </div>
+  <img class="lion" src="../img/apex-rig-5-alive.webp" alt="">
+</div>
+</body>
+</html>

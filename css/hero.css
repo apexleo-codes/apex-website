@@ -12,6 +12,14 @@
 .lion-stage { position: absolute; left: 2%; bottom: 0; width: 96%; }
 .lion { display: block; width: 100%; height: auto; }
 
+/* ---- the stage light (js/herofx.js) ----
+   The canvas draws him as well as the light, so once it has taken over the video
+   is only its source: still playing, never seen. JS sizes the canvas round the
+   stage; it sits under the copy and the bubble. */
+.hero__gl { position: absolute; top: 0; height: 100%; pointer-events: none; }
+.hero__visual { z-index: 1; }
+.hero.has-gl .lion { opacity: 0; }
+
 /* ---- the bubble ---- */
 /* The wrapper and the bubble stay separate elements so GSAP's intro tween and
    the CSS fade never own the same property. (The pointer parallax that
@@ -31,7 +39,12 @@
   box-shadow: 0 26px 70px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(236, 229, 214, .06);
   /* CSS owns the fade, GSAP owns the movement. A GSAP autoAlpha here strands the
      bubble at opacity:0 / visibility:hidden and nothing ever throws. */
-  opacity: 0; transition: opacity .42s var(--ease);
+  opacity: 0; transition: opacity .42s var(--ease), border-color .7s, box-shadow .7s;
+}
+/* the spark from his core has just landed on it */
+.bubble.is-lit {
+  border-color: rgba(233, 173, 79, .7); transition-duration: .42s, .08s, .08s;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(236, 229, 214, .06), 0 0 0 1px rgba(233, 173, 79, .25), 0 0 34px rgba(233, 173, 79, .28);
 }
 .bubble.is-live { opacity: 1; }
 .bubble.is-live.is-out { opacity: 0; }

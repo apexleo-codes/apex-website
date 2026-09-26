@@ -221,6 +221,29 @@
   $(".toolsbar").insertAdjacentHTML("beforeend", D.layerTools.map((t) =>
     `<span class="toolsbar__chip${t.flow ? " toolsbar__chip--flow" : ""}">${icon(t.icon)}<span>${t.name}${t.flow ? ` → ${t.flow}` : ""}</span></span>`).join(""));
 
+  // 03 · the journey on a phone: a card per leg to swipe through, and a dot for each
+  $(".jstrip__cards").innerHTML = D.route.map((j, i) => {
+    const mark = j.agent ? `<img class="jcard__av" src="img/agent-${j.agent}.webp" alt="" width="40" height="40">`
+      : j.logo ? `<svg class="jcard__logo" aria-hidden="true"><use href="#i-${j.logo}"/></svg>`
+      : j.icon ? icon(j.icon) : "";
+    return `<li class="jcard${i === D.route.length - 1 ? " jcard--gold" : ""}"><span class="jcard__leg">${pad(i + 1)} · ${j.leg}</span>
+      <div class="jcard__body">${mark}<div><b>${j.head}</b>${j.line ? `<span>${j.line}</span>` : ""}${
+      j.list ? `<ul>${j.list.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}${
+      j.stamp ? `<span class="jcard__stamp">${j.stamp}</span>` : ""}</div></div></li>`;
+  }).join("");
+  $(".jstrip__nav i").outerHTML = D.route.map((_, i) => `<i${i ? "" : ' class="is-on"'}></i>`).join("");
+
+  // 03 · the route, faintly, before anything travels it: a ghost under every wire, so
+  // the leg a packet is about to take is already on the stage when you arrive. The
+  // climb to the tool and the drop back are one line, so that pair gets one ghost.
+  const wires = $(".stage__svg");
+  $$(".wire", wires).filter((w) => w.id !== "p-tool-back").forEach((w) => {
+    const g = w.cloneNode();
+    g.removeAttribute("id");
+    g.setAttribute("class", `wire-ghost${w.classList.contains("wire--gold") ? " wire-ghost--gold" : ""}`);
+    wires.insertBefore(g, $(".wire", wires));
+  });
+
   // 06 · recipe → cart: phone screens + steps
   const screen = (v) => `<img src="img/${v}.webp" alt="" class="${v === "zepto-cart" ? "is-wide" : ""}">`;
   // scoped to .task: the frontend section has a phone too, and it comes first in the DOM
@@ -252,6 +275,16 @@
     const c = D.clock12(st.t);
     return `<li data-i="${i}" class="${i ? "" : "is-on"}"><b>${c.t}<small>${c.ap}</small></b>${av(st.key)}<span>${st.label}</span></li>`;
   }).join("");
+
+  // 07 · the curtain call: everyone who worked the day, APEX in the middle
+  const bow = $(".bow");
+  if (bow) {
+    const order = ["tusk", "bolt", "bullseye", "miso", "apex", "nyx", "kitsune", "forge", "colony"];
+    bow.innerHTML = order.map((k) => {
+      const t = D.team.find((m) => m.key === k);
+      return `<figure class="bow__m${k === "apex" ? " bow__m--lead" : ""}" style="--c:${t.color}"><img src="img/agent-${k}.webp" alt="" loading="lazy"><figcaption>${t.name}</figcaption></figure>`;
+    }).join("");
+  }
 
   // the build loop's nodes around the ring · parked
   if ($(".cycle__nodes")) $(".cycle__nodes").innerHTML = D.loop.map((s, i) => `

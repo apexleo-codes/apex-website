@@ -60,6 +60,7 @@ window.apexHero = (() => {
     bubble.classList.remove("is-out", "is-read");
 
     bubble.classList.add("is-typing");
+    window.apexHeroFx && apexHeroFx.say();         // a spark leaves his core and carries it up
     await wait(900);
     bubble.classList.remove("is-typing");
 

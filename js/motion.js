@@ -30,14 +30,20 @@
     });
   }
   function intro() {
-    gsap.timeline()
+    // with the stage lit (js/herofx.js) he is there from the start, in the dark,
+    // and the light striking on him is his entrance; the bubble waits for it
+    const fx = window.apexHeroFx, lit = !!(fx && fx.claim());
+    const tl = gsap.timeline()
       .from(".hero__title .line > span", { yPercent: 115, duration: 1.2, ease: "expo.out", stagger: 0.12 })
-      .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8")
-      .from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
+      .from(".hero__eyebrow, .hero__lede, .hero__stats, .hero__credit", { y: 30, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 }, "-=.8");
+    if (lit) tl.add(() => fx.reveal(), 0.15)
+      .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, 2.1)
+      .add(() => apexHero.start(), 2.45);
+    else tl.from(".lion", { yPercent: 16, autoAlpha: 0, duration: 1.4, ease: "expo.out" }, "-=1.25")
       .from(".bubble", { yPercent: 14, scale: 0.9, duration: 0.8, ease: "back.out(1.6)" }, "-=.7")
-      .add(() => apexHero.start(), "-=.45")   // he waves as the first message lands
-      .from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, "-=.9")
-      .add(countUp, "-=1");
+      .add(() => apexHero.start(), "-=.45");  // he waves as the first message lands
+    tl.from(".nav, .hero__scroll", { autoAlpha: 0, duration: 0.8 }, 1)
+      .add(countUp, 0.9);
   }
   const finishLoad = () => { document.body.classList.remove("is-loading"); lenis && lenis.start(); refreshAll(); };
   const loader = $(".loader");
@@ -83,14 +89,83 @@
   $$("[data-goto]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); setMenu(false); goto(a.dataset.goto); }));
   $$(".menu__list a").forEach((a) => a.addEventListener("pointerenter", () => ($(".menu__preview").src = `img/agent-${a.dataset.img}.webp`)));
 
+  // ---------- presenter mode ----------
+  // For showing the page to a room: → or PageDown (what a presentation clicker
+  // sends) glides to the next beat of the story, ← or PageUp to the one before. A
+  // beat is a place where something has just FINISHED happening - a setup step
+  // once its stage has landed on the rig, the end of a leg in the journey, an hour
+  // on the clock - so every press stops on a settled frame, never halfway through a
+  // morph. The list is built at the moment of the
+  // press, from the live layout and the live pins, so it can't go stale the way a
+  // list built at load would (see "How sections move" in the README).
+  const beats = () => {
+    const vh = innerHeight, top = (el) => el.getBoundingClientRect().top + scrollY;
+    const pinOf = (sel) => ScrollTrigger.getAll().find((t) => t.pin && t.trigger && t.trigger.matches(sel));
+    const out = [0];
+    const head = (el) => el && out.push(top(el) - 90);                              // a heading, just under the nav
+    const mid = (el) => el && out.push(top(el) + el.offsetHeight / 2 - vh / 2);    // a block, centred
+    head($(".front .shead"));
+    // the setup's heading shows step 01 whole (and his body assembled); each later
+    // step stops once its stage has landed on the rig, which changes over the step's
+    // travel from 60% of the screen to 38% (the rig's START and END, further down),
+    // so just past that
+    head($(".setup .shead"));
+    setupSteps.forEach((st, i) => i && out.push(top(st) - 0.38 * vh + 2));
+    // the journey: the moment each packet arrives (legs, in timeline seconds, over
+    // a 5.7 s timeline; a little late, because the scrub trails the scroll)
+    const orchPin = pinOf(".orch__pin");
+    if (orchPin) [0, 0.155, 0.33, 0.505, 0.68, 0.82, 0.975].forEach((f) => out.push(orchPin.start + f * (orchPin.end - orchPin.start)));
+    else head($(".orch .shead"));
+    head($(".task .shead")); tsteps.forEach(mid);
+    const rhythmPin = pinOf(".rhythm__pin");
+    if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
+    else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
+    if (window.apexGta) out.push(...apexGta.beats());                          // the heading, the flight, the grid, mission passed
+    mid($(".thanks"));
+    const max = document.documentElement.scrollHeight - vh;
+    return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
+      .filter((y, i, a) => !i || y - a[i - 1] > 24);
+  };
+  const toast = document.createElement("div");
+  toast.className = "present"; toast.setAttribute("aria-hidden", "true");
+  document.body.appendChild(toast);
+  let aim = null, aimAt = 0, toastT = 0;
+  const present = (dir) => {
+    const list = beats();
+    // a second press while the first glide is still going counts from where that one
+    // is headed, so three quick clicks go three beats and not one
+    const from = aim != null && performance.now() - aimAt < 1400 ? aim : scrollY;
+    const i = dir > 0 ? list.findIndex((y) => y > from + 8) : list.findLastIndex((y) => y < from - 8);
+    if (i < 0) return;
+    aim = list[i]; aimAt = performance.now();
+    if (lenis) lenis.scrollTo(aim, { duration: Math.min(2.2, 0.95 + Math.abs(aim - scrollY) / 2600), easing: (t) => 1 - Math.pow(1 - t, 3.4) });
+    else window.scrollTo(0, aim);
+    toast.innerHTML = `<b>${pad(i + 1)}</b> / ${pad(list.length)}`;
+    toast.classList.add("is-on"); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove("is-on"), 1500);
+  };
+  addEventListener("keydown", (e) => {
+    const dir = { ArrowRight: 1, PageDown: 1, ArrowLeft: -1, PageUp: -1 }[e.key];
+    if (!dir || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    if (document.body.classList.contains("menu-open") || document.body.classList.contains("is-loading")) return;
+    if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+    e.preventDefault();
+    present(dir);
+  });
+
   // the brand is the hero's, and only the hero's (see base.css). Active from the
   // moment the hero's bottom clears the top of the screen to the end of the page,
   // so one class covers the whole way down and back up again. onRefresh as well as
   // onToggle: a page opened deep - a #hash, or a browser putting back the scroll
   // position from last time - never crosses the line, so the toggle never fires and
   // the brand would sit there over a section it doesn't belong to.
-  const heroGate = (s) => document.body.classList.toggle("past-hero", s.isActive);
-  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: "max", onToggle: heroGate, onRefresh: heroGate });
+  // It reads the START alone - scrolled past the hero's bottom or not - never
+  // isActive. isActive also needs an end, and any end measured here is measured
+  // before the pins further down have added their scroll, so it landed around the
+  // daily rhythm and the brand came back over GTAmex and the thank-you (and at
+  // progress 1 a trigger reads inactive anyway). Updated on refresh, on toggle and
+  // on every update, so a jump past either edge lands right.
+  const heroGate = (s) => document.body.classList.toggle("past-hero", s.scroll() >= s.start);
+  ScrollTrigger.create({ trigger: ".hero", start: "bottom top", end: "max", refreshPriority: -1, onUpdate: heroGate, onToggle: heroGate, onRefresh: heroGate });
 
   const numEl = $(".nav__num"), nameEl = $(".nav__name");
   $$("[data-chapter]").forEach((sec, i) => ScrollTrigger.create({
@@ -197,12 +272,14 @@
   // between its top and the trigger line never straddles that line with both
   // edges, so an isActive test leaves a dead zone - the last and shortest step
   // sat dim with its dot unlit while it filled the screen. Entering latches.
-  // 55%, not 70%: a step is only ~520px tall, so at "top 70%" the NEXT step
+  // 60%, not 70%: a step is only ~520px tall, so at "top 70%" the NEXT step
   // crossed the line while the current one still filled the screen - the rig
-  // showed the brain while you were still reading "Give it a body". Entering
-  // still latches, so the short last step keeps its dead-zone fix.
+  // showed the brain while you were still reading "Give it a body". 60% is where
+  // the rig's window opens (START, below), so the words light as the picture
+  // starts to change. Entering still latches, so the short last step keeps its
+  // dead-zone fix.
   setupSteps.forEach((st, i) => ScrollTrigger.create({
-    trigger: st, start: "top 55%", end: "bottom 30%",
+    trigger: st, start: "top 60%", end: "bottom 30%",
     onEnter: () => setStep(i), onEnterBack: () => setStep(i)
   }));
   setStep(0);
@@ -220,20 +297,25 @@
   // PREVIOUS step's height, so a tall step stretched its change and a short one
   // rushed it, and every one of them ran early — the picture swapped while its
   // words were still arriving at the middle of the screen. Now a step's picture
-  // changes over the travel of that step's own heading, from a quarter of the way
-  // down the screen (by then the heading has climbed three quarters of it and the
-  // body fills what's under it) to the very top. Same travel on every step, no
-  // matter how much copy it carries, and between two windows there is a plateau
-  // where nothing moves at all.
+  // changes over the travel of that step's own heading, from 60% of the way down
+  // the screen to 38% - landing as the step's words settle just above the middle,
+  // where they're being read (it ran from 25% to the very top, and read late). Same
+  // travel on every step, no matter how much copy it carries, and between two
+  // windows there is a plateau where nothing moves at all.
   if (rigScrubbed) {
     const IN = 0.3, OUT = 0.14, BLUR = 12;   // how far out it starts, how far in it collapses, px
-    const START = 0.25, END = 0.03;          // the incoming heading's travel, as a fraction of the screen
+    const START = 0.6, END = 0.38;           // the incoming step's travel, as a fraction of the screen
     const at = rigParts.map((p) => p.dataset.at.split(" ").map(Number));
     // …except across a boundary listed here, which stays a flat cross-fade. 01→02
     // is the only one: the brain lighting up is the event there, and an implosion
     // on top of it fought the pulse for the same attention. The index is the step
     // it leaves FROM, so 0 is 01→02.
     const FLAT = new Set([0]);
+    // 02→03 is assembled instead (js/rigmorph.js): points of light gather onto the
+    // parts that change, and the new stage lands under them from 50% of the window,
+    // flat and hot, cooling as it settles. Its window goes to the points as it is.
+    const ASSEMBLE = new Set([1]);
+    const LAND = [0.5, 0.8];
     // Smoothstep across the window and nothing outside it. The plateau is what
     // keeps each stage sharp now, so this only has to make the swap itself gentle;
     // it is still symmetric — ease(u) + ease(1 - u) is 1 — so a pair of stages
@@ -258,8 +340,12 @@
       return tops.length - 1;
     };
     const paint = () => {
-      const p = position();
-      const flat = FLAT.has(Math.floor(p));
+      const raw = position(), seg = Math.floor(raw);
+      if (window.apexRigFx) apexRigFx.set(raw);        // the soul and the ascent, in WebGL (js/rigfx.js)
+      if (window.apexRigMorph) apexRigMorph.suit(raw < 1 ? 0 : raw >= 2 ? 1 : raw - 1);
+      const built = ASSEMBLE.has(seg);
+      const p = built ? seg + Math.min(1, Math.max(0, (raw - seg - LAND[0]) / (LAND[1] - LAND[0]))) : raw;
+      const flat = built || FLAT.has(seg);
       rigParts.forEach((el, i) => {
         const steps = at[i], lo = steps[0], hi = steps[steps.length - 1];
         // signed distance in steps: negative while the layer is still ahead of you,
@@ -274,7 +360,9 @@
         // "none", never "": an empty inline transform hands the layer back to the
         // stylesheet's parked translateY(16px), and the figure drops 16px mid-fade
         el.style.transform = flat ? "none" : `scale(${1 + (d < 0 ? m * IN : -m * OUT)})`;
-        el.style.filter = flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
+        // an assembled stage arrives hot and cools; a converging one arrives out of focus
+        el.style.filter = built && d < 0 && m > 0.002 ? `brightness(${(1 + m * 1.4).toFixed(3)})`
+          : flat || m <= 0.002 ? "none" : `blur(${(m * m * BLUR).toFixed(2)}px)`;
       });
     };
     rig.classList.add("is-converging");
@@ -317,6 +405,35 @@
   };
   setStop(0, false);
 
+  // Right now, in India: the same schedule read against today's clock, so the
+  // room sees it isn't a mock-up - the next job really is on its way. Times in
+  // content.js are IST; BULLSEYE only works Mon-Fri, and MISO's Sunday job, which
+  // the dial leaves to the note under the list, is counted here too. Information,
+  // not decoration, so it runs under reduced motion as well (only the dot's pulse
+  // stops). One line, fixed height, inside the pin: it can't move anything below.
+  const nowEl = $(".rhythm__now");
+  if (nowEl) {
+    const jobs = [...R, { t: "09:30", key: "miso", label: "Sunday recipe → cart", days: [0] }]
+      .map((st) => ({ ...st, days: st.days || (st.key === "bullseye" ? [1, 2, 3, 4, 5] : null) }));
+    const who = Object.fromEntries(D.team.map((t) => [t.key, t.name]));
+    const tick = () => {
+      const d = new Date(Date.now() + (330 + new Date().getTimezoneOffset()) * 60000);   // IST's wall clock
+      const now = d.getHours() * 60 + d.getMinutes(), dow = d.getDay();
+      let next = null;
+      for (const day of [0, 1]) for (const st of jobs) {
+        const [h, m] = st.t.split(":").map(Number), at = day * 1440 + h * 60 + m;
+        if (at <= now || (st.days && !st.days.includes((dow + day) % 7))) continue;
+        if (!next || at < next.at) next = { ...st, at };
+      }
+      if (!next) return;
+      const c = D.clock12(`${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`), wait = next.at - now;
+      const inTime = wait < 60 ? `${wait} min` : `${Math.floor(wait / 60)} h ${String(wait % 60).padStart(2, "0")} min`;
+      nowEl.lastElementChild.innerHTML = `<b>Right now</b> ${c.t} ${c.ap} in India · next up: <img src="img/agent-${next.key}.webp" alt="">${who[next.key]}, ${next.label.toLowerCase()}, in ${inTime}`;
+      nowEl.hidden = false;
+    };
+    tick(); setInterval(tick, 20000);
+  }
+
   const mm = gsap.matchMedia();
 
   // ---------- decorative motion ----------
@@ -352,25 +469,19 @@
     }
 
 
-    // thank you
-    gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
-    gsap.from(".thanks__lion", { rotate: -25, scale: 0.4, autoAlpha: 0, duration: 1.4, ease: "expo.out", scrollTrigger: { trigger: ".thanks", start: "top 70%" } });
+    // thank you: the words rise, then the team comes out from the middle and takes a
+    // bow, APEX first. The bow is on the image and the entrance on the figure, and a
+    // hover lifts the figure on `translate`, so no two of them share a property.
+    // With WebGL the curtain call is js/finale.js, which plays all of this on its
+    // own timeline after the points have poured into the team; this is its fallback.
+    if (!window.apexFinale) {
+      gsap.from(".thanks__word > *", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, scrollTrigger: { trigger: ".thanks", start: "top 75%" } });
+      gsap.timeline({ scrollTrigger: { trigger: ".bow", start: "top 85%" } })
+        .from(".bow__m", { y: 70, autoAlpha: 0, duration: 1.1, ease: "back.out(1.6)", stagger: { each: 0.08, from: "center" } })
+        .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
+    }
 
-    // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
-    // the tiles deal in like a mission select and "mission passed" lands last.
-    // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
-    // the flight's screen rises in softly once, and its glow warms up behind it
-    gsap.timeline({ scrollTrigger: { trigger: ".gta__flight", start: "top 85%" } })
-      .from(".gta__screen", { y: 50, scale: 0.97, autoAlpha: 0, duration: 1.3, ease: "expo.out" })
-      .fromTo(".gta__glow", { autoAlpha: 0 }, { autoAlpha: 0.6, duration: 1.6, ease: "power2.out" }, 0.2);
-    gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
-      .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
-      .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
-      .from(".gta__hud > *", { x: 30, autoAlpha: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, "-=.6");
-    gsap.set(".gta .tile", { autoAlpha: 0, y: 70, rotateX: -14, transformPerspective: 900, transformOrigin: "50% 100%" });
-    ScrollTrigger.batch(".gta .tile", { start: "top 92%", once: true,
-      onEnter: (b) => gsap.to(b, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: "expo.out", stagger: 0.09, overwrite: true }) });
-    gsap.from(".gta__passed > *", { scale: 2.4, autoAlpha: 0, duration: 0.9, ease: "back.out(1.8)", stagger: 0.18, scrollTrigger: { trigger: ".gta__passed", start: "top 88%" } });
+    // 06 · GTAmex: its entrances are js/gtamex.js
 
     return () => ScrollTrigger.removeEventListener("scrollEnd", settle);
   });
@@ -397,8 +508,28 @@
     // before the packet reached her.
     const stage = $(".stage"), caps = $$(".orch__captions li");
     $$(".stage .wire").forEach((w) => { const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L; });
-    const packets = $$(".packet").map((el) => ({ el, path: document.getElementById(el.dataset.path), p: { t: 0 } }));
-    const place = (pk) => { const L = pk.path.getTotalLength(), pt = pk.path.getPointAtLength(pk.p.t * L), r = stage.clientWidth / 1200; gsap.set(pk.el, { x: pt.x * r, y: pt.y * r }); };
+    // Each packet is a dot with a COMET behind it: the wire lights up along its
+    // last stretch, and the light drains into the stop it reaches (d, after it has
+    // arrived), which sends out a ring. Two strokes per leg, a wide soft tail and a
+    // short hot core, both dashes of a copy of the wire (one bright dash, slid
+    // along it). Once the last one is home the whole route turns gold.
+    const svg = $(".stage__svg"), pings = $$(".stage .ping");
+    const packets = $$(".packet").map((el) => {
+      const path = document.getElementById(el.dataset.path), L = path.getTotalLength();
+      const comets = [[Math.min(190, L * 0.6), "comet"], [Math.min(80, L * 0.32), "comet comet--core"]].map(([T, cls]) => {
+        const c = path.cloneNode(); c.removeAttribute("id");
+        c.setAttribute("class", cls + (path.classList.contains("wire--gold") ? " comet--gold" : ""));
+        c.style.strokeDasharray = `${T} ${L + T}`; c.style.strokeDashoffset = T;
+        svg.appendChild(c);
+        return { c, T };
+      });
+      return { el, path, L, comets, p: { t: 0, d: 0 } };
+    });
+    const place = (pk) => {
+      const pt = pk.path.getPointAtLength(pk.p.t * pk.L), r = stage.clientWidth / 1200;
+      gsap.set(pk.el, { x: pt.x * r, y: pt.y * r });
+      pk.comets.forEach(({ c, T }) => (c.style.strokeDashoffset = T - (pk.p.t * pk.L + pk.p.d * T)));
+    };
     const legs = [0, 1, 2, 3, 3.8, 4.6], LEG = 0.8;
     const orch = gsap.timeline({
       defaults: { ease: "none" },
@@ -408,6 +539,7 @@
         stage.dataset.step = k;
         stage.dataset.pick = t >= legs[1] + LEG ? "miso" : "";
         stage.dataset.tool = t >= legs[3] && t < legs[5] ? "on" : "";
+        stage.dataset.done = t >= legs[5] + LEG ? "1" : "";
       },
       scrollTrigger: { trigger: ".orch__pin", start: "top top", end: "+=300%", pin: true, scrub: 0.5 }
     });
@@ -416,17 +548,24 @@
       orch.to(pk.path, { strokeDashoffset: 0, duration: LEG }, at)
         .fromTo(pk.el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, at)
         .to(pk.p, { t: 1, duration: LEG, onUpdate: () => place(pk) }, at)
-        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, at + LEG);
+        .to(pk.el, { autoAlpha: 0, duration: 0.08 }, at + LEG)
+        .to(pk.p, { d: 1, duration: 0.2, ease: "power1.in", onUpdate: () => place(pk) }, at + LEG)
+        .fromTo(pings[i], { autoAlpha: 0.95, scale: 0.35 }, { autoAlpha: 0, scale: 2.3, duration: 0.3, ease: "power2.out", immediateRender: false }, at + LEG - 0.02);
     });
-    orch.to({}, { duration: 0.3 });
+    orch.to({}, { duration: 0.3 }, legs[5] + LEG);
     stage.dataset.step = 0;
 
     // daily rhythm: equal scroll per stop. setStop swings the hand, so this only
     // has to say which stop we are on.
+    // The sky (js/skyfx.js) reads the same progress for its hour, and the arrival
+    // before the pin for the sunrise.
     ScrollTrigger.create({
       trigger: ".rhythm__pin", start: "top top", end: "+=" + R.length * 45 + "%", pin: true,
-      onUpdate: (s) => setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length)))
+      onUpdate: (s) => { setStop(Math.min(R.length - 1, Math.floor(s.progress * R.length))); apexSky.set(s.progress); },
+      onRefresh: (s) => apexSky.set(s.progress)
     });
+    ScrollTrigger.create({ trigger: ".rhythm__pin", start: "top bottom", end: "top top", refreshPriority: -1,
+      onUpdate: (s) => apexSky.enter(s.progress), onRefresh: (s) => apexSky.enter(s.progress) });
 
     // build loop: the ring fills, a runner laps it, nodes light up · parked
     const fill = $(".cycle__fill"), cnodes = $$(".cnode");
@@ -452,47 +591,24 @@
     $$(".orch__captions li").forEach((c) => c.classList.add("is-on"));
     $(".stage").dataset.step = "all";
     $(".stage").dataset.pick = "miso";
+    // the journey strip: the card in view lights its leg on the stage above
+    const strip = $(".jstrip__cards"), jdots = $$(".jstrip__nav i");
+    const onStrip = () => {
+      const cards = [...strip.children], x = strip.scrollLeft, o = (c) => Math.abs(c.offsetLeft - cards[0].offsetLeft - x);
+      const k = cards.reduce((b, c, i) => (o(c) < o(cards[b]) ? i : b), 0);
+      $(".stage").dataset.leg = k;
+      jdots.forEach((d, i) => d.classList.toggle("is-on", i === k));
+    };
+    strip.addEventListener("scroll", onStrip, { passive: true });
+    onStrip();
     rItems.forEach((li, i) => ScrollTrigger.create({ trigger: li, start: "top 70%", end: "bottom 70%", onToggle: (s) => s.isActive && setStop(i) }));
     // no autoplay on touch or under reduced motion: each job drives the phone as it scrolls past
     stopAuto();
     cases.forEach((c, i) => ScrollTrigger.create({ trigger: c, start: "top 65%", end: "bottom 65%", onToggle: (s) => s.isActive && setCase(i) }));
+    return () => { strip.removeEventListener("scroll", onStrip); delete $(".stage").dataset.leg; };
   });
 
-  // ---------- 06 · GTAmex ----------
-  // The drone intro and the clips play only while on screen (the clips are
-  // preload="none", so they cost nothing until you reach them). Under reduced
-  // motion none plays by itself: hovering one plays it.
-  const gtaVids = $$(".gta video");
-  if (!reduce) {
-    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
-    gtaVids.forEach((v) => io.observe(v));
-  } else gtaVids.forEach((v) => {
-    const t = v.closest(".tile, .gta__flight");
-    t.addEventListener("pointerenter", () => v.play().catch(() => {}));
-    t.addEventListener("pointerleave", () => v.pause());
-  });
-  // the flight's timecode and progress bar follow the video, and its glow is the
-  // video itself: each timeupdate (~4 a second) draws the frame onto a 32×16 canvas
-  // that CSS blurs into light behind the screen. The poster stands in until it plays.
-  const drone = $(".gta__drone"), tc = $(".gta__tc"), bar = $(".gta__bar"), glow = $(".gta__glow"), gx = glow.getContext("2d");
-  const paint = (src) => { try { gx.drawImage(src, 0, 0, glow.width, glow.height); } catch {} };
-  const poster = new Image(); poster.onload = () => paint(poster); poster.src = drone.poster;
-  drone.addEventListener("timeupdate", () => {
-    const t = Math.floor(drone.currentTime);
-    tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`;
-    bar.style.setProperty("--p", drone.duration ? drone.currentTime / drone.duration : 0);
-    if (drone.readyState >= 2) paint(drone);
-  });
-  // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
-  // and the stars go to sirens at five
-  const stars = $$(".gta__stars i"), starRow = $(".gta__stars"), cash = $(".gta__cash span");
-  const setHud = (s) => {
-    const n = Math.min(5, Math.floor(s.progress * 6));
-    stars.forEach((st, i) => st.classList.toggle("is-on", i < n));
-    starRow.classList.toggle("is-max", n === 5);
-    cash.textContent = String(Math.round(s.progress * 1e6)).padStart(8, "0");
-  };
-  ScrollTrigger.create({ trigger: ".gta__grid", start: "top 80%", end: "bottom 70%", onUpdate: setHud, onRefresh: setHud });
+  // ---------- 06 · GTAmex: js/gtamex.js ----------
 
   refreshAll();
   addEventListener("load", refreshAll);
