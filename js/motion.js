@@ -120,7 +120,7 @@
     const rhythmPin = pinOf(".rhythm__pin");
     if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
     else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
-    head($(".gta .shead")); mid($(".gta__screen")); head($(".gta__grid")); mid($(".gta__passed"));
+    if (window.apexGta) out.push(...apexGta.beats());                          // the heading, the box, the flight, mission passed
     mid($(".thanks"));
     const max = document.documentElement.scrollHeight - vh;
     return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
@@ -481,21 +481,7 @@
         .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.35");
     }
 
-    // 06 · GTAmex: the A drops in, the words slam in beside it, the HUD slides on,
-    // the tiles deal in like a mission select and "mission passed" lands last.
-    // Tiles move on transform; their hover lift is on `translate`, so the two never fight.
-    // the flight's screen rises in softly once, and its glow warms up behind it
-    gsap.timeline({ scrollTrigger: { trigger: ".gta__flight", start: "top 85%" } })
-      .from(".gta__screen", { y: 50, scale: 0.97, autoAlpha: 0, duration: 1.3, ease: "expo.out" })
-      .fromTo(".gta__glow", { autoAlpha: 0 }, { autoAlpha: 0.6, duration: 1.6, ease: "power2.out" }, 0.2);
-    gsap.timeline({ scrollTrigger: { trigger: ".gta__top", start: "top 78%" } })
-      .from(".gta__A", { yPercent: -50, scale: 1.4, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
-      .from(".gta__words > span", { xPercent: -40, autoAlpha: 0, duration: 0.7, ease: "back.out(2)", stagger: 0.08 }, "-=.75")
-      .from(".gta__hud > *", { x: 30, autoAlpha: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 }, "-=.6");
-    gsap.set(".gta .tile", { autoAlpha: 0, y: 70, rotateX: -14, transformPerspective: 900, transformOrigin: "50% 100%" });
-    ScrollTrigger.batch(".gta .tile", { start: "top 92%", once: true,
-      onEnter: (b) => gsap.to(b, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1, ease: "expo.out", stagger: 0.09, overwrite: true }) });
-    gsap.from(".gta__passed > *", { scale: 2.4, autoAlpha: 0, duration: 0.9, ease: "back.out(1.8)", stagger: 0.18, scrollTrigger: { trigger: ".gta__passed", start: "top 88%" } });
+    // 06 · GTAmex: its entrances, and the cover's assembly, are js/gtamex.js
 
     return () => ScrollTrigger.removeEventListener("scrollEnd", settle);
   });
@@ -622,41 +608,7 @@
     return () => { strip.removeEventListener("scroll", onStrip); delete $(".stage").dataset.leg; };
   });
 
-  // ---------- 06 · GTAmex ----------
-  // The drone intro and the clips play only while on screen (the clips are
-  // preload="none", so they cost nothing until you reach them). Under reduced
-  // motion none plays by itself: hovering one plays it.
-  const gtaVids = $$(".gta video");
-  if (!reduce) {
-    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { rootMargin: "100px 0px" });
-    gtaVids.forEach((v) => io.observe(v));
-  } else gtaVids.forEach((v) => {
-    const t = v.closest(".tile, .gta__flight");
-    t.addEventListener("pointerenter", () => v.play().catch(() => {}));
-    t.addEventListener("pointerleave", () => v.pause());
-  });
-  // the flight's timecode and progress bar follow the video, and its glow is the
-  // video itself: each timeupdate (~4 a second) draws the frame onto a 32×16 canvas
-  // that CSS blurs into light behind the screen. The poster stands in until it plays.
-  const drone = $(".gta__drone"), tc = $(".gta__tc"), bar = $(".gta__bar"), glow = $(".gta__glow"), gx = glow.getContext("2d");
-  const paint = (src) => { try { gx.drawImage(src, 0, 0, glow.width, glow.height); } catch {} };
-  const poster = new Image(); poster.onload = () => paint(poster); poster.src = drone.poster;
-  drone.addEventListener("timeupdate", () => {
-    const t = Math.floor(drone.currentTime);
-    tc.textContent = `${pad(Math.floor(t / 60))}:${pad(t % 60)}`;
-    bar.style.setProperty("--p", drone.duration ? drone.currentTime / drone.duration : 0);
-    if (drone.readyState >= 2) paint(drone);
-  });
-  // the HUD fills as the grid scrolls past: a star per fifth, cash up to a million,
-  // and the stars go to sirens at five
-  const stars = $$(".gta__stars i"), starRow = $(".gta__stars"), cash = $(".gta__cash span");
-  const setHud = (s) => {
-    const n = Math.min(5, Math.floor(s.progress * 6));
-    stars.forEach((st, i) => st.classList.toggle("is-on", i < n));
-    starRow.classList.toggle("is-max", n === 5);
-    cash.textContent = String(Math.round(s.progress * 1e6)).padStart(8, "0");
-  };
-  ScrollTrigger.create({ trigger: ".gta__grid", start: "top 80%", end: "bottom 70%", onUpdate: setHud, onRefresh: setHud });
+  // ---------- 06 · GTAmex: js/gtamex.js ----------
 
   refreshAll();
   addEventListener("load", refreshAll);

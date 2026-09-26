@@ -397,7 +397,7 @@
    `translate`, which neither of them touches. */
 .bow { display: flex; align-items: flex-end; justify-content: center; gap: clamp(6px, 1.5vw, 22px); margin: 6px 0 4px; }
 .bow__m { margin: 0; display: grid; justify-items: center; gap: 12px; transition: translate .45s var(--ease); }
-.bow__m img { width: clamp(38px, 4.4vw, 62px); border-radius: 50%; box-shadow: 0 0 0 1.5px var(--c), 0 18px 40px rgba(0, 0, 0, .45); transform-origin: 50% 100%; }
+.bow__m img { width: clamp(38px, 4.4vw, 62px); aspect-ratio: 1; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--c), 0 18px 40px rgba(0, 0, 0, .45); transform-origin: 50% 100%; }
 .bow__m--lead img { width: clamp(92px, 10vw, 140px); box-shadow: 0 0 0 2px var(--c), 0 30px 90px rgba(233, 173, 79, .28); }
 .bow__m figcaption { font-family: var(--mono); font-size: .56rem; letter-spacing: .14em; color: var(--c); }
 .bow__m:hover { translate: 0 -8px; }

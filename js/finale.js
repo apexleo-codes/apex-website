@@ -24,8 +24,11 @@
   const lead = () => sec.querySelector(".bow__m--lead img");
 
   const small = matchMedia("(max-width: 700px)").matches;
+  // No sway and no pointer: the faces are DOM and stand still, so a scene turning
+  // in 3D would carry the halos off them - most at the ends of the row, where the
+  // turn moves points furthest (FORGE's sat low and COLONY's outside it).
   const scene = APEXMorph.create({
-    canvas, n: small ? 4000 : 7600, rate: Infinity, pointer: false, size: small ? 0.85 : 1,
+    canvas, n: small ? 4000 : 7600, rate: Infinity, pointer: false, sway: false, size: small ? 0.85 : 1,
     frame: () => { const [x, y, w] = at(lead()); return { s: w || 100, cx: x, cy: y }; },
     forms: [
       // 0 · dust over the empty stage
@@ -87,7 +90,8 @@
     .fromTo(".bow__m", { scale: 0.2, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.9, ease: "back.out(1.7)", stagger: { each: 0.06, from: "center" } }, "-=.5")
     .to(".bow__m img", { y: 9, rotation: (i) => (i < 4 ? 7 : i > 4 ? -7 : 0), duration: 0.32, ease: "power2.inOut", yoyo: true, repeat: 1, stagger: { each: 0.06, from: "center" } }, "-=.25")
     .to(words, { yPercent: 0, duration: 1.3, ease: "expo.out", stagger: 0.1 }, "<");
-  ScrollTrigger.create({ trigger: ".bow", start: "top 78%", once: true, onEnter: () => tl.play() });
+  // lay the halos out from the row as it is now, whatever loaded since the build
+  ScrollTrigger.create({ trigger: ".bow", start: "top 78%", once: true, onEnter: () => { scene.reform(1); scene.reform(2); tl.play(); } });
 
   window.apexFinale = { scene, tl };
 })();
