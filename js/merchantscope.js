@@ -60,7 +60,7 @@
       gsap.fromTo(".ms__win", { rotateX: 16, y: 80, scale: 0.94 }, { rotateX: 0, y: 0, scale: 1, ease: "none",
         scrollTrigger: { trigger: ".ms__stage", start: "top 98%", end: "top 40%", scrub: 0.6,
           onUpdate: (st) => glass.style.setProperty("--sheen", Math.min(1, Math.max(0, (st.progress - 0.55) / 0.45))) } });
-      gsap.from(".ms__step", { x: 40, autoAlpha: 0, duration: 0.9, ease: "expo.out", stagger: 0.12, scrollTrigger: { trigger: ".ms__rail", start: "top 85%" } });
+      gsap.from([...$$(".ms__step"), $(".ms__visit")], { x: 40, autoAlpha: 0, duration: 0.9, ease: "expo.out", stagger: 0.12, scrollTrigger: { trigger: ".ms__rail", start: "top 85%" } });
     });
   }
 
