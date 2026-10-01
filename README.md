@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and section 02 is *the setup*, which the deck never covered. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · MerchantScope · thank you.
+Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · MerchantScope · CBO Consortium · thank you.
 
 **Presenting it to a room?** → or PageDown (what a clicker sends) steps to the next beat of the story, ← or PageUp goes back. See Presenter mode, below.
 
@@ -42,13 +42,15 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `css/gtamex.css` | GTAmex (section 06): the side-quest game. The title and HUD, the drone flight on a framed screen with a glow sampled from the video, then a mission-select grid of clips and stills with a HUD that fills on scroll |
 | `js/gtamex.js` | Everything that moves in GTAmex: the footage playing only on screen, the flight's bar and glow, the entrances, the HUD |
 | `css/merchantscope.css` | MerchantScope (section 07): an aurora behind frosted glass, the guide in a glass browser window lit by the video, the rail of three glass cards, the callouts |
-| `js/merchantscope.js` | Everything that follows the guide clip: plays on screen from the top, the rail and callouts on the clip's clock, click-to-seek, the glow, the entrance, its presenter beats |
+| `css/consortium.css` | CBO Consortium (section 08): the same guide block as 07, retheme (Leo's amber, Atlas's violet) and mirrored, plus the demo-data note |
+| `js/merchantscope.js` | Both guide sections (07, 08), once per `.ms`. Everything that follows a guide clip: plays on screen from the top, the rail and callouts on the clip's clock, click-to-seek, the glow, the entrance, its presenter beats |
 | `tools/build-rig.py` | Generated stage PNGs → the rig's cut-out, aligned WebPs (see the assembly rig, below) |
 | `tools/og.html` | The link-preview card, `img/og.jpg` (1200×630, the site's own fonts and art); how to regenerate it is at the top of the file. The `og:` tags name the live site's URL, absolute, since most apps won't resolve a relative one |
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
 | `media/gtamex/` | Muted clips (h264 mp4, each with a first-frame WebP poster) and stills, cut at **1334×750 from the GTAmex gameplay reel** (`~/Desktop/GTAmex.mp4`, its native size), frame for frame the moments the 720×404 cuts used (`dining`/`corridor` sped up 2.5×/2×, `costa` with the fade's black hold cut). `drone.mp4` is a separate 720p60 recording (`~/Downloads/drone shot intro video.mov`, ~53 real frames a second), untrimmed and uncropped, **with full-width cinema bars baked in** (see GTAmex, below) |
+| `media/consortium/` | `guide.mp4` (14.6 s, 1600×1000, h264, muted, 0.75 MB, the whole page throughout) and `guide.webp` (Atlas mid-run). Recorded from a scratch copy of CBO Consortium on demo identities, cut in `devtools/consortium/` (see CBO Consortium, below) |
 | `media/merchantscope/` | `guide.mp4` (14.6 s, 1600×1000, h264, muted, 3.4 MB) and its poster `guide.webp` (mid-investigation, the agent strip half lit). Recorded from a local copy of MerchantScope and cut in `devtools/merchantscope/` (see MerchantScope, below) |
 | `vendor/`, `fonts/` | GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Bricolage Grotesque / Instrument Serif / JetBrains Mono |
 
@@ -340,11 +342,24 @@ Another build: a merchant fraud-triage tool for card analysts. One 15 s guide in
 - **It starts from the top each time it comes on screen** (half visible), and rewinds once it's gone: a walkthrough joined halfway reads as noise. Only plays on screen, like GTAmex's footage.
 - **Glass needs something behind it to blur**: three soft lights drift behind the section (violet, teal, our gold) and the window's glow is the video itself on a 32×20 canvas, the GTAmex flight's trick. A sheen crosses the glass as the window stands up out of its tilt on scroll.
 - **Seeking needs byte ranges.** Python's `http.server` doesn't serve them, so locally every seek snapped back to 0 and the rail did nothing; `devtools/nocache_server.py` now does. GitHub Pages always has.
+- **07 and 08 share this block** — see CBO Consortium, below, for how 08 rethemes and mirrors it.
 - **A way into the live tool sits under the rail**: *Try MerchantScope* (`.ms__visit`), a glass pill to <https://merchantscope.vercel.app/> in a new tab, with a slow light crossing it so it reads as the way in. It is part of the rail's column (`.ms__side`), so on phones it lands under the cards, centred. GSAP owns its transform (it deals in with the cards), so its CSS transition is on `box-shadow` alone; the hover moves only the arrow.
 - **Reduced motion**: nothing plays by itself; the poster (mid-sweep) with a glass play button, and the cards still start it at their part. Presenter mode stops on the heading and on the window.
 - **Screenshots of it lie**: the app's browser pane and a scale-1 headless capture both draw the playing video as an empty screen. Judge it on a `frames.mjs` sheet at the default scale (`shots/ms*.json`).
 
-## Thank you (section 08)
+## CBO Consortium (section 08)
+
+The user's third build: an OSINT platform that finds credit bust-out and synthetic-identity rings in **public** fraud data (CFPB, DOJ, FTC, sanctions…). Two AI agents — Leo and Atlas, the app's lion mascots — read the reports into people, places and phones; shared addresses and phones expose rings; a new applicant is scored against all of it, every point citing its source. The line: *Fraud rings, found in public data. Every point cited.*
+
+- **It is the MerchantScope block, not a new one** (`.ms`), so the two builds read as a pair: the same glass window, rail, callouts and clock-driven behaviour. `ms--cbo` rethemes it in the app's own colours (`css/consortium.css`: the accent is a set of rgb-triplet variables on `.ms`, so a section swaps them whole) and `ms--flip` mirrors it — rail left, window right, the cards dealing in from the window's side. `js/merchantscope.js` now runs once per `.ms`; presenter mode stops on each heading and each window.
+- **No visit button**: the app isn't hosted and its repo is private.
+- **The clip**: the dashboard → Atlas reads ten public CFPB complaints (the progress bar, the live console) → a ring's graph → an applicant scored **90 / 100, high risk**, with four cited signals. 14.6 s, two dissolves; the 85 s of waiting for the agent in the middle is cut.
+- **The whole page, held still — no push-ins** (the user's note: zooming in and out again and again was too much). The camera never moves; the callouts point at the agent's progress bar, the ring's first member and the gauge, placed against the full frame. MerchantScope's clip keeps its gentle push-ins.
+- **Every person in it is made up, and the page says so** (`.ms__fine`, under the rail). The real databases hold people from the BOSI forum — a private investigators' group — with names and identity data; none of that may reach a public page. So the run used a scratch copy, the BOSI posts were deleted from it, and four **demo identities** were seeded (900-range SSNs, never issued; 555-01xx phones, reserved for fiction; "Demo" street names; reports sourced `DEMO`). They were linked and their ring saved through the app's own code (`processing.ring_detector`, the Entity Resolution link rows), and the applicant borrows one of their SSNs and phones. The CFPB complaints Atlas reads are real and public (narratives come anonymised).
+- **The agents' answers came from a local stand-in** in place of OpenRouter (the scratch copy's extractor URL was made configurable): the company, amounts and fraud type read from each complaint by rule, no suspect invented. The pipeline's 5–15 s politeness pause between items was shortened in the copy for the recording. The scorer, ring detection and graph are the app's code unchanged.
+- **The BOSI login was not used**: it signs in to groups.io, a third-party site.
+
+## Thank you (section 09)
 
 The curtain call, then questions. **"Three things to remember" was cut** on the user's note, with the big idea it echoed.
 

@@ -1,0 +1,31 @@
+/* 08 · CBO Consortium · the same guide block as MerchantScope (.ms, merchantscope.css),
+   in the app's own colours — Leo's amber, Atlas's violet — and mirrored: the rail on
+   the left, the window on the right, so the two builds read as a pair, not a repeat. */
+.ms--cbo {
+  --ms-violet: #c084fc; --ms-fuchsia: #a855f7; --ms-teal: #f59e0b;
+  --ms-glow: 245, 158, 11; --ms-edge: 252, 211, 77; --ms-shade: 120, 53, 15; --ms-cool: 168, 85, 247;
+  --ms-a1: 245, 158, 11; --ms-a2: 168, 85, 247; --ms-a3: 56, 189, 248;
+  --ms-word: linear-gradient(100deg, #fde68a 0%, #f59e0b 30%, #f97316 52%, #c084fc 80%, #a855f7 100%);
+  background:
+    radial-gradient(80% 50% at 12% 8%, rgba(245, 158, 11, .12), transparent 62%),
+    radial-gradient(60% 45% at 95% 70%, rgba(168, 85, 247, .12), transparent 60%),
+    var(--ink);
+}
+.ms--cbo .eyebrow { color: #fbbf24; }
+.ms--cbo .ms__aurora i:nth-child(1) { left: 22%; top: 30%; }
+.ms--cbo .ms__aurora i:nth-child(2) { left: auto; right: 4%; top: 40%; }
+.ms--cbo .ms__aurora i:nth-child(3) { right: auto; left: 0; top: 66%; }
+
+/* mirrored: the rail first, the window second; the lit card leans towards the window */
+.ms--flip .ms__stage { grid-template-columns: clamp(250px, 21vw, 310px) minmax(0, 1fr); }
+.ms--flip .ms__win { order: 2; }
+.ms--flip .ms__step.is-on button { transform: translateX(6px); }
+
+/* every person in the clip is made up; the page says so, quietly, under the rail */
+.ms__fine { margin: 2px 4px 0; font-family: var(--mono); font-size: .68rem; line-height: 1.6; letter-spacing: .02em; color: var(--dim); }
+
+@media (max-width: 1100px) {
+  .ms--flip .ms__stage { grid-template-columns: minmax(0, 1fr); }
+  .ms--flip .ms__win { order: 0; }
+  .ms--flip .ms__step.is-on button { transform: translateY(-4px); }
+}
