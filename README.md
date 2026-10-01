@@ -2,7 +2,7 @@
 
 A scrolling story of the APEX build. **The sections follow deck v6 (the final deck)**, with two deliberate departures: section 01 is *the frontend* — a live Telegram phone that replaced the deck's "the idea" slide — and section 02 is *the setup*, which the deck never covered. It's a static site with no build step, and everything is local (fonts, GSAP, Lenis, images), so it works offline.
 
-Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · thank you.
+Page order: hero · the frontend · the setup · how they work together · recipe → cart · a day with APEX · GTAmex · MerchantScope · thank you.
 
 **Presenting it to a room?** → or PageDown (what a clicker sends) steps to the next beat of the story, ← or PageUp goes back. See Presenter mode, below.
 
@@ -41,12 +41,15 @@ Or use any static server from this folder (`python3 -m http.server 8080`). Openi
 | `css/sections-2.css` | brains & tools · how they work together · recipe → cart · daily rhythm · build loop · thank you |
 | `css/gtamex.css` | GTAmex (section 06): the side-quest game. The title and HUD, the drone flight on a framed screen with a glow sampled from the video, then a mission-select grid of clips and stills with a HUD that fills on scroll |
 | `js/gtamex.js` | Everything that moves in GTAmex: the footage playing only on screen, the flight's bar and glow, the entrances, the HUD |
+| `css/merchantscope.css` | MerchantScope (section 07): an aurora behind frosted glass, the guide in a glass browser window lit by the video, the rail of three glass cards, the callouts |
+| `js/merchantscope.js` | Everything that follows the guide clip: plays on screen from the top, the rail and callouts on the clip's clock, click-to-seek, the glow, the entrance, its presenter beats |
 | `tools/build-rig.py` | Generated stage PNGs → the rig's cut-out, aligned WebPs (see the assembly rig, below) |
 | `tools/og.html` | The link-preview card, `img/og.jpg` (1200×630, the site's own fonts and art); how to regenerate it is at the top of the file. The `og:` tags name the live site's URL, absolute, since most apps won't resolve a relative one |
 | `tools/check-pins.mjs` | Headless check that the pinned sections arrive and leave without a snap — run it after touching anything above a pin (see How sections move) |
 | `img/` | WebP copies of `tutorial/assets` (agents, framed Telegram crops, dashboard shots, Zepto cart) |
 | `media/` | `apex-wave.webm` (alpha) + `apex-wave.mp4` (fallback) — the hero lion loop, silent — and its poster frame |
 | `media/gtamex/` | Muted clips (h264 mp4, each with a first-frame WebP poster) and stills, cut at **1334×750 from the GTAmex gameplay reel** (`~/Desktop/GTAmex.mp4`, its native size), frame for frame the moments the 720×404 cuts used (`dining`/`corridor` sped up 2.5×/2×, `costa` with the fade's black hold cut). `drone.mp4` is a separate 720p60 recording (`~/Downloads/drone shot intro video.mov`, ~53 real frames a second), untrimmed and uncropped, **with full-width cinema bars baked in** (see GTAmex, below) |
+| `media/merchantscope/` | `guide.mp4` (14.6 s, 1600×1000, h264, muted, 3.4 MB) and its poster `guide.webp` (mid-investigation, the agent strip half lit). Recorded from a local copy of MerchantScope and cut in `devtools/merchantscope/` (see MerchantScope, below) |
 | `vendor/`, `fonts/` | GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Bricolage Grotesque / Instrument Serif / JetBrains Mono |
 
 ## How sections move
@@ -325,7 +328,22 @@ A side quest: a GTA-style game of the office, built with APEX in co-op. No copy 
 - **Everything is cut at 1334×750 from the reel** instead of 720×404 (upscaled into big tiles, it was soft): each output frame is the reel frame the old clip was matched to, so timing, speed-ups and cuts are unchanged. The clips went from 1.7 MB to about 7 MB in all; they're `preload="none"` and play only on screen.
 - **The flight's cinema bars are full width.** The game draws its letterbox as rounded bars inset from the frame, with the scene showing above the top one, below the bottom one and in their corners — it read as a glitch. `drone.mp4` is re-encoded from the untouched recording with square black bars baked in from the frame's edges: the top bar to the bottom of the game's own (82 of 720 rows), the bottom one deeper (102) to take the game's "press any key to skip" hint with it, which sat just above its band. **The bars track the game's frame by frame** — measured per frame from the recording as they grow in (3.0–3.55 s) and retract (34.0–34.48 s) — so the cut to gameplay at the end is exactly as it was. Burnt in rather than drawn over the video, so they hold on every browser, the poster and a paused frame. How it was made: `devtools/gtamex/`.
 
-## Thank you (section 07)
+## MerchantScope (section 07)
+
+Another build: a merchant fraud-triage tool for card analysts. One 15 s guide in a glass browser window, a rail of three glass cards beside it, and a headline that says the whole idea in one line: *one merchant name in, a cited risk verdict out.* The user asked for glassmorphism, a short glimpse rather than a tour, and the investigate page's agent strip in particular — the bar that fills across the agents as each finishes. That strip gets the longest share of the clip.
+
+- **The clip is a real run, not a mock-up.** MerchantScope ran from a copy of its folder in a scratch directory (the project itself was not touched), and a headless Chrome typed, clicked and scrolled through it with a painted cursor while every painted frame was saved (`devtools/merchantscope/record.mjs`). `build.py` cuts the 45 s take to 14.6 s: one continuous take, speed-ramped (typing and waiting fast, the agent strip at about a third of real speed), slow push-ins on what matters, one dissolve over the page change, faded at both ends so the loop doesn't jump.
+- **The agents' LLM answers were written for this recording.** The tool's six LLM agents need a provider key; instead its *Custom (OpenAI-compatible)* provider pointed at a small local stand-in (`shim.py`, scratch only) that returned answers written from the agents' real prompts and the real evidence, after a short think delay so the strip moves at a believable pace. Everything else — the 22 sources, the deterministic agents, the scoring floors, the red-team pass — is the tool's own code on live data.
+- **The merchant is Patagonia, on purpose.** Wayfair (the tool's own example) rate-limits bots, and a 429 from its site trips a hard "website unavailable" floor that scores it *high risk* — a false verdict about a real company on a public page. Patagonia's site answers cleanly, and its noise (a $1 trademark suit it filed, a suit over national monuments, SEC hits for *Patagonia Gold* and a pharma company, a Reddit "rip off" thread about the region) shows the point of the tool: the agents see through it to **14 / 100, low risk**.
+- **The mascots are the app's own** (Pokémon artwork); shown as they are on the user's call.
+- **The rail and the callouts read the clip's clock**, every frame while it plays (`currentTime`), never a timer of their own — so a paused, seeked or stalled clip can't drift from its cards. Each card's line fills teal → violet like the app's strip. A click on a card seeks the clip there. The three callouts are anchored to measured points in the frame (the search results, the strip's lower edge, the gauge's rim) in percent, so they hold at every width; below 700px they go (too small to point at anything) and the rail carries it.
+- **It starts from the top each time it comes on screen** (half visible), and rewinds once it's gone: a walkthrough joined halfway reads as noise. Only plays on screen, like GTAmex's footage.
+- **Glass needs something behind it to blur**: three soft lights drift behind the section (violet, teal, our gold) and the window's glow is the video itself on a 32×20 canvas, the GTAmex flight's trick. A sheen crosses the glass as the window stands up out of its tilt on scroll.
+- **Seeking needs byte ranges.** Python's `http.server` doesn't serve them, so locally every seek snapped back to 0 and the rail did nothing; `devtools/nocache_server.py` now does. GitHub Pages always has.
+- **Reduced motion**: nothing plays by itself; the poster (mid-sweep) with a glass play button, and the cards still start it at their part. Presenter mode stops on the heading and on the window.
+- **Screenshots of it lie**: the app's browser pane and a scale-1 headless capture both draw the playing video as an empty screen. Judge it on a `frames.mjs` sheet at the default scale (`shots/ms*.json`).
+
+## Thank you (section 08)
 
 The curtain call, then questions. **"Three things to remember" was cut** on the user's note, with the big idea it echoed.
 

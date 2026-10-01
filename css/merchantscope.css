@@ -1,0 +1,141 @@
+/* 07 · MerchantScope · another build: merchant fraud triage for analysts.
+   Glass on light: an aurora drifts behind the section in the app's own colours
+   (violet, teal, a little of our gold), the guide plays in a frosted browser
+   window lit from behind by the video itself, and a glass rail beside it follows
+   the clip. Everything that moves is js/merchantscope.js. */
+.ms {
+  --ms-violet: #a78bfa; --ms-fuchsia: #e879f9; --ms-teal: #2dd4bf; --ms-glass: rgba(255, 255, 255, .055);
+  --ms-rim: rgba(255, 255, 255, .14); --ms-dur: 14.6;
+  overflow: clip; isolation: isolate;
+  background:
+    radial-gradient(80% 50% at 85% 8%, rgba(167, 139, 250, .14), transparent 62%),
+    radial-gradient(60% 45% at 5% 70%, rgba(45, 212, 191, .10), transparent 60%),
+    var(--ink);
+}
+.ms .eyebrow { color: var(--ms-violet); }
+
+/* three soft lights that drift behind the glass, so the frost has something to blur */
+.ms__aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ms__aurora i { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .5; }
+.ms__aurora i:nth-child(1) { width: 46vw; height: 46vw; left: 30%; top: 22%; background: radial-gradient(circle, rgba(139, 92, 246, .55), transparent 65%); }
+.ms__aurora i:nth-child(2) { width: 36vw; height: 36vw; left: 2%; top: 48%; background: radial-gradient(circle, rgba(45, 212, 191, .4), transparent 65%); }
+.ms__aurora i:nth-child(3) { width: 30vw; height: 30vw; right: 0; top: 60%; background: radial-gradient(circle, rgba(233, 173, 79, .32), transparent 65%); }
+
+/* the name, set like the app's own wordmark, and one line */
+.ms__title { margin: 0 0 clamp(36px, 5vw, 64px); display: grid; gap: .35em; font-weight: 700; }
+.ms__word {
+  font-size: clamp(2.8rem, 7vw, 6.4rem); line-height: .95; letter-spacing: -.05em; width: fit-content;
+  background: linear-gradient(100deg, #c4b5fd 0%, var(--ms-violet) 34%, var(--ms-fuchsia) 58%, #fbbf77 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 14px 40px rgba(167, 139, 250, .28));
+}
+.ms__word b { font-weight: inherit; }
+.ms__line { font-size: clamp(1.15rem, 2vw, 1.75rem); letter-spacing: -.02em; color: var(--cream); font-weight: 500; }
+
+/* stage: the window, and the rail beside it */
+.ms__stage { display: grid; grid-template-columns: minmax(0, 1fr) clamp(250px, 21vw, 310px); gap: clamp(24px, 3vw, 48px); align-items: center; perspective: 1400px; }
+.ms__win { position: relative; transform-origin: 50% 100%; }
+.ms__glow {
+  position: absolute; left: -5%; top: -6%; width: 110%; height: 112%; pointer-events: none; z-index: -1;
+  filter: blur(70px) saturate(1.6) brightness(1.15); opacity: .55;
+}
+.ms__glass {
+  position: relative; padding: 0 10px 10px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .03) 40%, rgba(255, 255, 255, .05));
+  -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: inset 0 0 0 1px var(--ms-rim), inset 0 1px 0 rgba(255, 255, 255, .22), 0 50px 110px rgba(0, 0, 0, .45);
+}
+/* a sheen crosses the glass once as the window lands (--sheen, 0 → 1, from the JS) */
+.ms__glass::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .16) 48%, transparent 60%) no-repeat;
+  background-size: 250% 100%; background-position: calc(160% - var(--sheen, 1) * 220%) 0; opacity: calc(1 - var(--sheen, 1) * var(--sheen, 1));
+}
+.ms__bar { display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 8px; }
+.ms__bar i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, .2); }
+.ms__bar i:nth-child(1) { background: #ff5f57; } .ms__bar i:nth-child(2) { background: #febc2e; } .ms__bar i:nth-child(3) { background: #28c840; }
+.ms__bar span {
+  margin: 0 auto; transform: translateX(-24px); font-family: var(--mono); font-size: .68rem; letter-spacing: .06em; color: var(--cream-2);
+  padding: 4px 14px; border-radius: 999px; background: rgba(0, 0, 0, .22); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+.ms__screen { position: relative; aspect-ratio: 16 / 10; border-radius: 13px; overflow: hidden; background: #0c0b14; box-shadow: 0 0 0 1px rgba(255, 255, 255, .07); }
+.ms__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* callouts: a dot on the thing and a glass pill beside it, on a short leader.
+   The <p> is the anchor (no size, at --x/--y on the screen); they follow the clip. */
+.ms__note { position: absolute; left: var(--x); top: var(--y); margin: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .35s ease; }
+.ms__note::before {
+  content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 4px rgba(167, 139, 250, .4), 0 0 16px rgba(167, 139, 250, .9);
+}
+.ms__note::after { content: ""; position: absolute; left: 0; top: 0; width: 26px; height: 1px; background: rgba(255, 255, 255, .55); transform-origin: 0 0; transform: rotate(35deg); }
+.ms__note span {
+  position: absolute; left: 20px; top: 13px; white-space: nowrap; padding: .5em .95em; border-radius: 999px;
+  font-size: clamp(.72rem, .9vw, .88rem); font-weight: 600; letter-spacing: -.005em; color: #fff;
+  background: rgba(20, 16, 34, .48); -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), inset 0 1px 0 rgba(255, 255, 255, .18), 0 10px 30px rgba(0, 0, 0, .35);
+  transform: translateY(6px); transition: transform .45s var(--ease);
+}
+.ms__note--up::after { width: 22px; transform: rotate(90deg); }
+.ms__note--up span { left: 0; top: 22px; translate: -50% 0; }
+.ms__note--left::after { transform: rotate(145deg); }
+.ms__note--left span { left: auto; right: 18px; top: 12px; }
+.ms__note.is-on { opacity: 1; }
+.ms__note.is-on span { transform: none; }
+.ms__note.is-on::before { animation: ms-ping 1.6s ease-out infinite; }
+@keyframes ms-ping { 0% { box-shadow: 0 0 0 0 rgba(167, 139, 250, .7), 0 0 16px rgba(167, 139, 250, .9); } 100% { box-shadow: 0 0 0 14px rgba(167, 139, 250, 0), 0 0 16px rgba(167, 139, 250, .9); } }
+
+/* play: only shown when the clip doesn't start by itself (reduced motion) */
+.ms__play {
+  position: absolute; left: 50%; top: 50%; z-index: 3; width: 78px; height: 78px; margin: -39px 0 0 -39px; border: 0; border-radius: 50%; cursor: pointer;
+  display: none; place-items: center; color: #fff;
+  background: rgba(255, 255, 255, .12); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3), 0 18px 40px rgba(0, 0, 0, .4);
+}
+.ms__play svg { width: 30px; height: 30px; fill: currentColor; margin-left: 4px; }
+.ms.is-still .ms__play { display: grid; }
+
+/* the rail: one glass card per part of the clip. The card on screen lifts and
+   lights, and its line fills the way the app's agent strip does (teal → violet). */
+.ms__rail { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: none; }
+.ms__step button {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; width: 100%; text-align: left; cursor: pointer;
+  padding: 18px 20px 20px; border: 0; border-radius: 18px; overflow: hidden;
+  background: var(--ms-glass); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), inset 0 1px 0 rgba(255, 255, 255, .12);
+  opacity: .62; transition: opacity .45s, transform .55s var(--ease), box-shadow .45s, background .45s;
+}
+.ms__n { grid-row: span 2; font-family: var(--mono); font-size: .7rem; color: var(--dim); padding-top: .3em; }
+.ms__name { font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; color: var(--cream); }
+.ms__say { font-size: .86rem; line-height: 1.45; color: var(--cream-2); }
+.ms__fill { position: absolute; left: 20px; right: 20px; bottom: 10px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.ms__fill i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--ms-teal), var(--ms-violet) 70%, var(--ms-fuchsia)); box-shadow: 0 0 10px rgba(167, 139, 250, .8); }
+.ms__step.is-on button {
+  opacity: 1; transform: translateX(-6px);
+  background: linear-gradient(150deg, rgba(167, 139, 250, .16), rgba(45, 212, 191, .07) 70%);
+  box-shadow: inset 0 0 0 1px rgba(196, 181, 253, .35), inset 0 1px 0 rgba(255, 255, 255, .2), 0 18px 50px rgba(76, 29, 149, .35);
+}
+.ms__step.is-on .ms__n { color: var(--ms-violet); }
+.ms__step button:hover { opacity: 1; }
+.ms__step button:focus-visible { outline: 2px solid var(--ms-violet); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ms__aurora i { animation: ms-drift 22s ease-in-out infinite alternate; }
+  .ms__aurora i:nth-child(2) { animation-duration: 27s; animation-delay: -9s; }
+  .ms__aurora i:nth-child(3) { animation-duration: 31s; animation-delay: -15s; }
+  @keyframes ms-drift { 50% { transform: translate(6vw, -4vw) scale(1.12); } 100% { transform: translate(-5vw, 3vw) scale(.94); } }
+}
+@media (max-width: 1100px) {
+  .ms__stage { grid-template-columns: minmax(0, 1fr); }
+  .ms__rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ms__step.is-on button { transform: translateY(-4px); }
+}
+@media (max-width: 700px) {
+  .ms__glass { padding: 0 6px 6px; border-radius: 16px; }
+  .ms__bar { height: 30px; } .ms__bar i { width: 8px; height: 8px; }
+  .ms__screen { border-radius: 10px; }
+  .ms__note { display: none; } /* too small to point at anything; the rail carries it */
+  .ms__rail { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .ms__step button { padding: 14px 16px 16px; }
+  .ms__aurora i { filter: blur(60px); }
+}
