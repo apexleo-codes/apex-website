@@ -5,11 +5,15 @@
    the clip. Everything that moves is js/merchantscope.js. */
 .ms {
   --ms-violet: #a78bfa; --ms-fuchsia: #e879f9; --ms-teal: #2dd4bf; --ms-glass: rgba(255, 255, 255, .055);
-  --ms-rim: rgba(255, 255, 255, .14); --ms-dur: 14.6;
+  --ms-rim: rgba(255, 255, 255, .14);
+  /* the accent as rgb triplets, so a section can retheme the whole block (08 does, in consortium.css) */
+  --ms-glow: 167, 139, 250; --ms-edge: 196, 181, 253; --ms-shade: 76, 29, 149; --ms-cool: 45, 212, 191;
+  --ms-a1: 139, 92, 246; --ms-a2: 45, 212, 191; --ms-a3: 233, 173, 79;
+  --ms-word: linear-gradient(100deg, #c4b5fd 0%, var(--ms-violet) 34%, var(--ms-fuchsia) 58%, #fbbf77 100%);
   overflow: clip; isolation: isolate;
   background:
-    radial-gradient(80% 50% at 85% 8%, rgba(167, 139, 250, .14), transparent 62%),
-    radial-gradient(60% 45% at 5% 70%, rgba(45, 212, 191, .10), transparent 60%),
+    radial-gradient(80% 50% at 85% 8%, rgba(var(--ms-glow), .14), transparent 62%),
+    radial-gradient(60% 45% at 5% 70%, rgba(var(--ms-cool), .10), transparent 60%),
     var(--ink);
 }
 .ms .eyebrow { color: var(--ms-violet); }
@@ -17,17 +21,17 @@
 /* three soft lights that drift behind the glass, so the frost has something to blur */
 .ms__aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .ms__aurora i { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .5; }
-.ms__aurora i:nth-child(1) { width: 46vw; height: 46vw; left: 30%; top: 22%; background: radial-gradient(circle, rgba(139, 92, 246, .55), transparent 65%); }
-.ms__aurora i:nth-child(2) { width: 36vw; height: 36vw; left: 2%; top: 48%; background: radial-gradient(circle, rgba(45, 212, 191, .4), transparent 65%); }
-.ms__aurora i:nth-child(3) { width: 30vw; height: 30vw; right: 0; top: 60%; background: radial-gradient(circle, rgba(233, 173, 79, .32), transparent 65%); }
+.ms__aurora i:nth-child(1) { width: 46vw; height: 46vw; left: 30%; top: 22%; background: radial-gradient(circle, rgba(var(--ms-a1), .55), transparent 65%); }
+.ms__aurora i:nth-child(2) { width: 36vw; height: 36vw; left: 2%; top: 48%; background: radial-gradient(circle, rgba(var(--ms-a2), .4), transparent 65%); }
+.ms__aurora i:nth-child(3) { width: 30vw; height: 30vw; right: 0; top: 60%; background: radial-gradient(circle, rgba(var(--ms-a3), .32), transparent 65%); }
 
 /* the name, set like the app's own wordmark, and one line */
 .ms__title { margin: 0 0 clamp(36px, 5vw, 64px); display: grid; gap: .35em; font-weight: 700; }
 .ms__word {
   font-size: clamp(2.8rem, 7vw, 6.4rem); line-height: .95; letter-spacing: -.05em; width: fit-content;
-  background: linear-gradient(100deg, #c4b5fd 0%, var(--ms-violet) 34%, var(--ms-fuchsia) 58%, #fbbf77 100%);
+  background: var(--ms-word);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 14px 40px rgba(167, 139, 250, .28));
+  filter: drop-shadow(0 14px 40px rgba(var(--ms-glow), .28));
 }
 .ms__word b { font-weight: inherit; }
 .ms__line { font-size: clamp(1.15rem, 2vw, 1.75rem); letter-spacing: -.02em; color: var(--cream); font-weight: 500; }
@@ -66,7 +70,7 @@
 .ms__note { position: absolute; left: var(--x); top: var(--y); margin: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .35s ease; }
 .ms__note::before {
   content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
-  background: #fff; box-shadow: 0 0 0 4px rgba(167, 139, 250, .4), 0 0 16px rgba(167, 139, 250, .9);
+  background: #fff; box-shadow: 0 0 0 4px rgba(var(--ms-glow), .4), 0 0 16px rgba(var(--ms-glow), .9);
 }
 .ms__note::after { content: ""; position: absolute; left: 0; top: 0; width: 26px; height: 1px; background: rgba(255, 255, 255, .55); transform-origin: 0 0; transform: rotate(35deg); }
 .ms__note span {
@@ -83,7 +87,7 @@
 .ms__note.is-on { opacity: 1; }
 .ms__note.is-on span { transform: none; }
 .ms__note.is-on::before { animation: ms-ping 1.6s ease-out infinite; }
-@keyframes ms-ping { 0% { box-shadow: 0 0 0 0 rgba(167, 139, 250, .7), 0 0 16px rgba(167, 139, 250, .9); } 100% { box-shadow: 0 0 0 14px rgba(167, 139, 250, 0), 0 0 16px rgba(167, 139, 250, .9); } }
+@keyframes ms-ping { 0% { box-shadow: 0 0 0 0 rgba(var(--ms-glow), .7), 0 0 16px rgba(var(--ms-glow), .9); } 100% { box-shadow: 0 0 0 14px rgba(var(--ms-glow), 0), 0 0 16px rgba(var(--ms-glow), .9); } }
 
 /* play: only shown when the clip doesn't start by itself (reduced motion) */
 .ms__play {
@@ -100,9 +104,9 @@
 .ms__visit {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 22px; border-radius: 999px;
   font-weight: 600; font-size: .98rem; letter-spacing: -.01em; color: #fff; text-decoration: none; isolation: isolate;
-  background: linear-gradient(120deg, rgba(167, 139, 250, .26), rgba(232, 121, 249, .16) 55%, rgba(45, 212, 191, .16));
+  background: linear-gradient(120deg, rgba(var(--ms-glow), .26), rgba(232, 121, 249, .16) 55%, rgba(45, 212, 191, .16));
   -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
-  box-shadow: inset 0 0 0 1px rgba(196, 181, 253, .45), inset 0 1px 0 rgba(255, 255, 255, .25), 0 14px 40px rgba(124, 58, 237, .3);
+  box-shadow: inset 0 0 0 1px rgba(var(--ms-edge), .45), inset 0 1px 0 rgba(255, 255, 255, .25), 0 14px 40px rgba(124, 58, 237, .3);
   transition: box-shadow .4s; /* GSAP owns its transform (the entrance) */
 }
 .ms__visit .ic { transform: rotate(-45deg); transition: transform .4s var(--ease); }
@@ -128,11 +132,11 @@
 .ms__name { font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; color: var(--cream); }
 .ms__say { font-size: .86rem; line-height: 1.45; color: var(--cream-2); }
 .ms__fill { position: absolute; left: 20px; right: 20px; bottom: 10px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .1); overflow: hidden; }
-.ms__fill i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--ms-teal), var(--ms-violet) 70%, var(--ms-fuchsia)); box-shadow: 0 0 10px rgba(167, 139, 250, .8); }
+.ms__fill i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--ms-teal), var(--ms-violet) 70%, var(--ms-fuchsia)); box-shadow: 0 0 10px rgba(var(--ms-glow), .8); }
 .ms__step.is-on button {
   opacity: 1; transform: translateX(-6px);
-  background: linear-gradient(150deg, rgba(167, 139, 250, .16), rgba(45, 212, 191, .07) 70%);
-  box-shadow: inset 0 0 0 1px rgba(196, 181, 253, .35), inset 0 1px 0 rgba(255, 255, 255, .2), 0 18px 50px rgba(76, 29, 149, .35);
+  background: linear-gradient(150deg, rgba(var(--ms-glow), .16), rgba(var(--ms-cool), .07) 70%);
+  box-shadow: inset 0 0 0 1px rgba(var(--ms-edge), .35), inset 0 1px 0 rgba(255, 255, 255, .2), 0 18px 50px rgba(var(--ms-shade), .35);
 }
 .ms__step.is-on .ms__n { color: var(--ms-violet); }
 .ms__step button:hover { opacity: 1; }
