@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/sections-2.css">
   <link rel="stylesheet" href="css/gtamex.css">
+  <link rel="stylesheet" href="css/merchantscope.css">
 </head>
 <body class="is-loading">
 
@@ -417,7 +418,41 @@
     </div>
   </section>
 
-  <!-- 07 · THANK YOU (slide 10) · the curtain call: points of light gather into
+  <!-- 07 · MERCHANTSCOPE · another build: a fraud-triage tool for analysts. One
+       15 s guide plays in a glass browser window (a real run, recorded and cut in
+       devtools/merchantscope/); the rail beside it follows the clip and seeks it,
+       and the callouts on the screen come and go with it. js/merchantscope.js -->
+  <section class="section ms" id="merchantscope" data-chapter="MerchantScope">
+    <div class="ms__aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+    <header class="shead"><span class="shead__num">07</span><p class="eyebrow">Another build · fraud triage</p></header>
+    <h2 class="ms__title"><span class="ms__word">Merchant<b>Scope</b></span><span class="ms__line">One merchant name in. <em>A cited risk verdict out.</em></span></h2>
+    <div class="ms__stage">
+      <div class="ms__win">
+        <canvas class="ms__glow" width="32" height="20" aria-hidden="true"></canvas>
+        <div class="ms__glass">
+          <div class="ms__bar" aria-hidden="true"><i></i><i></i><i></i><span>merchantscope</span></div>
+          <div class="ms__screen">
+            <video class="ms__video" muted playsinline loop preload="metadata" poster="media/merchantscope/guide.webp"
+                   aria-label="MerchantScope walkthrough: a lookup of Patagonia across public sources, then eleven agents investigating it in turn, ending in a low-risk score of 14 out of 100 with a cited narrative"><source src="media/merchantscope/guide.mp4" type="video/mp4"></video>
+            <p class="ms__note" data-from="1.9" data-to="4.4" style="--x: 50%; --y: 41%" aria-hidden="true"><span>Every source answers at once</span></p>
+            <p class="ms__note ms__note--up" data-from="6.6" data-to="11.3" style="--x: 41%; --y: 28%" aria-hidden="true"><span>Each agent lights up as it finishes</span></p>
+            <p class="ms__note ms__note--left" data-from="12.3" data-to="14.4" style="--x: 22%; --y: 10%" aria-hidden="true"><span>14 / 100 · low risk</span></p>
+            <button class="ms__play" type="button" aria-label="Play the walkthrough"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="ms__side">
+        <ol class="ms__rail">
+        <li class="ms__step" data-at="0" data-end="4.6"><button type="button"><span class="ms__n">01</span><span class="ms__name">Look up</span><span class="ms__say">Type a merchant. 22 free sources answer at once.</span><span class="ms__fill" aria-hidden="true"><i></i></span></button></li>
+        <li class="ms__step" data-at="4.6" data-end="11.5"><button type="button"><span class="ms__n">02</span><span class="ms__name">Investigate</span><span class="ms__say">11 AI agents take turns on the evidence.</span><span class="ms__fill" aria-hidden="true"><i></i></span></button></li>
+        <li class="ms__step" data-at="11.5" data-end="14.6"><button type="button"><span class="ms__n">03</span><span class="ms__name">Verdict</span><span class="ms__say">A risk score, with every claim cited.</span><span class="ms__fill" aria-hidden="true"><i></i></span></button></li>
+      </ol>
+        <a class="ms__visit" href="https://merchantscope.vercel.app/" target="_blank" rel="noopener" data-cursor="Visit"><span>Try MerchantScope</span><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · THANK YOU (slide 10) · the curtain call: points of light gather into
        APEX and pour into his team, who step out and bow (js/finale.js; the row is
        built in js/render.js), then questions -->
   <section class="section outro" id="outro" data-chapter="Thank you">
@@ -448,5 +483,6 @@
 <script src="js/recipefx.js"></script>
 <script src="js/motion.js"></script>
 <script src="js/gtamex.js"></script>
+<script src="js/merchantscope.js"></script>
 </body>
 </html>

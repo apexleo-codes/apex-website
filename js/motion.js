@@ -121,6 +121,7 @@
     if (rhythmPin) R.forEach((_, i) => out.push(rhythmPin.start + ((i + 0.5) / R.length) * (rhythmPin.end - rhythmPin.start)));
     else { head($(".rhythm .shead")); rItems.forEach((li) => out.push(top(li) - vh * 0.6)); }
     if (window.apexGta) out.push(...apexGta.beats());                          // the heading, the flight, the grid, mission passed
+    if (window.apexMs) out.push(...apexMs.beats());                            // MerchantScope: the heading, the window
     mid($(".thanks"));
     const max = document.documentElement.scrollHeight - vh;
     return [...new Set(out.map((y) => Math.round(Math.min(max, Math.max(0, y)))))].sort((a, b) => a - b)
