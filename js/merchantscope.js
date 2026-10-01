@@ -58,6 +58,9 @@
       gsap.timeline({ scrollTrigger: { trigger: $(".ms__title"), start: "top 82%" } })
         .from($(".ms__word"), { yPercent: 40, autoAlpha: 0, duration: 1.1, ease: "expo.out" })
         .from($(".ms__line"), { y: 24, autoAlpha: 0, duration: 0.9, ease: "power3.out" }, "-=.8");
+        // the credit lands just after the name, like a signature (07 only)
+        const credit = $(".ms__credit");
+        if (credit) gsap.from(credit, { scale: 0.85, y: 20, autoAlpha: 0, duration: 1.1, ease: "back.out(1.6)", scrollTrigger: { trigger: credit, start: "top 85%" } });
       // the window rises out of the floor, tilted back, and stands up as you scroll;
       // the sheen crosses the glass on the last stretch
       const glass = $(".ms__glass");
